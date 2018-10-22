@@ -112,8 +112,106 @@ class BitString:
         neighbor[i] = np.abs(neighbor[i] - 1)
         
         return neighbor
+
+class Genetic(BitString):
+    """Child class for solving bitstring optimisation problems using a genetic algorithm."""
     
+    def __init__(self, length, fitness_fn):  
+        """Initialize Genetic object.
+    
+        Args:
+        length: int. Length of bitstring to be used in problem
+        fitness_fn: fitness function object. Object to implement fitness function 
+        for optimization.
+           
+        Returns:
+        None
+        """
+        BitString.__init__(self, length, fitness_fn)
+        self.population = []
+        self.pop_fitness = []
+        self.probs = []
+    
+    def get_random(self):
+        """Return a random bitstring
         
+        Args:
+        None
+           
+        Returns:
+        state: array. Randomly generated bitstring.
+        """
+        state = np.random.randint(0, 2, self.length)
+        
+        return state       
+       
+    def create_population(self, pop_size):
+        """Create a population of random bitstrings
+        
+        Args:
+        pop_size: int. Size of population to be created.
+           
+        Returns:
+        None
+        """
+        population = []
+        pop_fitness = []
+        
+        for i in range(pop_size):
+            state = self.get_random()
+            fitness = self.get_fitness(state)
+            
+            population.append(state)
+            pop_fitness.append(fitness)
+        
+        self.population = np.array(population)
+        self.pop_fitness = np.array(pop_fitness)
+        
+    def get_probs(self):
+        """Calculate the probability of each member of the population reproducing.
+        
+        Args:
+        None
+           
+        Returns:
+        None
+        """
+        self.probs = self.pop_fitness/np.sum(self.pop_fitness)
+        
+    def change_population(self, new_population):
+        """ Change the current population to a specified new population and get 
+        the fitness of all members
+        
+        Args:
+        new_population: array. Numpy array containing new population.
+           
+        Returns:
+        None
+        """
+        self.population = new_population
+        
+        # Calculate fitness
+        pop_fitness = []
+        
+        for i in range(len(self.population)):
+            fitness = self.get_fitness(self.population[i])
+            pop_fitness.append(fitness)
+        
+        self.pop_fitness = np.array(pop_fitness)
+        
+    def best_child(self):
+        """Return the best bitstring in the current population.
+        
+        Args:
+        None
+           
+        Returns:
+        best: array. Bitstring defining best child.
+        """
+        best = self.population[np.argmax(self.pop_fitness)]
+        
+        return best
+    
 class OneMax:
     """Fitness function for One Max bitstring optimization problem."""
         
