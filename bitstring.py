@@ -36,9 +36,35 @@ class BitString:
         None
         """
         self.state = np.random.randint(0, 2, self.length)
-        self.fitness = self.get_fitness(self.state)
+        self.fitness = self.calculate_fitness(self.state)
     
-    def change_string(self, new_bitstring):
+    def get_fitness(self):
+        """ Return the fitness of the current bitstring.
+        
+        Args:
+        None
+           
+        Returns:
+        fitness: float. Fitness value of current bitstring.
+        """
+        fitness = self.fitness
+        
+        return fitness
+        
+    def get_state(self):
+        """ Return the current bitstring
+        
+        Args:
+        None
+           
+        Returns:
+        state: array. Current bitstring value.
+        """
+        state = self.state
+        
+        return state
+        
+    def set_state(self, new_bitstring):
         """ Change the current bitstring to a specified value and get its fitness
         
         Args:
@@ -48,9 +74,9 @@ class BitString:
         None
         """
         self.state = new_bitstring
-        self.fitness = self.get_fitness(self.state)        
+        self.fitness = self.calculate_fitness(self.state)        
     
-    def get_fitness(self, bitstring):
+    def calculate_fitness(self, bitstring):
         """Evaluate the fitness of a bitstring
         
         Args:
@@ -63,7 +89,7 @@ class BitString:
         
         return fitness
                  
-    def get_neighbors(self):
+    def find_neighbors(self):
         """Find all neighbors of the current bitstring
         
         Args:
@@ -132,7 +158,7 @@ class Genetic(BitString):
         self.pop_fitness = []
         self.probs = []
     
-    def get_random(self):
+    def random(self):
         """Return a random bitstring
         
         Args:
@@ -158,8 +184,8 @@ class Genetic(BitString):
         pop_fitness = []
         
         for i in range(pop_size):
-            state = self.get_random()
-            fitness = self.get_fitness(state)
+            state = self.random()
+            fitness = self.calculate_fitness(state)
             
             population.append(state)
             pop_fitness.append(fitness)
@@ -167,7 +193,7 @@ class Genetic(BitString):
         self.population = np.array(population)
         self.pop_fitness = np.array(pop_fitness)
         
-    def get_probs(self):
+    def calculate_probs(self):
         """Calculate the probability of each member of the population reproducing.
         
         Args:
@@ -177,8 +203,21 @@ class Genetic(BitString):
         None
         """
         self.probs = self.pop_fitness/np.sum(self.pop_fitness)
+    
+    def get_population(self):
+        """ Return the current population
         
-    def change_population(self, new_population):
+        Args:
+        None
+           
+        Returns:
+        population: array. Numpy array containing current population.
+        """
+        population = self.population
+        
+        return population
+    
+    def set_population(self, new_population):
         """ Change the current population to a specified new population and get 
         the fitness of all members
         
@@ -194,7 +233,7 @@ class Genetic(BitString):
         pop_fitness = []
         
         for i in range(len(self.population)):
-            fitness = self.get_fitness(self.population[i])
+            fitness = self.calculate_fitness(self.population[i])
             pop_fitness.append(fitness)
         
         self.pop_fitness = np.array(pop_fitness)
@@ -211,6 +250,26 @@ class Genetic(BitString):
         best = self.population[np.argmax(self.pop_fitness)]
         
         return best
+
+class ProbOpt(BitString):
+    """Child class for solving bitstring optimisation problems using a probabilistic
+    optimization algorithm (i.e. MIMIC)."""
+    
+    def __init__(self, length, fitness_fn):  
+        """Initialize ProbOpt object.
+    
+        Args:
+        length: int. Length of bitstring to be used in problem
+        fitness_fn: fitness function object. Object to implement fitness function 
+        for optimization.
+           
+        Returns:
+        None
+        """
+        BitString.__init__(self, length, fitness_fn)
+    
+    
+    
     
 class OneMax:
     """Fitness function for One Max bitstring optimization problem."""
