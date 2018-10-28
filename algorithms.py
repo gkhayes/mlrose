@@ -323,11 +323,13 @@ def genetic_alg(problem, pop_size, mutation_prob, max_attempts):
     
     return best_state, best_fitness
 
-def mimic(problem):
+def mimic(problem, pop_size, keep_pct, max_attempts):
     """Use MIMIC to find the maximum for a given optimization problem.
     
     Args:
     problem: Optimization class object. Object containing optimization problem to be solved.
+    pop_size: int. Size of population to be used in algorithm.
+    keep_pct: float. Proportion of samples to keep in each iteration of the algorithm
     max_attempts: int. Maximum number of attempts to find a better neighbor at each step.
        
     Returns:
@@ -336,14 +338,24 @@ def mimic(problem):
     """
     # Initialize problem, population and attempts counter
     problem.reset()
+    problem.create_population(pop_size)
     attempts = 0
     
     while attempts < max_attempts:
+        # Get top n percent of population
+        problem.select_keep_sample(keep_pct)
         
-        #next_state = 
-        #next_fitness = problem.calculate_fitness(next_state)
+        # Update probability estimates
+        problem.update_probs()
         
-        # If best sample is an improvement, move to that state and reset attempts counter
+        # Generate new sample
+        new_sample = problem.generate_new_sample(pop_size)
+        problem.set_population(new_sample)
+        
+        next_state = problem.best_child()
+        next_fitness = problem.calculate_fitness(next_state)
+        
+        # If best child is an improvement, move to that state and reset attempts counter
         if next_fitness > problem.get_fitness():
             problem.set_state(next_state)
             attempts = 0
@@ -352,47 +364,6 @@ def mimic(problem):
             attempts += 1
         
     best_fitness = problem.get_fitness()
-    best_state = problem.get_state()
+    best_state = problem.get_state().astype(int)
     
     return best_state, best_fitness
-
-# MIMIC - delete below this
-def mimic(stringlen, evalfn, latentlen = 100, num_samples = 200, samples_pct = 0.5, patience=20):
-    samples_to_keep = int(np.ceil(num_samples*samples_pct)) # Added by GKH
-    batchsize = tf.placeholder(tf.int32)
-    r = tf.random_uniform([batchsize, latentlen])
-    logits = tf.layers.dense(r, stringlen)
-    labels = tf.placeholder(tf.float32, shape=[None, stringlen])
-    loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits)
-    generated_samples = tf.floor(tf.nn.sigmoid(logits) + tf.random_uniform([batchsize, stringlen]))
-    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
-    
-    best_fitness = float('-inf')
-    bitstring = None
-    no_improvement = 0
-    iter_cnt = 0 # Added by GKH
-    
-    while True:
-        iter_cnt += 1  # Added by GKH
-        samples = sess.run(generated_samples, feed_dict={batchsize: num_samples})
-        fitnesses = np.array(list(map(evalfn, samples)))
-        sorted_fitnesses = np.argsort(fitnesses)
-        kept_samples = samples[sorted_fitnesses][-samples_to_keep:]
-        fitness = evalfn(kept_samples[-1])
-        
-        if fitness > best_fitness:
-            bitstring = kept_samples[-1]
-            best_fitness = fitness
-            no_improvement = -1            
-        
-        no_improvement += 1    
-        
-        if no_improvement >= patience:
-            break
-            
-        sess.run(train_step, feed_dict={batchsize: samples_to_keep, labels: kept_samples})
-    
-    sess.close()
-    return bitstring, best_fitness, iter_cnt # iter_cnt added by GKH
