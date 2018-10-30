@@ -110,3 +110,32 @@ class ExpDecay:
             temp = self.min_t
         
         return temp   
+
+class CustomSchedule:
+    """Class for generating your own temperature schedule."""
+    
+    def __init__(self, schedule, **kwargs):
+        """Initialize CustomSchedule object.
+        
+        Args:
+        schedule: function. Function for calculating the temperature at time t
+        kwargs: dictionary. Additional arguments to be passed to schedule
+        
+        Returns:
+        None       
+        """
+        self.schedule = schedule
+        self.kwargs = kwargs
+    
+    def evaluate(self, t):
+        """Evaluate the temperature parameter at time t
+        
+        Args:    
+        t: int. Time at which the temperature paramter t is evaluated
+        
+        Returns:
+        temp: float. Temperature parameter at time t
+        """
+        temp = self.schedule(t, **self.kwargs)
+        return temp
+        
