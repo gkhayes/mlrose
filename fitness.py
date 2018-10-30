@@ -339,6 +339,36 @@ class TravellingSales:
 
         return fitness
 
+class Queens:
+    """Fitness function for N-Queens optimization problem."""
+        
+    def evaluate(self, state):
+        """Evaluate the fitness of a state vector
+        
+        Args:
+        state: array. State array for evaluation.
+           
+        Returns:
+        fitness: float. Value of fitness function. 
+        """
+        fitness = 0
+        
+        for i in range(len(state) - 1):
+            for j in range(i + 1, len(state)):
+                # Check for horizontal attacks
+                if state[j] == state[i]:
+                    fitness += 1
+                
+                # Check for diagonal-up attacks
+                elif state[j] == state[i] + (j - i):
+                    fitness += 1
+                
+                # Check for diagonal-down attacks
+                elif state[j] == state[i] - (j - i):
+                    fitness += 1
+                    
+        return fitness
+
 class CustomFitness:
     """Class for generating your own fitness function."""
     
