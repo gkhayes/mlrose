@@ -3,6 +3,7 @@
     Author: Genevieve Hayes <ghayes17@gmail.com>
     License: 3-clause BSD license.
 """
+
 import numpy as np
 
 class OneMax:
