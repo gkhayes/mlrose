@@ -337,3 +337,33 @@ class TravellingSales:
             fitness = 0
 
         return fitness
+
+class CustomFitness:
+    """Class for generating your own fitness function."""
+    
+    def __init__(self, fitness_fn, **kwargs):
+        """Initialize CustomFitness object.
+        
+        Args:
+        fitness_fn: function. Function for calculating fitness of a state
+        kwargs: dictionary. Additional arguments to be passed to fitness_fn
+        
+        Returns:
+        None       
+        """
+        self.fitness_fn = fitness_fn
+        self.kwargs = kwargs
+    
+    def evaluate(self, state):
+        """Evaluate the fitness of a state
+        
+        Args:
+        state: array. State array for evaluation. Must contain the same number
+        of elements as the distances matrix
+           
+        Returns:
+        fitness: float. Value of fitness function. 
+        """
+        fitness = self.fitness_fn(state, **self.kwargs)
+        return fitness
+        
