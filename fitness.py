@@ -332,7 +332,7 @@ class TravellingSales:
             (np.max(col_sums) == 1 and np.min(col_sums) == 1) and \
             diag_sum == 0:
                 
-            fitness = max_dist - total_dist
+            fitness = total_dist
         
         else:
             fitness = 0
