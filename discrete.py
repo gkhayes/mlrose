@@ -11,7 +11,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
 class DiscreteOpt: 
     """Base class for discrete state optimisation problems."""
     
-    def __init__(self, length, fitness_fn, max_int = 2):  
+    def __init__(self, length, fitness_fn, max_int = 2, maximize = True):  
         """Initialize DiscreteProb object.
     
         Args:
@@ -19,6 +19,7 @@ class DiscreteOpt:
         fitness_fn: fitness function object. Object to implement fitness function 
         for optimization.
         max_int: int. Number of unique values that each element could take.
+        maximize: bool. Whether to maximize the fitness function. Set False for minimization problem.
            
         Returns:
         None
@@ -35,8 +36,13 @@ class DiscreteOpt:
         self.keep_sample = []
         self.node_probs = np.zeros([self.length, self.max_int, self.max_int])
         self.parent_nodes = []
+        
+        if maximize:
+            self.maximize = 1.0
+        else:
+            self.maximize = -1.0
     
-    def best_child(self):
+    def best_child(self): 
         """Return the best state in the current population.
         
         Args:
@@ -49,7 +55,7 @@ class DiscreteOpt:
         
         return best
     
-    def best_neighbor(self):
+    def best_neighbor(self): 
         """Return the best neighbor of current state
         
         Args:
@@ -60,15 +66,15 @@ class DiscreteOpt:
         """
         fitness_list = []
         
-        for n in self.neighbors:
-            fitness = self.fitness_fn.evaluate(n)
+        for neigh in self.neighbors:
+            fitness = self.eval_fitness(neigh)
             fitness_list.append(fitness)
 
         best = self.neighbors[np.argmax(fitness_list)]
         
         return best 
       
-    def eval_fitness(self, state):
+    def eval_fitness(self, state): 
         """Evaluate the fitness of a state vector
         
         Args:
@@ -77,7 +83,7 @@ class DiscreteOpt:
         Returns:
         fitness: float. Value of fitness function. 
         """
-        fitness = self.fitness_fn.evaluate(state)
+        fitness = self.maximize*self.fitness_fn.evaluate(state)
         
         return fitness
     
@@ -213,7 +219,7 @@ class DiscreteOpt:
         
         return sample_order      
      
-    def get_fitness(self):
+    def get_fitness(self): 
         """ Return the fitness of the current state vector.
         
         Args:
@@ -246,7 +252,18 @@ class DiscreteOpt:
         current population
         """
         return self.mate_probs
+    
+    def get_maximize(self):
+        """ Return the maximization multiplier
         
+        Args:
+        None
+        
+        Returns:
+        self.maximize: int. Maximization multiplier
+        """
+        return self.maximize
+    
     def get_population(self):
         """ Return the current population
         
@@ -359,7 +376,7 @@ class DiscreteOpt:
             
         return child 
     
-    def reset(self):
+    def reset(self): 
         """Set the current state vector to a random value and get its fitness
         
         Args:
@@ -371,7 +388,7 @@ class DiscreteOpt:
         self.state = np.random.randint(0, self.max_int, self.length)
         self.fitness = self.eval_fitness(self.state)
     
-    def sample_pop(self, sample_size):
+    def sample_pop(self, sample_size): 
         """Generate new sample from probability density
         
         Args:
@@ -401,7 +418,7 @@ class DiscreteOpt:
             
         return new_sample
     
-    def set_population(self, new_population):
+    def set_population(self, new_population): 
         """ Change the current population to a specified new population and get 
         the fitness of all members
         
@@ -422,7 +439,7 @@ class DiscreteOpt:
         
         self.pop_fitness = np.array(pop_fitness)
         
-    def set_state(self, new_state):
+    def set_state(self, new_state): 
         """ Change the current state vector to a specified value and get its fitness
         
         Args:

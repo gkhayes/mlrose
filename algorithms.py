@@ -7,7 +7,7 @@
 import numpy as np
 
 def hill_climb(problem, restarts = 1):
-    """Use standard hill climbing to find the maximum for a given 
+    """Use standard hill climbing to find the optimum for a given 
     optimization problem, starting from a random state.
 
     Args:
@@ -44,10 +44,11 @@ def hill_climb(problem, restarts = 1):
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()  
     
+    best_fitness = problem.get_maximize()*best_fitness
     return best_state, best_fitness
 
 def random_hill_climb(problem, max_attempts = 10, restarts = 1):
-    """Use randomized hill climbing to find the maximum for a given 
+    """Use randomized hill climbing to find the optimum for a given 
     optimization problem, starting from a random state.
     
     Args:
@@ -85,10 +86,11 @@ def random_hill_climb(problem, max_attempts = 10, restarts = 1):
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
     
+    best_fitness = problem.get_maximize()*best_fitness
     return best_state, best_fitness
 
 def simulated_annealing(problem, schedule, max_attempts = 10):
-    """Use simulated annealing to find the maximum for a given 
+    """Use simulated annealing to find the optimum for a given 
     optimization problem, starting from a random state.
     
     Args:
@@ -132,13 +134,13 @@ def simulated_annealing(problem, schedule, max_attempts = 10):
             # Increment time counter
             t += 1
         
-    best_fitness = problem.get_fitness()
+    best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
-    
+
     return best_state, best_fitness
 
 def genetic_alg(problem, pop_size, mutation_prob, max_attempts):
-    """Use a standard genetic algorithm to find the maximum for a given 
+    """Use a standard genetic algorithm to find the optimum for a given 
     optimization problem.
     
     Args:
@@ -187,13 +189,13 @@ def genetic_alg(problem, pop_size, mutation_prob, max_attempts):
         else:
             attempts += 1
         
-    best_fitness = problem.get_fitness()
+    best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
     
     return best_state, best_fitness
 
 def mimic(problem, pop_size, keep_pct, max_attempts):
-    """Use MIMIC to find the maximum for a given optimization problem.
+    """Use MIMIC to find the optimum for a given optimization problem.
     
     Args:
     problem: Optimization class object. Object containing optimization problem to be solved.
@@ -234,7 +236,7 @@ def mimic(problem, pop_size, keep_pct, max_attempts):
         else:
             attempts += 1
         
-    best_fitness = problem.get_fitness()
+    best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state().astype(int)
     
     return best_state, best_fitness
