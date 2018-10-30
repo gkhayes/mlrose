@@ -30,7 +30,7 @@ def hill_climb(problem, restarts = 1):
             # Find neighbors and determine best neighbor
             problem.find_neighbors()
             next_state = problem.best_neighbor()
-            next_fitness = problem.calculate_fitness(next_state)
+            next_fitness = problem.eval_fitness(next_state)
             
             # If best neighbor is an improvement, move to that state
             if next_fitness > problem.get_fitness():
@@ -70,7 +70,7 @@ def random_hill_climb(problem, max_attempts = 10, restarts = 1):
         while attempts < max_attempts:
             # Find random neighbor and evaluate fitness
             next_state = problem.random_neighbor()
-            next_fitness = problem.calculate_fitness(next_state)
+            next_fitness = problem.eval_fitness(next_state)
             
             # If best neighbor is an improvement, move to that state and reset attempts counter
             if next_fitness > problem.get_fitness():
@@ -219,7 +219,7 @@ def simulated_annealing(problem, schedule, max_attempts = 10):
         else:
             # Find random neighbor and evaluate fitness
             next_state = problem.random_neighbor()
-            next_fitness = problem.calculate_fitness(next_state)
+            next_fitness = problem.eval_fitness(next_state)
             
             # Calculate delta E and change prob
             delta_e = next_fitness - problem.get_fitness()
@@ -242,32 +242,6 @@ def simulated_annealing(problem, schedule, max_attempts = 10):
     
     return best_state, best_fitness
 
-def reproduce(parent_1, parent_2, mutation_prob = 0.1):
-    """Create child bitstring from two parent bitstrings.
-    
-    Args:
-    parent_1: array. Bitstring for parent 1.
-    parent_2: array. Bitstring for parent 2.
-    mutation_prob: float. Probability of a mutation at each bit during reproduction.
-    
-    Returns:
-    child: array. Child bitstring produced from parents 1 and 2.
-    """
-    # Reproduce parents
-    n = np.random.randint(len(parent_1)-1)
-    child = np.array([0]*len(parent_1))
-    child[0:n+1] = parent_1[0:n+1]
-    child[n+1:] = parent_2[n+1:]
-    
-    # Mutate child
-    rand = np.random.uniform(size = len(child))
-    mutate = np.where(rand < mutation_prob)[0]
-
-    for i in mutate:
-        child[i] = np.abs(child[i] - 1)
-        
-    return child 
-    
 def genetic_alg(problem, pop_size, mutation_prob, max_attempts):
     """Use a standard genetic algorithm to find the maximum for a given 
     optimization problem.
@@ -284,31 +258,31 @@ def genetic_alg(problem, pop_size, mutation_prob, max_attempts):
     """
     # Initialize problem, population and attempts counter
     problem.reset()
-    problem.create_population(pop_size)
+    problem.random_pop(pop_size)
     attempts = 0
     
     while attempts < max_attempts:
         # Calculate breeding probabilities
-        problem.calculate_probs()
-        
+        problem.eval_mate_probs()
+
         # Create next generation of population
         next_gen = []
         
         for i in range(pop_size):
             # Select parents
-            selected = np.random.choice(pop_size, size = 2, p = problem.probs)
+            selected = np.random.choice(pop_size, size = 2, p = problem.get_mate_probs())
             parent_1 = problem.get_population()[selected[0]]
             parent_2 = problem.get_population()[selected[1]]
             
             # Create offspring
-            child = reproduce(parent_1, parent_2, mutation_prob)
+            child = problem.reproduce(parent_1, parent_2, mutation_prob)
             next_gen.append(child)
         
         next_gen = np.array(next_gen)
         problem.set_population(next_gen)
         
         next_state = problem.best_child()
-        next_fitness = problem.calculate_fitness(next_state)
+        next_fitness = problem.eval_fitness(next_state)
         
         # If best child is an improvement, move to that state and reset attempts counter
         if next_fitness > problem.get_fitness():
@@ -338,23 +312,25 @@ def mimic(problem, pop_size, keep_pct, max_attempts):
     """
     # Initialize problem, population and attempts counter
     problem.reset()
-    problem.create_population(pop_size)
+    problem.random_pop(pop_size)
     attempts = 0
-    
-    while attempts < max_attempts:
+    ctr = 0
+    #while attempts < max_attempts:
+    while ctr < 10:
+        ctr += 1
         # Get top n percent of population
-        problem.select_keep_sample(keep_pct)
-        
+        problem.find_top_pct(keep_pct)
+
         # Update probability estimates
-        problem.update_probs()
-        
+        problem.eval_node_probs()
+
         # Generate new sample
-        new_sample = problem.generate_new_sample(pop_size)
+        new_sample = problem.sample_pop(pop_size)
         problem.set_population(new_sample)
-        
+
         next_state = problem.best_child()
-        next_fitness = problem.calculate_fitness(next_state)
-        
+        next_fitness = problem.eval_fitness(next_state)
+
         # If best child is an improvement, move to that state and reset attempts counter
         if next_fitness > problem.get_fitness():
             problem.set_state(next_state)

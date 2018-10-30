@@ -9,7 +9,7 @@ class OneMax:
     """Fitness function for One Max optimization problem."""
         
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector
         
         Args:
         state: array. State array for evaluation.
@@ -26,7 +26,7 @@ class FlipFlop:
     """Fitness function for Flip Flop optimization problem."""
         
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector
         
         Args:
         state: array. State array for evaluation.
