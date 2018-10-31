@@ -90,7 +90,7 @@ def random_hill_climb(problem, max_attempts=10, restarts=1):
             else:
                 attempts += 1
 
-                # Update best state and best fitness
+        # Update best state and best fitness
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()

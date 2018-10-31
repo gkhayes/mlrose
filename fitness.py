@@ -67,7 +67,7 @@ def head(_b, _x):
         else:
             break
 
-    return head
+    return _head
 
 
 def tail(_b, _x):
@@ -91,7 +91,7 @@ def tail(_b, _x):
         else:
             break
 
-    return tail
+    return _tail
 
 
 def max_run(_b, _x):
@@ -118,7 +118,7 @@ def max_run(_b, _x):
 
             run = 0
 
-    return max_run
+    return _max
 
 
 class FourPeaks:
