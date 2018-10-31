@@ -310,6 +310,12 @@ class TravellingSales:
         """
         self.distances = distances
 
+        if not np.array_equal(self.distances, np.rot90(np.fliplr(self.distances))):
+            raise Exception('The distances matrix must be symmetric about the main diag.')
+        
+        if not np.all(np.diag(self.distances) == 0):
+            raise Exception('The main diag. of the distances matrix should be all 0s.')
+
     def evaluate(self, state):
         """Evaluate the fitness of a state
 
@@ -376,6 +382,48 @@ class Queens:
 
                 # Check for diagonal-down attacks
                 elif state[j] == state[i] - (j - i):
+                    fitness += 1
+
+        return fitness
+
+
+class MaxKColor:
+    """Fitness function for max-k color optimization problem."""
+    
+    def __init__(self, edges):
+        """Initialize MaxKColor object.
+        
+        Args:
+        edges: array. 0-1 array indicating whether or not each pair of nodes is connected.
+        Array should be symmetric and with 0 diagonal.
+        
+        Returns:
+        None            
+        """
+        self.edges = edges
+        
+        if not np.array_equal(self.edges, np.rot90(np.fliplr(self.edges))):
+            raise Exception('The edges matrix must be symmetric about the main diag.')
+        
+        if not np.all(np.diag(self.edges) == 0):
+            raise Exception('The main diag. of the edges matrix should be all 0s.')
+         
+    def evaluate(self, state):
+        """Evaluate the fitness of a state
+        
+        Args:
+        state: array. State array for evaluation. Must contain the same number
+        of elements as the distances matrix
+           
+        Returns:
+        fitness: float. Value of fitness function. 
+        """
+        fitness = 0
+        
+        for i in range(len(state) - 1):
+            for j in range(i + 1, len(state)):
+                # Check for adjacent nodes of the same color
+                if (state[i] == state[j]) and (self.edges[i, j] == 1):
                     fitness += 1
 
         return fitness

@@ -55,5 +55,17 @@ class TestFitness(unittest.TestCase):
         assert(Queens().evaluate(state) == 6)
 
 
+def test_max_k_color(self):
+        """Test MaxKColor fitness function"""
+        
+        edges = np.array([[0, 1, 1, 0, 1], 
+                         [1, 0, 0, 1, 0],
+                         [1, 0, 0, 1, 0],
+                         [0, 1, 1, 0, 1],
+                         [1, 0, 0, 1, 0]])
+        
+        state = np.array([0, 1, 0, 1, 1]) 
+        assert(MaxKColor(edges).evaluate(state) == 3)
+
 if __name__ == '__main__':
     unittest.main()
