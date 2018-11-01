@@ -1,6 +1,6 @@
 """ Classes for defining fitness functions.
 
-    Author: Genevieve Hayes <ghayes17@gmail.com>
+    Author: Genevieve Hayes
     License: 3-clause BSD license.
 """
 
@@ -102,7 +102,7 @@ def max_run(_b, _x):
     x: array. Vector of integers.
 
     Returns:
-    max_run: int. Length of maximum run of b's
+    max: int. Length of maximum run of b's
     """
     # Initialize counter
     _max = 0
@@ -310,7 +310,8 @@ class TravellingSales:
         """
         self.distances = distances
 
-        if not np.array_equal(self.distances, np.rot90(np.fliplr(self.distances))):
+        if not np.array_equal(self.distances, \
+                              np.rot90(np.fliplr(self.distances))):
             raise Exception('The distances matrix must be symmetric about the main diag.')
         
         if not np.all(np.diag(self.distances) == 0):
@@ -394,8 +395,8 @@ class MaxKColor:
         """Initialize MaxKColor object.
         
         Args:
-        edges: array. 0-1 array indicating whether or not each pair of nodes is connected.
-        Array should be symmetric and with 0 diagonal.
+        edges: array. 0-1 array indicating whether or not each pair of nodes 
+        is connected. Array should be symmetric and with 0 diagonal.
         
         Returns:
         None            
