@@ -1,6 +1,6 @@
 """ Classes for defining discrete state optimization problems.
 
-    Author: Genevieve Hayes <ghayes17@gmail.com>
+    Author: Genevieve Hayes
     License: 3-clause BSD license.
 """
 import numpy as np

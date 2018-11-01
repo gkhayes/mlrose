@@ -1,6 +1,6 @@
 """ Classes for defining fitness functions.
 
-    Author: Genevieve Hayes <ghayes17@gmail.com>
+    Author: Genevieve Hayes
     License: 3-clause BSD license.
 """
 import numpy as np
@@ -100,7 +100,7 @@ def max_run(_b, _x):
     x: array. Vector of integers.
 
     Returns:
-    max_run: int. Length of maximum run of b's
+    max: int. Length of maximum run of b's
     """
     # Initialize counter
     _max = 0
