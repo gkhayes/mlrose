@@ -25,4 +25,9 @@ pylint test.py --score=no --disable=R0902,R0903,R0904,R0201
 pycodestyle test.py
 flake8 test.py
 
+echo "Starting lint on opt_probs.py"
+pylint opt_probs.py --score=no --disable=R0902,R0903,R0904,R0201
+pycodestyle opt_probs.py
+flake8 opt_probs.py
+
 echo "Finished linting all files"
