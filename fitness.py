@@ -345,10 +345,9 @@ class TravellingSales:
         diag_sum = np.sum(np.diag(state_mat))
 
         # Determine fitness
-        if(np.max(row_sums) == 1 and np.min(row_sums) == 1) \
-          and (np.max(col_sums) == 1 and np.min(col_sums) == 1) \
-          and diag_sum == 0:
-
+        if (np.max(row_sums) == 1 and np.min(row_sums) == 1) \
+           and (np.max(col_sums) == 1 and np.min(col_sums) == 1) \
+           and diag_sum == 0:
             fitness = total_dist
 
         else:
