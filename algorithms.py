@@ -241,7 +241,7 @@ def mimic(problem, pop_size, keep_pct, max_attempts):
     problem.reset()
     problem.random_pop(pop_size)
     attempts = 0
-    
+
     while attempts < max_attempts:
         # Get top n percent of population
         problem.find_top_pct(keep_pct)
