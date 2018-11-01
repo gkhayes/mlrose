@@ -4,7 +4,8 @@
     License: 3-clause BSD license.
 """
 import unittest
-from fitness import (OneMax, FlipFlop, head, tail, max_run, Queens, np,
+import numpy as np
+from fitness import (OneMax, FlipFlop, head, tail, max_run, Queens, 
                      MaxKColor)
 
 
