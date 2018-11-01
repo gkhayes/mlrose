@@ -1,6 +1,6 @@
 """ Functions to implement the randomized optimization and search algorithms.
 
-    Author: Genevieve Hayes <ghayes17@gmail.com>
+    Author: Genevieve Hayes
     License: 3-clause BSD license.
 """
 
@@ -220,7 +220,7 @@ def genetic_alg(problem, pop_size, mutation_prob, max_attempts):
     return best_state, best_fitness
 
 
-def mimic(problem, pop_size, keep_pct):
+def mimic(problem, pop_size, keep_pct, max_attempts):
     """Use MIMIC to find the optimum for a given optimization problem.
 
     Args:
@@ -241,10 +241,8 @@ def mimic(problem, pop_size, keep_pct):
     problem.reset()
     problem.random_pop(pop_size)
     attempts = 0
-    ctr = 0
-    # while attempts < max_attempts:
-    while ctr < 10:
-        ctr += 1
+    
+    while attempts < max_attempts:
         # Get top n percent of population
         problem.find_top_pct(keep_pct)
 

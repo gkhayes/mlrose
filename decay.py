@@ -1,6 +1,6 @@
 """ Classes for defining decay schedules for simulated annealing.
 
-    Author: Genevieve Hayes <ghayes17@gmail.com>
+    Author: Genevieve Hayes
     License: 3-clause BSD license.
 """
 
