@@ -3,17 +3,9 @@
     Author: Genevieve Hayes <ghayes17@gmail.com>
     License: 3-clause BSD license.
 """
-
 import unittest
 from fitness import (OneMax, FlipFlop, head, tail, max_run, Queens, np,
                      MaxKColor)
-
-# from algorithms import *
-# from discrete import *
-# from fitness import *
-# from decay import *
-# from neural import *
-# import numpy as np
 
 
 class TestFitness(unittest.TestCase):
