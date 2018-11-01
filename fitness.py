@@ -3,8 +3,6 @@
     Author: Genevieve Hayes <ghayes17@gmail.com>
     License: 3-clause BSD license.
 """
-
-
 import numpy as np
 
 
@@ -61,8 +59,8 @@ def head(_b, _x):
     _head = 0
 
     # Iterate through values in vector
-    for i in range(len(_x)):
-        if _x[i] == _b:
+    for i in _x:
+        if i == _b:
             _head += 1
         else:
             break
@@ -109,8 +107,8 @@ def max_run(_b, _x):
     run = 0
 
     # Iterate through values in vector
-    for i in range(len(_x)):
-        if _x[i] == _b:
+    for i in _x:
+        if i == _b:
             run += 1
         else:
             if run > _max:
@@ -310,11 +308,14 @@ class TravellingSales:
         """
         self.distances = distances
 
-        if not np.array_equal(self.distances, np.rot90(np.fliplr(self.distances))):
-            raise Exception('The distances matrix must be symmetric about the main diag.')
-        
+        if not np.array_equal(self.distances,
+                              np.rot90(np.fliplr(self.distances))):
+            raise Exception("""The distances matrix must be symmetric
+            about the main diag.""")
+
         if not np.all(np.diag(self.distances) == 0):
-            raise Exception('The main diag. of the distances matrix should be all 0s.')
+            raise Exception("""The main diag. of the distances matrix
+            should be all 0s.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -389,37 +390,40 @@ class Queens:
 
 class MaxKColor:
     """Fitness function for max-k color optimization problem."""
-    
+
     def __init__(self, edges):
         """Initialize MaxKColor object.
-        
+
         Args:
-        edges: array. 0-1 array indicating whether or not each pair of nodes is connected.
+        edges: array. 0-1 array indicating whether or not each pair
+        of nodes is connected.
         Array should be symmetric and with 0 diagonal.
-        
+
         Returns:
-        None            
+        None
         """
         self.edges = edges
-        
+
         if not np.array_equal(self.edges, np.rot90(np.fliplr(self.edges))):
-            raise Exception('The edges matrix must be symmetric about the main diag.')
-        
+            raise Exception("""The edges matrix must be symmetric
+            about the main diag.""")
+
         if not np.all(np.diag(self.edges) == 0):
-            raise Exception('The main diag. of the edges matrix should be all 0s.')
-         
+            raise Exception("""The main diag. of the edges matrix
+            should be all 0s.""")
+
     def evaluate(self, state):
         """Evaluate the fitness of a state
-        
+
         Args:
         state: array. State array for evaluation. Must contain the same number
         of elements as the distances matrix
-           
+
         Returns:
-        fitness: float. Value of fitness function. 
+        fitness: float. Value of fitness function.
         """
         fitness = 0
-        
+
         for i in range(len(state) - 1):
             for j in range(i + 1, len(state)):
                 # Check for adjacent nodes of the same color

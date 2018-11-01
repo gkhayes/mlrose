@@ -55,15 +55,15 @@ class TestFitness(unittest.TestCase):
         state = np.array([1, 4, 1, 3, 5, 5, 2, 7])
         assert Queens().evaluate(state) == 6
 
-
-def test_max_k_color(self):
+    @staticmethod
+    def test_max_k_color():
         """Test MaxKColor fitness function"""
 
         edges = np.array([[0, 1, 1, 0, 1],
-                         [1, 0, 0, 1, 0],
-                         [1, 0, 0, 1, 0],
-                         [0, 1, 1, 0, 1],
-                         [1, 0, 0, 1, 0]])
+                          [1, 0, 0, 1, 0],
+                          [1, 0, 0, 1, 0],
+                          [0, 1, 1, 0, 1],
+                          [1, 0, 0, 1, 0]])
 
         state = np.array([0, 1, 0, 1, 1])
         assert MaxKColor(edges).evaluate(state) == 3
