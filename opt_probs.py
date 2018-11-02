@@ -165,28 +165,6 @@ class OptProb:
         """
         return self.state
 
-    def random_pop(self, pop_size):
-        """Create a population of random state vectors
-
-        Args:
-        pop_size: int. Size of population to be created.
-
-        Returns:
-        None
-        """
-        population = []
-        pop_fitness = []
-
-        for _ in range(pop_size):
-            state = self.random()
-            fitness = self.eval_fitness(state)
-
-            population.append(state)
-            pop_fitness.append(fitness)
-
-        self.population = np.array(population)
-        self.pop_fitness = np.array(pop_fitness)
-
     def set_population(self, new_population):
         """ Change the current population to a specified new population and get
         the fitness of all members
@@ -406,6 +384,28 @@ class DiscreteOpt(OptProb):
 
         return neighbor
 
+    def random_pop(self, pop_size):
+        """Create a population of random state vectors
+
+        Args:
+        pop_size: int. Size of population to be created.
+
+        Returns:
+        None
+        """
+        population = []
+        pop_fitness = []
+
+        for _ in range(pop_size):
+            state = self.random()
+            fitness = self.eval_fitness(state)
+
+            population.append(state)
+            pop_fitness.append(fitness)
+
+        self.population = np.array(population)
+        self.pop_fitness = np.array(pop_fitness)
+
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
 
@@ -567,6 +567,28 @@ class ContinuousOpt(OptProb):
             neighbor[i] = self.min_val
 
         return neighbor
+
+    def random_pop(self, pop_size):
+        """Create a population of random state vectors
+
+        Args:
+        pop_size: int. Size of population to be created.
+
+        Returns:
+        None
+        """
+        population = []
+        pop_fitness = []
+
+        for _ in range(pop_size):
+            state = self.random()
+            fitness = self.eval_fitness(state)
+
+            population.append(state)
+            pop_fitness.append(fitness)
+
+        self.population = np.array(population)
+        self.pop_fitness = np.array(pop_fitness)
 
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
