@@ -8,9 +8,10 @@ from sklearn.metrics import mutual_info_score
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
 
+
 class OptProb:
     """Base class for state optimisation problems."""
-    
+
     def __init__(self, length, fitness_fn, maximize=True):
         """Initialize OptProb object.
 
@@ -221,10 +222,10 @@ class OptProb:
         self.state = new_state
         self.fitness = self.eval_fitness(self.state)
 
-    
+
 class DiscreteOpt(OptProb):
     """Child class for discrete state optimisation problems."""
-    
+
     def __init__(self, length, fitness_fn, maximize=True, max_val=2):
         """Initialize OptProb object.
 
@@ -244,7 +245,7 @@ class DiscreteOpt(OptProb):
         self.keep_sample = []
         self.node_probs = np.zeros([self.length, self.max_val, self.max_val])
         self.parent_nodes = []
-            
+
     def eval_node_probs(self):
         """Update probability density estimates.
 
@@ -275,7 +276,7 @@ class DiscreteOpt(OptProb):
         # Get probs
         probs = np.zeros([self.length, self.max_val, self.max_val])
 
-        if len(self.keep_sample) == 0:
+        if len(self.keep_sample) == 0:      
             probs[0] = 0
             probs[0, :, 0] = 1
 
@@ -300,7 +301,7 @@ class DiscreteOpt(OptProb):
         # Update probs and parent
         self.node_probs = probs
         self.parent_nodes = parent
-        
+
     def find_neighbors(self):
         """Find all neighbors of the current state
 
@@ -327,7 +328,7 @@ class DiscreteOpt(OptProb):
                     neighbor = np.copy(self.state)
                     neighbor[i] = j
                     self.neighbors.append(neighbor)
-    
+
     def find_sample_order(self):
         """Determine order in which to generate sample vector elements
 
@@ -351,7 +352,7 @@ class DiscreteOpt(OptProb):
             last = inds
 
         return sample_order
-    
+
     def find_top_pct(self, keep_pct):
         """Select samples with fitness in the top n percentile.
 
@@ -368,8 +369,8 @@ class DiscreteOpt(OptProb):
         keep_inds = np.where(self.pop_fitness >= theta)[0]
 
         # Determine sample for keeping
-        self.keep_sample = self.population[keep_inds]    
-          
+        self.keep_sample = self.population[keep_inds]
+
     def random(self):
         """Return a random state vector
 
@@ -382,7 +383,7 @@ class DiscreteOpt(OptProb):
         state = np.random.randint(0, self.max_val, self.length)
 
         return state
-    
+
     def random_neighbor(self):
         """Return random neighbor of current state vector
 
@@ -404,7 +405,7 @@ class DiscreteOpt(OptProb):
             neighbor[i] = vals[np.random.randint(0, self.max_val-1)]
 
         return neighbor
-    
+
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
 
@@ -438,7 +439,7 @@ class DiscreteOpt(OptProb):
                 child[i] = vals[np.random.randint(0, self.max_val-1)]
 
         return child
-    
+
     def reset(self):
         """Set the current state vector to a random value and get its fitness
 
@@ -485,8 +486,8 @@ class DiscreteOpt(OptProb):
 
 class ContinuousOpt(OptProb):
     """Child class for continuous state optimisation problems."""
-    
-    def __init__(self, length, fitness_fn, maximize=True, min_val=0, 
+
+    def __init__(self, length, fitness_fn, maximize=True, min_val=0,
                  max_val=1, step=0.1):
         """Initialize OptProb object.
 
@@ -507,7 +508,7 @@ class ContinuousOpt(OptProb):
         self.min_val = min_val
         self.max_val = max_val
         self.step = step
-    
+
     def find_neighbors(self):
         """Find all neighbors of the current state
 
@@ -523,15 +524,15 @@ class ContinuousOpt(OptProb):
             for j in [-1, 1]:
                 neighbor = np.copy(self.state)
                 neighbor[i] += j*self.step
-        
+
                 if neighbor[i] > self.max_val:
                     neighbor[i] = self.max_val
-            
+
                 elif neighbor[i] < self.min_val:
                     neighbor[i] = self.min_val
-                    
+
                 self.neighbors.append(neighbor)
-                    
+
     def random(self):
         """Return a random state vector
 
@@ -544,7 +545,7 @@ class ContinuousOpt(OptProb):
         state = np.random.uniform(self.min_val, self.max_val, self.length)
 
         return state
-    
+
     def random_neighbor(self):
         """Return random neighbor of current state vector
 
@@ -558,15 +559,15 @@ class ContinuousOpt(OptProb):
         i = np.random.randint(0, self.length)
 
         neighbor[i] += self.step*np.random.choice([-1, 1])
-        
+
         if neighbor[i] > self.max_val:
             neighbor[i] = self.max_val
-            
+
         elif neighbor[i] < self.min_val:
             neighbor[i] = self.min_val
-        
+
         return neighbor
-    
+
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
 
@@ -592,7 +593,7 @@ class ContinuousOpt(OptProb):
             child[i] = np.random.uniform(self.min_val, self.max_val)
 
         return child
-    
+
     def reset(self):
         """Set the current state vector to a random value and get its fitness
 
