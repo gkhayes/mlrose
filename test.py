@@ -5,7 +5,7 @@
 """
 import unittest
 import numpy as np
-from fitness import (OneMax, FlipFlop, head, tail, max_run, Queens, 
+from fitness import (OneMax, FlipFlop, head, tail, max_run, Queens,
                      MaxKColor)
 
 
