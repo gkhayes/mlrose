@@ -5,7 +5,7 @@
 """
 import numpy as np
 
-def hill_climb(problem, max_iters=np.inf, restarts=0):
+def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
     """Use standard hill climbing to find the optimum for a given
     optimization problem, starting from a random state.
 
@@ -14,6 +14,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0):
     optimization problem to be solved.
     max_iters: int. Maximum number of iterations of the algorithm.
     restarts: int. Number of random restarts.
+    init_state: array. Numpy array containing starting state for algorithm. 
+    If None then a random state is used.
 
     Returns:
     best_state: array. NumPy array containing state that
@@ -26,7 +28,11 @@ def hill_climb(problem, max_iters=np.inf, restarts=0):
 
     for _ in range(restarts + 1):
         # Initialize optimization problem
-        problem.reset()
+        if init_state is None:
+            problem.reset()
+        else:
+            problem.set_state(init_state)
+            
         iters = 0
 
         while iters < max_iters:
@@ -53,7 +59,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0):
     return best_state, best_fitness
 
 
-def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0):
+def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0, 
+                      init_state=None):
     """Use randomized hill climbing to find the optimum for a given
     optimization problem, starting from a random state.
 
@@ -64,6 +71,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0):
     better neighbor at each step.
     max_iters: int. Maximum number of iterations of the algorithm.
     restarts: int. Number of random restarts.
+    init_state: array. Numpy array containing starting state for algorithm. 
+    If None then a random state is used.
 
     Returns:
     best_state: array. NumPy array containing state that optimizes
@@ -75,7 +84,11 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0):
 
     for _ in range(restarts + 1):
         # Initialize optimization problem and attempts counter
-        problem.reset()
+        if init_state is None:
+            problem.reset()
+        else:
+            problem.set_state(init_state)
+            
         attempts = 0
         iters = 0
 
@@ -104,7 +117,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0):
     return best_state, best_fitness
 
 
-def simulated_annealing(problem, schedule, max_attempts=10, max_iters=np.inf):
+def simulated_annealing(problem, schedule, max_attempts=10, max_iters=np.inf, 
+                        init_state=None):
     """Use simulated annealing to find the optimum for a given
     optimization problem, starting from a random state.
 
@@ -116,6 +130,8 @@ def simulated_annealing(problem, schedule, max_attempts=10, max_iters=np.inf):
     max_attempts: int. Maximum number of attempts to find a better
     neighbor at each step.
     max_iters: int. Maximum number of iterations of the algorithm.
+    init_state: array. Numpy array containing starting state for algorithm. 
+    If None then a random state is used.
 
     Returns:
     best_state: array. NumPy array containing state that optimizes
@@ -124,7 +140,11 @@ def simulated_annealing(problem, schedule, max_attempts=10, max_iters=np.inf):
     best_fitness: float. Value of fitness function at best state
     """
     # Initialize problem, time and attempts counter
-    problem.reset()
+    if init_state is None:
+        problem.reset()
+    else:
+        problem.set_state(init_state)
+        
     attempts = 0
     iters = 0
 
@@ -180,7 +200,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     best_fitness: float. Value of fitness function at best state
     """
     # Initialize problem, population and attempts counter
-    problem.reset()
+    problem.reset()   
     problem.random_pop(pop_size)
     attempts = 0
     iters = 0
