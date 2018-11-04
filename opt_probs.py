@@ -254,7 +254,7 @@ class DiscreteOpt(OptProb):
         # Get probs
         probs = np.zeros([self.length, self.max_val, self.max_val])
 
-        if not self.keep_sample:
+        if not len(self.keep_sample):
             probs[0] = 0
             probs[0, :, 0] = 1
 
@@ -268,7 +268,7 @@ class DiscreteOpt(OptProb):
                 subset = self.keep_sample[np.where(
                     self.keep_sample[:, parent[i - 1]] == j)[0]]
 
-                if not subset:
+                if not len(subset):
                     probs[i, j] = 0
                     probs[i, j, 0] = 1
                 else:
