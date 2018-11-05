@@ -508,9 +508,22 @@ class ContinuousOpt(OptProb):
         self.min_val = min_val
         self.max_val = max_val
         self.step = step
+    
+    def calculate_updates(self):
+        """Calculate gradient descent updates.
+        
+        Args:
+        None
+        
+        Returns:
+        updates: list. List of back propagation weight updates.
+        """
+        updates = self.fitness_fn.calculate_updates()
 
+        return updates
+            
     def find_neighbors(self):
-        """Find all neighbors of the current state
+        """Find all neighbors of the current state.
 
         Args:
         None
