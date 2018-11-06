@@ -13,20 +13,20 @@ class GeomDecay:
     annealing temperature parameter T
     """
 
-    def __init__(self, init_t=1.0, decay=0.99, min_t=0.001):
+    def __init__(self, init_temp=1.0, decay=0.99, min_temp=0.001):
         """Initialize decay schedule object
 
         Args:
-        init_t: float. Initial value of temperature parameter T
+        init_temp: float. Initial value of temperature parameter T
         decay: float. Temperature decay parameter.
-        min_t: float. Minimum value of temperature parameter.
+        min_temp: float. Minimum value of temperature parameter.
 
         Returns:
         None
         """
-        self.init_t = init_t
+        self.init_temp = init_temp
         self.decay = decay
-        self.min_t = min_t
+        self.min_temp = min_temp
 
     def evaluate(self, _t):
         """Evaluate the temperature parameter at time t
@@ -38,10 +38,10 @@ class GeomDecay:
         temp: float. Temperature parameter at time t
         """
 
-        temp = self.init_t*(self.decay**_t)
+        temp = self.init_temp*(self.decay**_t)
 
-        if temp < self.min_t:
-            temp = self.min_t
+        if temp < self.min_temp:
+            temp = self.min_temp
 
         return temp
 
@@ -52,20 +52,20 @@ class ArithDecay:
     annealing temperature parameter T
     """
 
-    def __init__(self, init_t=1.0, decay=0.0001, min_t=0.001):
+    def __init__(self, init_temp=1.0, decay=0.0001, min_temp=0.001):
         """Initialize decay schedule object
 
         Args:
-        init_t: float. Initial value of temperature parameter T
+        init_temp: float. Initial value of temperature parameter T
         decay: float. Temperature decay parameter.
-        min_t: float. Minimum value of temperature parameter.
+        min_temp: float. Minimum value of temperature parameter.
 
         Returns:
         None
         """
-        self.init_t = init_t
+        self.init_temp = init_temp
         self.decay = decay
-        self.min_t = min_t
+        self.min_temp = min_temp
 
     def evaluate(self, _t):
         """Evaluate the temperature parameter at time t
@@ -77,10 +77,10 @@ class ArithDecay:
         temp: float. Temperature parameter at time t
         """
 
-        temp = self.init_t - (self.decay*_t)
+        temp = self.init_temp - (self.decay*_t)
 
-        if temp < self.min_t:
-            temp = self.min_t
+        if temp < self.min_temp:
+            temp = self.min_temp
 
         return temp
 
@@ -91,20 +91,20 @@ class ExpDecay:
     annealing temperature parameter T
     """
 
-    def __init__(self, init_t=1.0, exp_const=0.005, min_t=0.001):
+    def __init__(self, init_temp=1.0, exp_const=0.005, min_temp=0.001):
         """Initialize decay schedule object
 
         Args:
-        init_t: float. Initial value of temperature parameter T
+        init_temp: float. Initial value of temperature parameter T
         exp_const: float. Exponential constant parameter.
-        min_t: float. Minimum value of temperature parameter.
+        min_temp: float. Minimum value of temperature parameter.
 
         Returns:
         None
         """
-        self.init_t = init_t
+        self.init_temp = init_temp
         self.exp_const = exp_const
-        self.min_t = min_t
+        self.min_temp = min_temp
 
     def evaluate(self, _t):
         """Evaluate the temperature parameter at time t
@@ -116,10 +116,10 @@ class ExpDecay:
         temp: float. Temperature parameter at time t
         """
 
-        temp = self.init_t*np.exp(-1.0*self.exp_const*_t)
+        temp = self.init_temp*np.exp(-1.0*self.exp_const*_t)
 
-        if temp < self.min_t:
-            temp = self.min_t
+        if temp < self.min_temp:
+            temp = self.min_temp
 
         return temp
 
