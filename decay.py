@@ -27,7 +27,18 @@ class GeomDecay:
         self.init_temp = init_temp
         self.decay = decay
         self.min_temp = min_temp
-
+        
+        if self.init_temp <= 0:
+            raise Exception("""init_temp must be greater than 0.""")
+        
+        if (self.decay <= 0) or (self.decay > 1):
+            raise Exception("""decay must be between 0 and 1.""")
+        
+        if self.min_temp < 0:
+            raise Exception("""min_temp must be greater than 0.""")
+        elif self.min_temp > self.init_temp:
+            raise Exception("""init_temp must be greater than min_temp.""")
+            
     def evaluate(self, _t):
         """Evaluate the temperature parameter at time t
 
@@ -66,6 +77,17 @@ class ArithDecay:
         self.init_temp = init_temp
         self.decay = decay
         self.min_temp = min_temp
+        
+        if self.init_temp <= 0:
+            raise Exception("""init_temp must be greater than 0.""")
+        
+        if (self.decay <= 0) or (self.decay > 1):
+            raise Exception("""decay must be greater than 0.""")
+        
+        if self.min_temp < 0:
+            raise Exception("""min_temp must be greater than 0.""")
+        elif self.min_temp > self.init_temp:
+            raise Exception("""init_temp must be greater than min_temp.""")
 
     def evaluate(self, _t):
         """Evaluate the temperature parameter at time t
@@ -105,6 +127,18 @@ class ExpDecay:
         self.init_temp = init_temp
         self.exp_const = exp_const
         self.min_temp = min_temp
+        
+        if self.init_temp <= 0:
+            raise Exception("""init_temp must be greater than 0.""")
+        
+        if self.exp_const <= 0:
+            raise Exception("""exp_const must be greater than 0.""")
+        
+        if self.min_temp < 0:
+            raise Exception("""min_temp must be greater than 0.""")
+        elif self.min_temp > self.init_temp:
+            raise Exception("""init_temp must be greater than min_temp.""")
+
 
     def evaluate(self, _t):
         """Evaluate the temperature parameter at time t
