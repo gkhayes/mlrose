@@ -142,7 +142,19 @@ class OptProb:
         self.maximize: int. Maximization multiplier
         """
         return self.maximize
+    
+    def get_pop_fitness(self):
+        """ Return the current population fitness array
 
+        Args:
+        None
+
+        Returns:
+        self.pop_fitness: array. Numpy array containing the fitness values
+        for the current population.
+        """
+        return self.pop_fitness
+    
     def get_population(self):
         """ Return the current population
 
