@@ -2,7 +2,7 @@
 This repository contains the source code for the mlrose Python package. This package implements a range of Machine Learning, Randomized Optimization and SEarch algorithms, to allow users to explore the properties of these algorithms under various conditions.
 
 ## Installation
-mlrose was written in Python 3 and requires NumPy.
+mlrose was written in Python 3 and requires NumPy, SciPy and Scikit-Learn (sklearn).
 
 The latest released version is available at the Python package index < insert link to PyPi page> and can be installed using `pip`:
 
@@ -26,5 +26,11 @@ You can cite mlrose in research publications and reports as follows:
 
 BibTeX entry:
 ```
-<Insert BibTeX code here>
+@misc{Hayes18,
+ author = {Hayes, G},
+ title 	= {{mlrose: Machine Learning, Randomized Optimization and SEarch package for Python}},
+ year 	= 2018,
+ howpublished = {\url{https://github.com/gkhayes/mlrose}},
+ note 	= {Accessed: day month year}
+}
 ```
