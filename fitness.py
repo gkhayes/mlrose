@@ -279,8 +279,8 @@ class Knapsack:
         self._w = np.ceil(sum(self.weights)*max_weight_pct)
         
         if len(self.weights) != len(self.values):
-            raise Exception("""The weights array and values array must be
-                            the same size.""")
+            raise Exception("""The weights array and values array must be"""
+                            + """ the same size.""")
         
         if min(self.weights) <= 0:
             raise Exception("""All weights must be greater than 0.""")
@@ -302,8 +302,8 @@ class Knapsack:
         fitness: float. Value of fitness function.
         """
         if len(state) != len(self.weights):
-            raise Exception("""The state array must be the same size as the
-                            weight and values arrays.""")
+            raise Exception("""The state array must be the same size as the"""
+                            + """ weight and values arrays.""")
             
         # Calculate total weight and value of knapsack
         total_weight = np.sum(state*self.weights)
@@ -335,17 +335,17 @@ class TravellingSales:
         self.distances = distances
         
         if np.min(self.distances) < 0:
-            raise Exception("""All elements of the distance matrix must be 
-                            non-negative.""")
+            raise Exception("""All elements of the distance matrix must be""" 
+                            + """ non-negative.""")
             
         if not np.array_equal(self.distances,
                               np.rot90(np.fliplr(self.distances))):
-            raise Exception("""The distances matrix must be symmetric
-            about the main diag.""")
+            raise Exception("""The distances matrix must be symmetric"""
+            + """ about the main diag.""")
 
         if not np.all(np.diag(self.distances) == 0):
-            raise Exception("""The main diag. of the distances matrix
-            should be all 0s.""")
+            raise Exception("""The main diag. of the distances matrix"""
+            + """ should be all 0s.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -434,16 +434,16 @@ class MaxKColor:
         self.edges = edges
         
         if not np.all(np.logical_or(self.edges==0, self.edges==1)):
-            raise Exception("""All elements of the edges array must be 0 or
-                            1.""")
+            raise Exception("""All elements of the edges array must be 0 or"""
+            + """ 1.""")
             
         if not np.array_equal(self.edges, np.rot90(np.fliplr(self.edges))):
-            raise Exception("""The edges matrix must be symmetric
-            about the main diag.""")
+            raise Exception("""The edges matrix must be symmetric"""
+            + """ about the main diag.""")
 
         if not np.all(np.diag(self.edges) == 0):
-            raise Exception("""The main diag. of the edges matrix
-            should be all 0s.""")
+            raise Exception("""The main diag. of the edges matrix"""
+            + """ should be all 0s.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
