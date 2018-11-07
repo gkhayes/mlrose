@@ -5,9 +5,10 @@
 """
 import unittest
 import numpy as np
-from fitness import (OneMax, FlipFlop, head, tail, max_run, FourPeaks, 
+from fitness import (OneMax, FlipFlop, head, tail, max_run, FourPeaks,
                      SixPeaks, ContinuousPeaks, Knapsack, TravellingSales,
                      Queens, MaxKColor, CustomFitness)
+
 
 class TestFitness(unittest.TestCase):
     """Tests for fitness.py."""
@@ -42,27 +43,27 @@ class TestFitness(unittest.TestCase):
         state"""
         state = np.array([1, 1, 1, 1, 0, 1, 0, 2, 1, 1, 1, 1, 1, 4, 6, 1, 1])
         assert max_run(1, state) == 5
-        
+
     @staticmethod
     def test_max_run_start():
         """Test max_run function for case where run is at the start of the
         state"""
         state = np.array([1, 1, 1, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 4, 6, 1, 1])
         assert max_run(1, state) == 6
-        
+
     @staticmethod
     def test_max_run_end():
         """Test max_run function for case where run is at the end of the
         state"""
         state = np.array([1, 1, 1, 1, 0, 1, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         assert max_run(1, state) == 9
-    
+
     @staticmethod
     def test_fourpeaks_r0():
         """Test FourPeaks fitness function for the case where R=0 and max>0"""
         state = np.array([1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
         assert FourPeaks(t_pct=0.30).evaluate(state) == 4
-    
+
     @staticmethod
     def test_fourpeaks_r_gt0():
         """Test FourPeaks fitness function for the case where R>0 and max>0"""
@@ -74,44 +75,44 @@ class TestFitness(unittest.TestCase):
         """Test FourPeaks fitness function for the case where R=0 and max=0"""
         state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
         assert FourPeaks(t_pct=0.30).evaluate(state) == 0
-            
+
     @staticmethod
     def test_sixpeaks_r0():
         """Test SixPeaks fitness function for the case where R=0 and max>0"""
         state = np.array([1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
         assert SixPeaks(t_pct=0.30).evaluate(state) == 4
-    
+
     @staticmethod
     def test_sixpeaks_r_gt0():
         """Test SixPeaks fitness function for the case where R>0 and max>0"""
         state = np.array([1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
         assert SixPeaks(t_pct=0.15).evaluate(state) == 16
-        
+
     @staticmethod
     def test_sixpeaks_r0_max0():
         """Test SixPeaks fitness function for the case where R=0 and max=0"""
         state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
         assert SixPeaks(t_pct=0.30).evaluate(state) == 0
-    
+
     @staticmethod
     def test_sixpeaks_r_gt0_max0():
         """Test SixPeaks fitness function for the case where R>0 and max=0"""
         state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
         assert SixPeaks(t_pct=0.15).evaluate(state) == 12
-    
+
     @staticmethod
     def test_continuouspeaks_r0():
         """Test ContinuousPeaks fitness function for case when R = 0."""
         state = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1])
         assert ContinuousPeaks(t_pct=0.30).evaluate(state) == 5
-    
+
     @staticmethod
     def test_continuouspeaks_r_gt():
         """Test ContinuousPeaks fitness function for case when R > 0."""
         state = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1])
 
         assert ContinuousPeaks(t_pct=0.15).evaluate(state) == 17
-    
+
     @staticmethod
     def test_knapsack_weight_lt_max():
         """Test Knapsack fitness function for case where total weight is less
@@ -119,21 +120,21 @@ class TestFitness(unittest.TestCase):
         weights = [10, 5, 2, 8, 15]
         values = [1, 2, 3, 4, 5]
         max_weight_pct = 0.6
-        
+
         state = np.array([1, 0, 2, 1, 0])
         assert Knapsack(weights, values, max_weight_pct).evaluate(state) == 11
-        
+
     @staticmethod
     def test_knapsack_weight_gt_max():
-        """Test Knapsack fitness function for case where total weight is 
+        """Test Knapsack fitness function for case where total weight is
         greater than the maximum"""
         weights = [10, 5, 2, 8, 15]
         values = [1, 2, 3, 4, 5]
         max_weight_pct = 0.4
-        
+
         state = np.array([1, 0, 2, 1, 0])
         assert Knapsack(weights, values, max_weight_pct).evaluate(state) == 0
-    
+
     @staticmethod
     def test_travelling_sales_nodups():
         """Test TravellingSales fitness function for case where each city is
@@ -143,15 +144,15 @@ class TestFitness(unittest.TestCase):
                              [5, -1, 0, 8, 2],
                              [1, 6, 8, 0, 4],
                              [7, 9, 2, 4, 0]])
-        
+
         state = np.array([0, 1, 0, 0, 0,
                           0, 0, 0, 0, 1,
                           1, 0, 0, 0, 0,
-                          0, 0, 1, 0, 0, 
+                          0, 0, 1, 0, 0,
                           0, 0, 0, 1, 0])
-    
+
         assert TravellingSales(distance).evaluate(state) == 29
-    
+
     @staticmethod
     def test_travelling_sales_dups():
         """Test TravellingSales fitness function for invalid tour"""
@@ -160,15 +161,15 @@ class TestFitness(unittest.TestCase):
                              [5, -1, 0, 8, 2],
                              [1, 6, 8, 0, 4],
                              [7, 9, 2, 4, 0]])
-        
+
         state = np.array([0, 1, 0, 0, 1,
                           0, 0, 0, 0, 1,
                           1, 0, 1, 0, 0,
-                          0, 0, 1, 0, 0, 
+                          0, 0, 1, 0, 0,
                           0, 1, 0, 1, 0])
-    
+
         assert TravellingSales(distance).evaluate(state) == 0
-        
+
     @staticmethod
     def test_queens():
         """Test Queens fitness function"""
@@ -186,19 +187,18 @@ class TestFitness(unittest.TestCase):
 
         state = np.array([0, 1, 0, 1, 1])
         assert MaxKColor(edges).evaluate(state) == 3
-    
+
     @staticmethod
     def test_custom_fitness():
         """Test CustomFitness fitness function"""
         # Define custom finess function
         def cust_fn(state, c):
             return c*np.sum(state)
-        
+
         state = np.array([1, 2, 3, 4, 5])
-        kwargs = {'c':10}
-        assert CustomFitness(cust_fn, **kwargs).evaluate(state) == 150    
-        
+        kwargs = {'c': 10}
+        assert CustomFitness(cust_fn, **kwargs).evaluate(state) == 150
+
 
 if __name__ == '__main__':
     unittest.main()
-    
