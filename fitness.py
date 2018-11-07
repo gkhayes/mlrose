@@ -113,8 +113,11 @@ def max_run(_b, _x):
         else:
             if run > _max:
                 _max = run
-
+                    
             run = 0
+    
+    if (_x[-1] == _b) and (run > _max):
+        _max = run
 
     return _max
 
