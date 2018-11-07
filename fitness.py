@@ -132,6 +132,9 @@ class FourPeaks:
         None
         """
         self.t_pct = t_pct
+        
+        if (self.t_pct < 0) or (self.t_pct > 1):
+            raise Exception("""t_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -174,6 +177,9 @@ class SixPeaks:
         None
         """
         self.t_pct = t_pct
+        
+        if (self.t_pct < 0) or (self.t_pct > 1):
+            raise Exception("""t_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -219,6 +225,9 @@ class ContinuousPeaks:
         None
         """
         self.t_pct = t_pct
+        
+        if (self.t_pct < 0) or (self.t_pct > 1):
+            raise Exception("""t_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -268,6 +277,19 @@ class Knapsack:
         self.weights = weights
         self.values = values
         self._w = np.ceil(sum(self.weights)*max_weight_pct)
+        
+        if len(self.weights) != len(self.values):
+            raise Exception("""The weights array and values array must be
+                            the same size.""")
+        
+        if min(self.weights) <= 0:
+            raise Exception("""All weights must be greater than 0.""")
+        
+        if min(self.values) <= 0:
+            raise Exception("""All values must be greater than 0.""")
+        
+        if (max_weight_pct <= 0) or (max_weight_pct > 1):
+            raise Exception("""max_weight_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -279,6 +301,10 @@ class Knapsack:
         Returns:
         fitness: float. Value of fitness function.
         """
+        if len(state) != len(self.weights):
+            raise Exception("""The state array must be the same size as the
+                            weight and values arrays.""")
+            
         # Calculate total weight and value of knapsack
         total_weight = np.sum(state*self.weights)
         total_value = np.sum(state*self.values)
@@ -307,7 +333,11 @@ class TravellingSales:
         None
         """
         self.distances = distances
-
+        
+        if np.min(self.distances) < 0:
+            raise Exception("""All elements of the distance matrix must be 
+                            non-negative.""")
+            
         if not np.array_equal(self.distances,
                               np.rot90(np.fliplr(self.distances))):
             raise Exception("""The distances matrix must be symmetric
@@ -402,7 +432,11 @@ class MaxKColor:
         None
         """
         self.edges = edges
-
+        
+        if not np.all(np.logical_or(self.edges==0, self.edges==1)):
+            raise Exception("""All elements of the edges array must be 0 or
+                            1.""")
+            
         if not np.array_equal(self.edges, np.rot90(np.fliplr(self.edges))):
             raise Exception("""The edges matrix must be symmetric
             about the main diag.""")
