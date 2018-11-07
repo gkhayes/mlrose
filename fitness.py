@@ -271,7 +271,7 @@ class Knapsack:
         values: array. Array of values for each of the possible items.
         Must be same length as weights array.
         max_weight_pct: float. Parameter used to set maximum capacity
-        of knapsack (W) as a percentage of the total weight of all items
+        of knapsack (W) as a percentage of the total of the weights array
         (W = max_weight_pct*total_weight)
 
         Returns:
@@ -330,16 +330,13 @@ class TravellingSales:
         Args:
         distances: matrix. n x n matrix giving the distances between
         pairs of cities. In most cases, we would expect the lower triangle
-        to mirror the upper triangle and the lead diagonal to be zeros.
+        to mirror the upper triangle and the lead diagonal to be zeros. Set 
+        equal to -1 if there is no path between two cities.
 
         Returns:
         None
         """
         self.distances = distances
-        
-        if np.min(self.distances) < 0:
-            raise Exception("""All elements of the distance matrix must be""" 
-                            + """ non-negative.""")
             
         if not np.array_equal(self.distances,
                               np.rot90(np.fliplr(self.distances))):
