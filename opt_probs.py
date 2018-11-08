@@ -97,8 +97,8 @@ class OptProb:
         None
         """
         if np.sum(self.pop_fitness) == 0:
-            self.mate_probs = np.ones(len(self.pop_fitness))\
-                              /len(self.pop_fitness)
+            self.mate_probs = np.ones(len(self.pop_fitness)) \
+                              / len(self.pop_fitness)
         else:
             self.mate_probs = self.pop_fitness/np.sum(self.pop_fitness)
 
@@ -146,7 +146,7 @@ class OptProb:
         self.maximize: int. Maximization multiplier
         """
         return self.maximize
-    
+
     def get_pop_fitness(self):
         """ Return the current population fitness array
 
@@ -158,7 +158,7 @@ class OptProb:
         for the current population.
         """
         return self.pop_fitness
-    
+
     def get_population(self):
         """ Return the current population
 
