@@ -97,8 +97,8 @@ class OptProb:
         None
         """
         if np.sum(self.pop_fitness) == 0:
-            self.mate_probs = np.ones(len(self.pop_fitness)) \
-                              / len(self.pop_fitness)
+            self.mate_probs = np.ones(len(self.pop_fitness))\
+                              /len(self.pop_fitness)
         else:
             self.mate_probs = self.pop_fitness/np.sum(self.pop_fitness)
 
@@ -146,7 +146,7 @@ class OptProb:
         self.maximize: int. Maximization multiplier
         """
         return self.maximize
-
+    
     def get_pop_fitness(self):
         """ Return the current population fitness array
 
@@ -158,7 +158,7 @@ class OptProb:
         for the current population.
         """
         return self.pop_fitness
-
+    
     def get_population(self):
         """ Return the current population
 
@@ -270,14 +270,9 @@ class DiscreteOpt(OptProb):
         # Get probs
         probs = np.zeros([self.length, self.max_val, self.max_val])
 
-        if not len(self.keep_sample):
-            probs[0] = 0
-            probs[0, :, 0] = 1
-
-        else:
-            probs[0, :] = np.histogram(self.keep_sample[:, 0],
-                                       np.arange(self.max_val + 1),
-                                       density=True)[0]
+        probs[0, :] = np.histogram(self.keep_sample[:, 0],
+                                   np.arange(self.max_val + 1),
+                                   density=True)[0]
 
         for i in range(1, self.length):
             for j in range(self.max_val):
@@ -285,10 +280,9 @@ class DiscreteOpt(OptProb):
                     self.keep_sample[:, parent[i - 1]] == j)[0]]
 
                 if not len(subset):
-                    probs[i, j] = 0
-                    probs[i, j, 0] = 1
+                    probs[i, j] = 1/self.max_val
                 else:
-                    probs[i, j] = np.histogram(subset,
+                    probs[i, j] = np.histogram(subset[:, i],
                                                np.arange(self.max_val + 1),
                                                density=True)[0]
 
@@ -365,6 +359,18 @@ class DiscreteOpt(OptProb):
         # Determine sample for keeping
         self.keep_sample = self.population[keep_inds]
 
+    def get_keep_sample(self):
+        """ Return the keep sample.
+
+        Args:
+        None
+
+        Returns:
+        self.keep_sample: array. Numpy array containing samples with fitness
+        in the top n percentile.
+        """
+        return self.keep_sample
+    
     def random(self):
         """Return a random state vector
 
@@ -559,8 +565,9 @@ class ContinuousOpt(OptProb):
 
                 elif neighbor[i] < self.min_val:
                     neighbor[i] = self.min_val
-
-                self.neighbors.append(neighbor)
+                
+                if not np.array_equal(np.array(neighbor), self.state):
+                    self.neighbors.append(neighbor)
 
     def random(self):
         """Return a random state vector
