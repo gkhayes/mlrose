@@ -591,16 +591,20 @@ class ContinuousOpt(OptProb):
         Returns:
         neighbor: array. State vector of random neighbor.
         """
-        neighbor = np.copy(self.state)
-        i = np.random.randint(0, self.length)
-
-        neighbor[i] += self.step*np.random.choice([-1, 1])
-
-        if neighbor[i] > self.max_val:
-            neighbor[i] = self.max_val
-
-        elif neighbor[i] < self.min_val:
-            neighbor[i] = self.min_val
+        while True:
+            neighbor = np.copy(self.state)
+            i = np.random.randint(0, self.length)
+    
+            neighbor[i] += self.step*np.random.choice([-1, 1])
+    
+            if neighbor[i] > self.max_val:
+                neighbor[i] = self.max_val
+    
+            elif neighbor[i] < self.min_val:
+                neighbor[i] = self.min_val
+                
+            if not np.array_equal(np.array(neighbor), self.state):
+                break
 
         return neighbor
 
