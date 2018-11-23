@@ -8,7 +8,18 @@ import numpy as np
 
 class OneMax:
     """Fitness function for One Max optimization problem."""
+    
+    def __init__(self):
+        """Initialize OneMax object.
 
+        Args:
+        None
+        
+        Returns:
+        None
+        """
+        self.prob_type = 'either'
+        
     def evaluate(self, state):
         """Evaluate the fitness of a state vector
 
@@ -21,11 +32,34 @@ class OneMax:
 
         fitness = sum(state)
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class FlipFlop:
     """Fitness function for Flip Flop optimization problem."""
+    
+    def __init__(self):
+        """Initialize FlipFlop object.
 
+        Args:
+        None
+        
+        Returns:
+        None
+        """
+        self.prob_type = 'discrete'
+        
     def evaluate(self, state):
         """Evaluate the fitness of a state vector
 
@@ -42,6 +76,18 @@ class FlipFlop:
                 fitness += 1
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 def head(_b, _x):
@@ -135,6 +181,7 @@ class FourPeaks:
         None
         """
         self.t_pct = t_pct
+        self.prob_type = 'discrete'
 
         if (self.t_pct < 0) or (self.t_pct > 1):
             raise Exception("""t_pct must be between 0 and 1.""")
@@ -165,6 +212,18 @@ class FourPeaks:
         fitness = max(tail_0, head_1) + _r
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class SixPeaks:
@@ -180,6 +239,7 @@ class SixPeaks:
         None
         """
         self.t_pct = t_pct
+        self.prob_type = 'discrete'
 
         if (self.t_pct < 0) or (self.t_pct > 1):
             raise Exception("""t_pct must be between 0 and 1.""")
@@ -212,6 +272,18 @@ class SixPeaks:
         fitness = max(tail_0, head_1) + _r
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class ContinuousPeaks:
@@ -228,6 +300,7 @@ class ContinuousPeaks:
         None
         """
         self.t_pct = t_pct
+        self.prob_type = 'discrete'
 
         if (self.t_pct < 0) or (self.t_pct > 1):
             raise Exception("""t_pct must be between 0 and 1.""")
@@ -258,6 +331,18 @@ class ContinuousPeaks:
         fitness = max(max_0, max_1) + _r
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class Knapsack:
@@ -280,6 +365,7 @@ class Knapsack:
         self.weights = weights
         self.values = values
         self._w = np.ceil(sum(self.weights)*max_weight_pct)
+        self.prob_type = 'discrete'
 
         if len(self.weights) != len(self.values):
             raise Exception("""The weights array and values array must be"""
@@ -319,6 +405,18 @@ class Knapsack:
             fitness = 0
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class TravellingSales:
@@ -337,6 +435,7 @@ class TravellingSales:
         None
         """
         self.distances = distances
+        self.prob_type = 'discrete'
 
         if not np.array_equal(self.distances,
                               np.rot90(np.fliplr(self.distances))):
@@ -384,11 +483,34 @@ class TravellingSales:
             fitness = 0
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class Queens:
     """Fitness function for N-Queens optimization problem."""
+    
+    def __init__(self):
+        """Initialize Queens object.
 
+        Args:
+        None
+        
+        Returns:
+        None
+        """
+        self.prob_type = 'discrete'
+        
     def evaluate(self, state):
         """Evaluate the fitness of a state vector
 
@@ -415,6 +537,18 @@ class Queens:
                     fitness += 1
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class MaxKColor:
@@ -432,6 +566,7 @@ class MaxKColor:
         None
         """
         self.edges = edges
+        self.prob_type = 'discrete'
 
         if not np.all(np.logical_or(self.edges == 0, self.edges == 1)):
             raise Exception("""All elements of the edges array must be 0 or"""
@@ -464,22 +599,37 @@ class MaxKColor:
                     fitness += 1
 
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
 
 
 class CustomFitness:
     """Class for generating your own fitness function."""
 
-    def __init__(self, fitness_fn, **kwargs):
+    def __init__(self, fitness_fn, problem_type = 'either', **kwargs):
         """Initialize CustomFitness object.
 
         Args:
         fitness_fn: function. Function for calculating fitness of a state
+        problem_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'        
         kwargs: dictionary. Additional arguments to be passed to fitness_fn
 
         Returns:
         None
         """
         self.fitness_fn = fitness_fn
+        self.problem_type = problem_type
         self.kwargs = kwargs
 
     def evaluate(self, state):
@@ -494,3 +644,16 @@ class CustomFitness:
         """
         fitness = self.fitness_fn(state, **self.kwargs)
         return fitness
+    
+    def get_prob_type(self):
+        """ Return the problem type
+
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Specifies problem type as 'discrete', 
+        'continuous' or 'either'     
+        """
+        return self.prob_type
+    
