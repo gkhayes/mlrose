@@ -228,7 +228,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_eval_node_probs():
         """Test eval_node_probs method"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         
         pop = np.array([[0, 0, 0, 0, 1], 
                         [1, 0, 1, 0, 1],
@@ -259,7 +259,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_find_neighbors_max2():
         """Test find_neighbors method when max_val is equal to 2"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False, max_val = 2)
+        problem = DiscreteOpt(5, OneMax(), maximize = True, max_val = 2)
         
         x = np.array([0, 1, 0, 1, 0])
         problem.set_state(x)
@@ -277,7 +277,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_find_neighbors_max_gt2():
         """Test find_neighbors method when max_val is greater than 2"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False, max_val = 3)
+        problem = DiscreteOpt(5, OneMax(), maximize = True, max_val = 3)
         
         x = np.array([0, 1, 2, 1, 0])
         problem.set_state(x)
@@ -300,7 +300,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_find_sample_order():
         """Test find_sample_order method"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         problem.parent_nodes = np.array([2, 0, 1, 0])
         
         order = np.array([0, 2, 4, 1, 3])
@@ -357,7 +357,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_random():
         """Test random method"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False, max_val = 5)
+        problem = DiscreteOpt(5, OneMax(), maximize = True, max_val = 5)
         
         rand = problem.random()
         
@@ -367,7 +367,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_random_neighbor_max2():
         """Test random_neighbor method when max_val is equal to 2"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         
         x = np.array([0, 0, 1, 1, 1])
         problem.set_state(x)
@@ -381,7 +381,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_random_neighbor_max_gt2():
         """Test random_neighbor method when max_val is greater than 2"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False, max_val = 5)
+        problem = DiscreteOpt(5, OneMax(), maximize = True, max_val = 5)
         
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
@@ -398,7 +398,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_random_pop():
         """Test random_pop method"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         problem.random_pop(100)
         
         pop = problem.get_population()
@@ -412,7 +412,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_reproduce_mut0():
         """Test reproduce method when mutation_prob is 0"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([1, 1, 1, 1, 1])
         
@@ -424,7 +424,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_reproduce_mut1_max2():
         """Test reproduce method when mutation_prob is 1 and max_val is 2"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([1, 1, 1, 1, 1])
         
@@ -437,7 +437,7 @@ class TestDiscreteOpt(unittest.TestCase):
         """Test reproduce method when mutation_prob is 1 and max_val is 
         greater than 2"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False, max_val = 3)
+        problem = DiscreteOpt(5, OneMax(), maximize = True, max_val = 3)
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([2, 2, 2, 2, 2])
         
@@ -449,7 +449,7 @@ class TestDiscreteOpt(unittest.TestCase):
     def test_sample_pop():
         """Test sample_pop method"""
         
-        problem = DiscreteOpt(5, OneMax(), maximize = False)
+        problem = DiscreteOpt(5, OneMax(), maximize = True)
         
         pop = np.array([[0, 0, 0, 0, 1], 
                         [1, 0, 1, 0, 1],
@@ -473,7 +473,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_find_neighbors_range_eq_step():
         """Test find_neighbors method when range equals step size"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 1, step = 1)
     
         x = np.array([0, 1, 0, 1, 0])
@@ -493,7 +493,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_find_neighbors_range_gt_step():
         """Test find_neighbors method when range greater than step size"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 2, step = 1)
         
         x = np.array([0, 1, 2, 1, 0])
@@ -514,7 +514,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_random():
         """Test random method"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 4)
         
         rand = problem.random()
@@ -525,7 +525,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_random_neighbor_range_eq_step():
         """Test random_neighbor method when range equals step size"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 1, step = 1)
         
         x = np.array([0, 0, 1, 1, 1])
@@ -540,7 +540,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_random_neighbor_range_gt_step():
         """Test random_neighbor method when range greater than step size"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 2, step = 1)
         
         x = np.array([0, 1, 2, 3, 4])
@@ -558,7 +558,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_random_pop():
         """Test random_pop method"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 1, step = 1)
         problem.random_pop(100)
         
@@ -573,7 +573,7 @@ class TestContinuousOpt(unittest.TestCase):
     def test_reproduce_mut0():
         """Test reproduce method when mutation_prob is 0"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 1, step = 1)
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([1, 1, 1, 1, 1])
@@ -587,7 +587,7 @@ class TestContinuousOpt(unittest.TestCase):
         """Test reproduce method when mutation_prob is 1 and range equals 
         step size"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 1, step = 1)
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([1, 1, 1, 1, 1])
@@ -601,7 +601,7 @@ class TestContinuousOpt(unittest.TestCase):
         """Test reproduce method when mutation_prob is 1 and range is 
         greater than step size"""
         
-        problem = ContinuousOpt(5, OneMax(), maximize = False, 
+        problem = ContinuousOpt(5, OneMax(), maximize = True, 
                                 min_val = 0, max_val = 2, step = 1)
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([2, 2, 2, 2, 2])

@@ -584,7 +584,7 @@ class ContinuousOpt(OptProb):
         Returns:
         None
         """
-        OptProb.__init__(self, length, fitness_fn, maximize=True)
+        OptProb.__init__(self, length, fitness_fn, maximize=maximize)
         
         if self.fitness_fn.get_prob_type() == 'discrete':
             raise Exception("""fitness_fn must have problem type 'continuous'"""
