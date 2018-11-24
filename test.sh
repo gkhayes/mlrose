@@ -8,3 +8,11 @@ python test_decay.py
 
 echo "Running tests on test_fitness.py"
 python test_fitness.py
+
+echo "Running tests on test_algorithms.py"
+python test_algorithms.py
+
+echo "Running tests on test_opt_probs.py"
+python test_opt_probs.py
+
+echo "Finished all tests"
