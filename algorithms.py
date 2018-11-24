@@ -4,7 +4,7 @@
     License: 3-clause BSD license.
 """
 import numpy as np
-
+from decay import GeomDecay
 
 def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
     """Use standard hill climbing to find the optimum for a given
@@ -118,8 +118,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     return best_state, best_fitness
 
 
-def simulated_annealing(problem, schedule, max_attempts=10, max_iters=np.inf,
-                        init_state=None):
+def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10, 
+                        max_iters=np.inf, init_state=None):
     """Use simulated annealing to find the optimum for a given
     optimization problem, starting from a random state.
 
