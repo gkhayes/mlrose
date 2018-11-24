@@ -272,6 +272,7 @@ class DiscreteOpt(OptProb):
         self.keep_sample = []
         self.node_probs = np.zeros([self.length, self.max_val, self.max_val])
         self.parent_nodes = []
+        self.prob_type = 'discrete'
 
     def eval_node_probs(self):
         """Update probability density estimates.
@@ -406,6 +407,17 @@ class DiscreteOpt(OptProb):
         in the top n percentile.
         """
         return self.keep_sample
+    
+    def get_prob_type(self):
+        """ Return the problem type.
+        
+        Args:
+        None
+
+        Returns:
+        self.prob_type: string. Returns problem type.
+        """
+        return self.prob_type
     
     def random(self):
         """Return a random state vector
@@ -606,6 +618,7 @@ class ContinuousOpt(OptProb):
         self.min_val = min_val
         self.max_val = max_val
         self.step = step
+        self.prob_type = 'continuous'
 
     def calculate_updates(self):
         """Calculate gradient descent updates.
@@ -644,7 +657,18 @@ class ContinuousOpt(OptProb):
                 
                 if not np.array_equal(np.array(neighbor), self.state):
                     self.neighbors.append(neighbor)
+    
+    def get_prob_type(self):
+        """ Return the problem type.
+        
+        Args:
+        None
 
+        Returns:
+        self.prob_type: string. Returns problem type.
+        """
+        return self.prob_type
+    
     def random(self):
         """Return a random state vector
 

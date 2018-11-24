@@ -23,7 +23,17 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
     optimizes fitness function.
     best_fitness: float. Value of fitness function at best state
     """
-
+    if (type(max_iters) != int and max_iters != np.inf \
+       and max_iters.is_integer() == False) or (max_iters < 0):
+        raise Exception("""max_iters must be a positive integer.""")
+    
+    if (type(restarts) != int and restarts.is_integer() == False) \
+       or (restarts < 0):
+        raise Exception("""restarts must be a positive integer.""")
+    
+    if init_state is not None and len(init_state) != problem.get_length():
+        raise Exception("""init_state must have same length as problem.""")
+    
     best_fitness = -1*np.inf
     best_state = None
 
@@ -80,6 +90,21 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     fitness function.
     best_fitness: float. Value of fitness function at best state
     """
+    if (type(max_attempts) != int and max_attempts.is_integer() == False) \
+       or (max_attempts < 0):
+        raise Exception("""max_attempts must be a positive integer.""")
+        
+    if (type(max_iters) != int and max_iters != np.inf \
+       and max_iters.is_integer() == False) or (max_iters < 0):
+        raise Exception("""max_iters must be a positive integer.""")
+    
+    if (type(restarts) != int and restarts.is_integer() == False) \
+       or (restarts < 0):
+        raise Exception("""restarts must be a positive integer.""")
+    
+    if init_state is not None and len(init_state) != problem.get_length():
+        raise Exception("""init_state must have same length as problem.""")
+        
     best_fitness = -1*np.inf
     best_state = None
 
@@ -140,6 +165,17 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
     best_fitness: float. Value of fitness function at best state
     """
+    if (type(max_attempts) != int and max_attempts.is_integer() == False) \
+       or (max_attempts < 0):
+        raise Exception("""max_attempts must be a positive integer.""")
+        
+    if (type(max_iters) != int and max_iters != np.inf \
+       and max_iters.is_integer() == False) or (max_iters < 0):
+        raise Exception("""max_iters must be a positive integer.""")
+    
+    if init_state is not None and len(init_state) != problem.get_length():
+        raise Exception("""init_state must have same length as problem.""")
+        
     # Initialize problem, time and attempts counter
     if init_state is None:
         problem.reset()
@@ -200,6 +236,25 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     fitness function.
     best_fitness: float. Value of fitness function at best state
     """
+    if pop_size < 0:
+        raise Exception("""pop_size must be a positive integer.""")
+    elif type(pop_size) != int:
+        if pop_size.is_integer():
+            pop_size = int(pop_size)
+        else:
+            raise Exception("""pop_size must be a positive integer.""")
+    
+    if (mutation_prob < 0) or (mutation_prob > 1):
+        raise Exception("""mutation_prob must be between 0 and 1.""")  
+            
+    if (type(max_attempts) != int and max_attempts.is_integer() == False) \
+       or (max_attempts < 0):
+        raise Exception("""max_attempts must be a positive integer.""")
+        
+    if (type(max_iters) != int and max_iters != np.inf \
+       and max_iters.is_integer() == False) or (max_iters < 0):
+        raise Exception("""max_iters must be a positive integer.""")
+           
     # Initialize problem, population and attempts counter
     problem.reset()
     problem.random_pop(pop_size)
@@ -266,6 +321,28 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     fitness function.
     best_fitness: float. Value of fitness function at best state
     """
+    if problem.get_prob_type() == 'continuous':
+        raise Exception("""problem type must be discrete.""")
+        
+    if pop_size < 0:
+        raise Exception("""pop_size must be a positive integer.""")
+    elif type(pop_size) != int:
+        if pop_size.is_integer():
+            pop_size = int(pop_size)
+        else:
+            raise Exception("""pop_size must be a positive integer.""")
+    
+    if (keep_pct < 0) or (keep_pct > 1):
+        raise Exception("""keep_pct must be between 0 and 1.""")  
+            
+    if (type(max_attempts) != int and max_attempts.is_integer() == False) \
+       or (max_attempts < 0):
+        raise Exception("""max_attempts must be a positive integer.""")
+        
+    if (type(max_iters) != int and max_iters != np.inf \
+       and max_iters.is_integer() == False) or (max_iters < 0):
+        raise Exception("""max_iters must be a positive integer.""")
+        
     # Initialize problem, population and attempts counter
     problem.reset()
     problem.random_pop(pop_size)
