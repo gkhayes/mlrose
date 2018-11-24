@@ -40,4 +40,14 @@ pylint test_fitness.py --score=no --disable=R0201,R0902,R0903,R0904,R0913,R0914,
 pycodestyle test_fitness.py
 flake8 test_fitness.py
 
+echo "Starting lint on test_algorithms.py"
+pylint test_algorithms.py --score=no --disable=R0201,R0902,R0903,R0904,R0913,R0914,C0103,C1801
+pycodestyle test_algorithms.py
+flake8 test_algorithms.py
+
+echo "Starting lint on test_opt_probs.py"
+pylint test_opt_probs.py --score=no --disable=R0201,R0902,R0903,R0904,R0913,R0914,C0103,C1801
+pycodestyle test_opt_probs.py
+flake8 test_opt_probs.py
+
 echo "Finished linting all files"

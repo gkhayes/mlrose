@@ -35,9 +35,9 @@ class OptProb:
                 self.length = int(length)
             else:
                 raise Exception("""length must be a positive integer.""")
-        else:        
+        else:
             self.length = length
-        
+
         self.state = np.array([0]*self.length)
         self.neighbors = []
         self.fitness_fn = fitness_fn
@@ -49,8 +49,8 @@ class OptProb:
         if maximize:
             self.maximize = 1.0
         else:
-            self.maximize = -1.0         
-        
+            self.maximize = -1.0
+
     def best_child(self):
         """Return the best state in the current population.
 
@@ -93,8 +93,8 @@ class OptProb:
         fitness: float. Value of fitness function.
         """
         if len(state) != self.length:
-           raise Exception("""state length must match problem length""") 
-           
+           raise Exception("""state length must match problem length""")
+
         fitness = self.maximize*self.fitness_fn.evaluate(state)
 
         return fitness
@@ -159,7 +159,7 @@ class OptProb:
         self.maximize: int. Maximization multiplier
         """
         return self.maximize
-    
+
     def get_pop_fitness(self):
         """ Return the current population fitness array
 
@@ -171,7 +171,7 @@ class OptProb:
         for the current population.
         """
         return self.pop_fitness
-    
+
     def get_population(self):
         """ Return the current population
 
@@ -227,8 +227,8 @@ class OptProb:
         None
         """
         if len(new_state) != self.length:
-           raise Exception("""new_state length must match problem length""") 
-           
+           raise Exception("""new_state length must match problem length""")
+
         self.state = new_state
         self.fitness = self.eval_fitness(self.state)
 
@@ -251,14 +251,14 @@ class DiscreteOpt(OptProb):
         None
         """
         OptProb.__init__(self, length, fitness_fn, maximize)
-        
+
         if self.fitness_fn.get_prob_type() == 'continuous':
             raise Exception("""fitness_fn must have problem type 'discrete'"""
                             + """ or 'either'. Define problem as"""
                             + """ ContinuousOpt problem or use alternative"""
                             + """ fitness function."""
                             )
-            
+
         if max_val < 0:
             raise Exception("""max_val must be a positive integer.""")
         elif type(max_val) != int:
@@ -266,7 +266,7 @@ class DiscreteOpt(OptProb):
                 self.max_val = int(max_val)
             else:
                 raise Exception("""max_val must be a positive integer.""")
-        else:        
+        else:
             self.max_val = max_val
 
         self.keep_sample = []
@@ -386,7 +386,7 @@ class DiscreteOpt(OptProb):
         """
         if (keep_pct < 0) or (keep_pct > 1):
             raise Exception("""keep_pct must be between 0 and 1.""")
-            
+
         # Determine threshold
         theta = np.percentile(self.pop_fitness, 100*(1 - keep_pct))
 
@@ -407,10 +407,10 @@ class DiscreteOpt(OptProb):
         in the top n percentile.
         """
         return self.keep_sample
-    
+
     def get_prob_type(self):
         """ Return the problem type.
-        
+
         Args:
         None
 
@@ -418,7 +418,7 @@ class DiscreteOpt(OptProb):
         self.prob_type: string. Returns problem type.
         """
         return self.prob_type
-    
+
     def random(self):
         """Return a random state vector
 
@@ -470,7 +470,7 @@ class DiscreteOpt(OptProb):
                 pop_size = int(pop_size)
             else:
                 raise Exception("""pop_size must be a positive integer.""")
-            
+
         population = []
         pop_fitness = []
 
@@ -498,10 +498,10 @@ class DiscreteOpt(OptProb):
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
            raise Exception("""Lengths of parents must match problem length""")
-        
+
         if (mutation_prob < 0) or (mutation_prob > 1):
             raise Exception("""mutation_prob must be between 0 and 1.""")
-            
+
         # Reproduce parents
         _n = np.random.randint(self.length - 1)
         child = np.array([0]*self.length)
@@ -552,7 +552,7 @@ class DiscreteOpt(OptProb):
                 sample_size = int(sample_size)
             else:
                 raise Exception("""sample_size must be a positive integer.""")
-                
+
         # Initialize new sample matrix
         new_sample = np.zeros([sample_size, self.length])
 
@@ -597,24 +597,24 @@ class ContinuousOpt(OptProb):
         None
         """
         OptProb.__init__(self, length, fitness_fn, maximize=maximize)
-        
+
         if self.fitness_fn.get_prob_type() == 'discrete':
             raise Exception("""fitness_fn must have problem type 'continuous'"""
                             + """ or 'either'. Define problem as"""
                             + """ DiscreteOpt problem or use alternative"""
                             + """ fitness function."""
                             )
-            
+
         if max_val <= min_val:
             raise Exception("""max_val must be greater than min_val.""")
-        
+
         if step <= 0:
             raise Exception("""step size must be positive.""")
-            
+
         if (max_val - min_val) < step:
             raise Exception("""step size must be less than"""
                             + """ (max_val - min_val).""")
-            
+
         self.min_val = min_val
         self.max_val = max_val
         self.step = step
@@ -654,13 +654,13 @@ class ContinuousOpt(OptProb):
 
                 elif neighbor[i] < self.min_val:
                     neighbor[i] = self.min_val
-                
+
                 if not np.array_equal(np.array(neighbor), self.state):
                     self.neighbors.append(neighbor)
-    
+
     def get_prob_type(self):
         """ Return the problem type.
-        
+
         Args:
         None
 
@@ -668,7 +668,7 @@ class ContinuousOpt(OptProb):
         self.prob_type: string. Returns problem type.
         """
         return self.prob_type
-    
+
     def random(self):
         """Return a random state vector
 
@@ -694,15 +694,15 @@ class ContinuousOpt(OptProb):
         while True:
             neighbor = np.copy(self.state)
             i = np.random.randint(0, self.length)
-    
+
             neighbor[i] += self.step*np.random.choice([-1, 1])
-    
+
             if neighbor[i] > self.max_val:
                 neighbor[i] = self.max_val
-    
+
             elif neighbor[i] < self.min_val:
                 neighbor[i] = self.min_val
-                
+
             if not np.array_equal(np.array(neighbor), self.state):
                 break
 
@@ -724,7 +724,7 @@ class ContinuousOpt(OptProb):
                 pop_size = int(pop_size)
             else:
                 raise Exception("""pop_size must be a positive integer.""")
-                
+
         population = []
         pop_fitness = []
 
@@ -752,10 +752,10 @@ class ContinuousOpt(OptProb):
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
            raise Exception("""Lengths of parents must match problem length""")
-        
+
         if (mutation_prob < 0) or (mutation_prob > 1):
             raise Exception("""mutation_prob must be between 0 and 1.""")
-            
+
         # Reproduce parents
         _n = np.random.randint(self.length - 1)
         child = np.array([0.0]*self.length)
