@@ -30,7 +30,7 @@ class OptProb:
 
         if length < 0:
             raise Exception("""length must be a positive integer.""")
-        elif type(length) != int:
+        elif not isinstance(length, int):
             if length.is_integer():
                 self.length = int(length)
             else:
@@ -93,7 +93,7 @@ class OptProb:
         fitness: float. Value of fitness function.
         """
         if len(state) != self.length:
-           raise Exception("""state length must match problem length""")
+            raise Exception("state length must match problem length")
 
         fitness = self.maximize*self.fitness_fn.evaluate(state)
 
@@ -110,8 +110,8 @@ class OptProb:
         None
         """
         if np.sum(self.pop_fitness) == 0:
-            self.mate_probs = np.ones(len(self.pop_fitness))\
-                              /len(self.pop_fitness)
+            self.mate_probs = np.ones(len(self.pop_fitness)) \
+                              / len(self.pop_fitness)
         else:
             self.mate_probs = self.pop_fitness/np.sum(self.pop_fitness)
 
@@ -227,7 +227,7 @@ class OptProb:
         None
         """
         if len(new_state) != self.length:
-           raise Exception("""new_state length must match problem length""")
+            raise Exception("""new_state length must match problem length""")
 
         self.state = new_state
         self.fitness = self.eval_fitness(self.state)
@@ -261,7 +261,7 @@ class DiscreteOpt(OptProb):
 
         if max_val < 0:
             raise Exception("""max_val must be a positive integer.""")
-        elif type(max_val) != int:
+        elif not isinstance(max_val, int):
             if max_val.is_integer():
                 self.max_val = int(max_val)
             else:
@@ -465,7 +465,7 @@ class DiscreteOpt(OptProb):
         """
         if pop_size < 0:
             raise Exception("""pop_size must be a positive integer.""")
-        elif type(pop_size) != int:
+        elif not isinstance(pop_size, int):
             if pop_size.is_integer():
                 pop_size = int(pop_size)
             else:
@@ -497,7 +497,7 @@ class DiscreteOpt(OptProb):
         child: array. Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
-           raise Exception("""Lengths of parents must match problem length""")
+            raise Exception("""Lengths of parents must match problem length""")
 
         if (mutation_prob < 0) or (mutation_prob > 1):
             raise Exception("""mutation_prob must be between 0 and 1.""")
@@ -547,7 +547,7 @@ class DiscreteOpt(OptProb):
         """
         if sample_size < 0:
             raise Exception("""sample_size must be a positive integer.""")
-        elif type(sample_size) != int:
+        elif not isinstance(sample_size, int):
             if sample_size.is_integer():
                 sample_size = int(sample_size)
             else:
@@ -599,7 +599,7 @@ class ContinuousOpt(OptProb):
         OptProb.__init__(self, length, fitness_fn, maximize=maximize)
 
         if self.fitness_fn.get_prob_type() == 'discrete':
-            raise Exception("""fitness_fn must have problem type 'continuous'"""
+            raise Exception("fitness_fn must have problem type 'continuous'"
                             + """ or 'either'. Define problem as"""
                             + """ DiscreteOpt problem or use alternative"""
                             + """ fitness function."""
@@ -719,7 +719,7 @@ class ContinuousOpt(OptProb):
         """
         if pop_size < 0:
             raise Exception("""pop_size must be a positive integer.""")
-        elif type(pop_size) != int:
+        elif not isinstance(pop_size, int):
             if pop_size.is_integer():
                 pop_size = int(pop_size)
             else:
@@ -751,7 +751,7 @@ class ContinuousOpt(OptProb):
         child: array. Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
-           raise Exception("""Lengths of parents must match problem length""")
+            raise Exception("""Lengths of parents must match problem length""")
 
         if (mutation_prob < 0) or (mutation_prob > 1):
             raise Exception("""mutation_prob must be between 0 and 1.""")

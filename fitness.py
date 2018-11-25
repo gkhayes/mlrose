@@ -616,7 +616,7 @@ class MaxKColor:
 class CustomFitness:
     """Class for generating your own fitness function."""
 
-    def __init__(self, fitness_fn, problem_type = 'either', **kwargs):
+    def __init__(self, fitness_fn, problem_type='either', **kwargs):
         """Initialize CustomFitness object.
 
         Args:
@@ -655,4 +655,4 @@ class CustomFitness:
         self.prob_type: string. Specifies problem type as 'discrete',
         'continuous' or 'either'
         """
-        return self.prob_type
+        return None  # 'return prob_type' does not exist as a variable name
