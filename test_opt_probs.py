@@ -8,10 +8,6 @@ import numpy as np
 from fitness import OneMax
 from opt_probs import OptProb, DiscreteOpt, ContinuousOpt
 
-# from scipy.sparse import csr_matrix
-# from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
-
-
 class TestOptProb(unittest.TestCase):
     """Tests for OptProb class."""
 
