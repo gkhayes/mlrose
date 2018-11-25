@@ -781,3 +781,22 @@ class ContinuousOpt(OptProb):
         """
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
+    
+    def update_state(self, updates):
+        """Update current state given a vector of updates
+        
+        Args:
+        updates: array. Update array.
+        
+        Returns:
+        updated_state: array. Current state adjusted for updates
+        """
+        if len(updates) != self.length:
+            raise Exception("""Length of updates must match problem length""")
+        
+        updated_state = self.state + updates
+        
+        updated_state[updated_state > self.max_val] = self.max_val
+        updated_state[updated_state < self.min_val] = self.min_val
+                
+        return updated_state
