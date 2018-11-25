@@ -85,8 +85,9 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
         iters += 1
         
         # Update weights
-        updates = problem.calculate_updates()
-        next_state = problem.get_state() + updates
+        updates = flatten_weights(problem.calculate_updates())
+        
+        next_state = problem.update_state(updates)
         next_fitness = problem.eval_fitness(next_state)
         
         if next_fitness > problem.get_fitness():
@@ -256,7 +257,7 @@ class NeuralNetwork:
     def __init__(self, hidden_nodes, activation='relu', 
                  algorithm='random_hill_climb', max_iters=100, bias=True, 
                  is_classifier=True, learning_rate=0.1, early_stopping=False, 
-                 clip_max=np.inf, schedule=GeomDecay(), pop_size=200, 
+                 clip_max=1e+10, schedule=GeomDecay(), pop_size=200, 
                  mutation_prob=0.1, max_attempts=10):        
         """Initialize NeuralNetwork object.
 
@@ -363,7 +364,7 @@ class NeuralNetwork:
 
         # Initialize optimization problem
         fitness = NetworkWeights(X, y, node_list, self.activation, self.bias,
-                                 self.is_classifier)
+                                 self.is_classifier, learning_rate = self.lr)
 
         problem = ContinuousOpt(num_nodes, fitness, maximize=False, 
                                 min_val=-1*self.clip_max, 
@@ -413,7 +414,7 @@ class NeuralNetwork:
         y_pred: array. Numpy array containing predicted data labels.
         """
         weights = unflatten_weights(self.fitted_weights, self.node_list)
-        
+
         # Add bias column to inputs matrix, if required
         if self.bias:
             ones = np.ones([np.shape(X)[0], 1])
@@ -426,7 +427,7 @@ class NeuralNetwork:
         for i in range(len(weights)):
             # Multiple inputs by weights
             outputs = np.dot(inputs, weights[i])
-            
+
             # Transform outputs to get inputs for next layer (or final preds)
             if i < len(weights) - 1:
                 inputs = self.activation(outputs)
