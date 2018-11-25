@@ -8,6 +8,7 @@ import numpy as np
 from neural import (flatten_weights, unflatten_weights, gradient_descent,
                     NetworkWeights, NeuralNetwork)
 from activation import identity
+from opt_probs import ContinuousOpt
 
 class TestNeural(unittest.TestCase):
     """Tests for neural.py functions."""
@@ -51,7 +52,69 @@ class TestNeural(unittest.TestCase):
                and np.array_equal(weights[1], b) \
                and np.array_equal(weights[2], c)
     
+    @staticmethod
+    def test_gradient_descent():
+        """Test gradient_descent function"""
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
 
+        nodes = [4, 2, 1]
+        
+        fitness = NetworkWeights(X, y, nodes, activation = identity, 
+                                 bias = False, is_classifier = False,
+                                 learning_rate = 0.1)
+        
+        problem = ContinuousOpt(10, fitness, maximize=False,
+                                min_val=-1, max_val=1, step=0.1)
+        
+        test_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        test_fitness = -1*problem.eval_fitness(test_weights)
+        
+        best_state, best_fitness = gradient_descent(problem)
+            
+        assert len(best_state) == 10 and min(best_state) >= -1 \
+            and max(best_state) <= 1 and best_fitness < test_fitness
+    
+    @staticmethod
+    def test_gradient_descent_iter1():
+        """Test gradient_descent function gets the correct answer after a 
+        single iteration"""
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        nodes = [4, 2, 1]
+        
+        fitness = NetworkWeights(X, y, nodes, activation = identity, 
+                                 bias = False, is_classifier = False,
+                                 learning_rate = 0.1)
+        
+        problem = ContinuousOpt(10, fitness, maximize=False,
+                                min_val=-1, max_val=1, step=0.1)
+        
+        init_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        
+        best_state, best_fitness = gradient_descent(problem, max_iters = 1,
+                                                    init_state = init_weights)
+        
+        x = np.array([-0.7, -0.7, -0.9, -0.9, -0.9, -0.9, -1, -1, -1, -1])
+
+        assert np.allclose(best_state, x, atol=0.001) \
+            and round(best_fitness, 2) == 19.14
+        
 class TestNeuralWeights(unittest.TestCase):
     """Tests for NeuralWeights class."""
     
@@ -133,7 +196,7 @@ class TestNeuralWeights(unittest.TestCase):
         b = list(0.01*(np.arange(2) + 1))
         
         weights = a + b
-
+        
         assert round(fitness.evaluate(weights), 4) == 0.5542
         
     @staticmethod
@@ -187,7 +250,7 @@ class TestNeuralWeights(unittest.TestCase):
         fitness.evaluate(weights)
 
         updates = fitness.calculate_updates()
-        
+
         update1 = np.array([[-0.0017, -0.0034],
                             [-0.0046, -0.0092],
                             [-0.0052, -0.0104],
@@ -204,14 +267,14 @@ class TestNeuralNetwork(unittest.TestCase):
     """Tests for NeuralNetwork class."""
     
     @staticmethod
-    def test_fit_random_hill_climb_classifier():
-        """Test fit method for a classifier using the random hill climbing 
-        algorithm"""
+    def test_fit_random_hill_climb():
+        """Test fit method using the random hill climbing algorithm"""
         
         network = NeuralNetwork(hidden_nodes = [2], activation = 'identity',
-                                algorithm = 'random_hill_climb', max_iters = 1, 
+                                algorithm = 'random_hill_climb',  
                                 bias = False, is_classifier=True, 
-                                learning_rate = 1, max_attempts=100)
+                                learning_rate = 1, clip_max = 1, 
+                                max_attempts=100)
         
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -225,9 +288,139 @@ class TestNeuralNetwork(unittest.TestCase):
         weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
         
         network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
 
-        assert abs(sum(network.fitted_weights)) == 9
+        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+            and max(fitted) <= 1
+    
+    @staticmethod
+    def test_fit_simulated_annealing():
+        """Test fit method using the simulated_annealing algorithm"""
+        
+        network = NeuralNetwork(hidden_nodes = [2], activation = 'identity',
+                                algorithm = 'simulated_annealing',  
+                                bias = False, is_classifier=True, 
+                                learning_rate = 1, clip_max = 1, 
+                                max_attempts=100)
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+        
+        weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
 
+        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+            and max(fitted) <= 1
+    
+    @staticmethod
+    def test_fit_genetic_alg():
+        """Test fit method using the genetic_alg algorithm"""
+        
+        network = NeuralNetwork(hidden_nodes = [2], activation = 'identity',
+                                algorithm = 'genetic_alg',  
+                                bias = False, is_classifier=True, 
+                                learning_rate = 1, clip_max = 1, 
+                                max_attempts=100)
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+        
+        network.fit(X, y)
+        fitted = network.fitted_weights
+
+        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+            and max(fitted) <= 1
+
+    @staticmethod
+    def test_fit_gradient_descent():
+        """Test fit method using the gradient_descent algorithm"""
+        
+        network = NeuralNetwork(hidden_nodes = [2], activation = 'identity',
+                                algorithm = 'gradient_descent',  
+                                bias = False, is_classifier=True, 
+                                learning_rate = 1, clip_max = 1, 
+                                max_attempts=100)
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+        
+        weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+            and max(fitted) <= 1
+    
+    @staticmethod
+    def test_predict_no_bias():
+        """Test predict method with no bias term"""
+        
+        network = NeuralNetwork(hidden_nodes = [2], activation = 'identity',
+                                algorithm = 'random_hill_climb',  
+                                bias = False, is_classifier=True, 
+                                learning_rate = 1, clip_max = 1, 
+                                max_attempts=100)
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        network.fitted_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        network.node_list = [4, 2, 1]
+        network.output_activation = identity
+        
+        x = np.reshape(np.array([4, 0, 8, 8, 4, 2]), [6, 1])
+
+        assert np.array_equal(network.predict(X), x)
+    
+    @staticmethod
+    def test_predict_bias():
+        """Test predict method with bias term"""
+        
+        network = NeuralNetwork(hidden_nodes = [2], activation = 'identity',
+                                algorithm = 'random_hill_climb',  
+                                bias = True, is_classifier=True, 
+                                learning_rate = 1, clip_max = 1, 
+                                max_attempts=100)
+        
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+        
+        network.fitted_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+        network.node_list = [5, 2, 1]
+        network.output_activation = identity
+        
+        x = np.reshape(np.array([6, 2, 10, 10, 6, 4]), [6, 1])
+
+        assert np.array_equal(network.predict(X), x)      
     
 if __name__ == '__main__':
     unittest.main()
