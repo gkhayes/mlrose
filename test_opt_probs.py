@@ -23,8 +23,8 @@ class TestOptProb(unittest.TestCase):
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
 
-        assert np.array_equal(problem.get_state(), x) \
-            and problem.get_fitness() == 10
+        assert (np.array_equal(problem.get_state(), x)
+                and problem.get_fitness() == 10)
 
     @staticmethod
     def test_set_state_min():
@@ -35,8 +35,8 @@ class TestOptProb(unittest.TestCase):
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
 
-        assert np.array_equal(problem.get_state(), x) \
-            and problem.get_fitness() == -10
+        assert (np.array_equal(problem.get_state(), x)
+                and problem.get_fitness() == -10)
 
     @staticmethod
     def test_set_population_max():
@@ -57,8 +57,8 @@ class TestOptProb(unittest.TestCase):
 
         problem.set_population(pop)
 
-        assert np.array_equal(problem.get_population(), pop) \
-            and np.array_equal(problem.get_pop_fitness(), pop_fit)
+        assert (np.array_equal(problem.get_population(), pop)
+                and np.array_equal(problem.get_pop_fitness(), pop_fit))
 
     @staticmethod
     def test_set_population_min():
@@ -79,8 +79,8 @@ class TestOptProb(unittest.TestCase):
 
         problem.set_population(pop)
 
-        assert np.array_equal(problem.get_population(), pop) \
-            and np.array_equal(problem.get_pop_fitness(), pop_fit)
+        assert (np.array_equal(problem.get_population(), pop)
+                and np.array_equal(problem.get_pop_fitness(), pop_fit))
 
     @staticmethod
     def test_best_child_max():
@@ -253,8 +253,8 @@ class TestDiscreteOpt(unittest.TestCase):
                           [[0.5, 0.5],
                            [0.25, 0.75]]])
 
-        assert np.allclose(problem.node_probs, probs, atol=0.00001) \
-            and np.array_equal(problem.parent_nodes, parent)
+        assert (np.allclose(problem.node_probs, probs, atol=0.00001)
+                and np.array_equal(problem.parent_nodes, parent))
 
     @staticmethod
     def test_find_neighbors_max2():
@@ -362,7 +362,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         rand = problem.random()
 
-        assert len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4
+        assert (len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4)
 
     @staticmethod
     def test_random_neighbor_max2():
@@ -376,7 +376,7 @@ class TestDiscreteOpt(unittest.TestCase):
         neigh = problem.random_neighbor()
         sum_diff = np.sum(np.abs(x - neigh))
 
-        assert len(neigh) == 5 and sum_diff == 1
+        assert (len(neigh) == 5 and sum_diff == 1)
 
     @staticmethod
     def test_random_neighbor_max_gt2():
@@ -393,7 +393,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         sum_diff = np.sum(abs_diff)
 
-        assert len(neigh) == 5 and sum_diff == 1
+        assert (len(neigh) == 5 and sum_diff == 1)
 
     @staticmethod
     def test_random_pop():
@@ -405,9 +405,9 @@ class TestDiscreteOpt(unittest.TestCase):
         pop = problem.get_population()
         pop_fitness = problem.get_pop_fitness()
 
-        assert np.shape(pop)[0] == 100 and np.shape(pop)[1] == 5 \
-            and np.sum(pop) > 0 and np.sum(pop) < 500 \
-            and len(pop_fitness) == 100
+        assert (np.shape(pop)[0] == 100 and np.shape(pop)[1] == 5
+                and np.sum(pop) > 0 and np.sum(pop) < 500
+                and len(pop_fitness) == 100)
 
     @staticmethod
     def test_reproduce_mut0():
@@ -419,7 +419,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=0)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
+        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
 
     @staticmethod
     def test_reproduce_mut1_max2():
@@ -431,7 +431,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
+        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
 
     @staticmethod
     def test_reproduce_mut1_max_gt2():
@@ -444,7 +444,7 @@ class TestDiscreteOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 10
+        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 10)
 
     @staticmethod
     def test_sample_pop():
@@ -464,8 +464,8 @@ class TestDiscreteOpt(unittest.TestCase):
 
         sample = problem.sample_pop(100)
 
-        assert np.shape(sample)[0] == 100 and np.shape(sample)[1] == 5 \
-            and np.sum(sample) > 0 and np.sum(sample) < 500
+        assert (np.shape(sample)[0] == 100 and np.shape(sample)[1] == 5
+                and np.sum(sample) > 0 and np.sum(sample) < 500)
 
 
 class TestContinuousOpt(unittest.TestCase):
@@ -508,8 +508,8 @@ class TestContinuousOpt(unittest.TestCase):
         update2 = np.array([[-3.17],
                             [-4.18]])
 
-        assert np.allclose(updates[0], update1, atol=0.001) \
-            and np.allclose(updates[1], update2, atol=0.001)
+        assert (np.allclose(updates[0], update1, atol=0.001)
+                and np.allclose(updates[1], update2, atol=0.001))
 
     @staticmethod
     def test_find_neighbors_range_eq_step():
@@ -561,7 +561,7 @@ class TestContinuousOpt(unittest.TestCase):
 
         rand = problem.random()
 
-        assert len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4
+        assert (len(rand) == 5 and max(rand) >= 0 and min(rand) <= 4)
 
     @staticmethod
     def test_random_neighbor_range_eq_step():
@@ -576,7 +576,7 @@ class TestContinuousOpt(unittest.TestCase):
         neigh = problem.random_neighbor()
         sum_diff = np.sum(np.abs(x - neigh))
 
-        assert len(neigh) == 5 and sum_diff == 1
+        assert (len(neigh) == 5 and sum_diff == 1)
 
     @staticmethod
     def test_random_neighbor_range_gt_step():
@@ -594,7 +594,7 @@ class TestContinuousOpt(unittest.TestCase):
 
         sum_diff = np.sum(abs_diff)
 
-        assert len(neigh) == 5 and sum_diff == 1
+        assert (len(neigh) == 5 and sum_diff == 1)
 
     @staticmethod
     def test_random_pop():
@@ -607,9 +607,9 @@ class TestContinuousOpt(unittest.TestCase):
         pop = problem.get_population()
         pop_fitness = problem.get_pop_fitness()
 
-        assert np.shape(pop)[0] == 100 and np.shape(pop)[1] == 5 \
-            and np.sum(pop) > 0 and np.sum(pop) < 500 \
-            and len(pop_fitness) == 100
+        assert (np.shape(pop)[0] == 100 and np.shape(pop)[1] == 5
+                and np.sum(pop) > 0 and np.sum(pop) < 500
+                and len(pop_fitness) == 100)
 
     @staticmethod
     def test_reproduce_mut0():
@@ -622,7 +622,7 @@ class TestContinuousOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=0)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
+        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
 
     @staticmethod
     def test_reproduce_mut1_range_eq_step():
@@ -636,7 +636,7 @@ class TestContinuousOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 5
+        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 5)
 
     @staticmethod
     def test_reproduce_mut1_range_gt_step():
@@ -650,7 +650,7 @@ class TestContinuousOpt(unittest.TestCase):
 
         child = problem.reproduce(father, mother, mutation_prob=1)
 
-        assert len(child) == 5 and sum(child) > 0 and sum(child) < 10
+        assert (len(child) == 5 and sum(child) > 0 and sum(child) < 10)
 
     @staticmethod
     def test_update_state_in_range():

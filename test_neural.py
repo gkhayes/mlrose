@@ -80,8 +80,8 @@ class TestNeural(unittest.TestCase):
 
         best_state, best_fitness = gradient_descent(problem)
 
-        assert len(best_state) == 10 and min(best_state) >= -1 \
-            and max(best_state) <= 1 and best_fitness < test_fitness
+        assert (len(best_state) == 10 and min(best_state) >= -1 
+                and max(best_state) <= 1 and best_fitness < test_fitness)
 
     @staticmethod
     def test_gradient_descent_iter1():
@@ -292,8 +292,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
+                and max(fitted) <= 1)
 
     @staticmethod
     def test_fit_simulated_annealing():
@@ -319,8 +319,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
+                and max(fitted) <= 1)
 
     @staticmethod
     def test_fit_genetic_alg():
@@ -344,8 +344,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+                and max(fitted) <= 1)
 
     @staticmethod
     def test_fit_gradient_descent():
@@ -371,8 +371,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+                and max(fitted) <= 1)
 
     @staticmethod
     def test_predict_no_bias():
