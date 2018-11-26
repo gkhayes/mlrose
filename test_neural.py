@@ -48,9 +48,9 @@ class TestNeural(unittest.TestCase):
         nodes = [4, 3, 2, 8]
         weights = unflatten_weights(flat, nodes)
 
-        assert np.array_equal(weights[0], a) \
-               and np.array_equal(weights[1], b) \
-               and np.array_equal(weights[2], c)
+        assert (np.array_equal(weights[0], a)
+                and np.array_equal(weights[1], b)
+                and np.array_equal(weights[2], c))
     
     @staticmethod
     def test_gradient_descent():
@@ -79,8 +79,8 @@ class TestNeural(unittest.TestCase):
         
         best_state, best_fitness = gradient_descent(problem)
             
-        assert len(best_state) == 10 and min(best_state) >= -1 \
-            and max(best_state) <= 1 and best_fitness < test_fitness
+        assert (len(best_state) == 10 and min(best_state) >= -1 
+                and max(best_state) <= 1 and best_fitness < test_fitness)
     
     @staticmethod
     def test_gradient_descent_iter1():
@@ -112,8 +112,8 @@ class TestNeural(unittest.TestCase):
         
         x = np.array([-0.7, -0.7, -0.9, -0.9, -0.9, -0.9, -1, -1, -1, -1])
 
-        assert np.allclose(best_state, x, atol=0.001) \
-            and round(best_fitness, 2) == 19.14
+        assert (np.allclose(best_state, x, atol=0.001)
+                and round(best_fitness, 2) == 19.14)
         
 class TestNeuralWeights(unittest.TestCase):
     """Tests for NeuralWeights class."""
@@ -259,8 +259,8 @@ class TestNeuralWeights(unittest.TestCase):
         update2 = np.array([[-3.17],
                             [-4.18]])
         
-        assert  np.allclose(updates[0], update1, atol=0.001) \
-                and np.allclose(updates[1], update2, atol=0.001)
+        assert (np.allclose(updates[0], update1, atol=0.001)
+                and np.allclose(updates[1], update2, atol=0.001))
    
     
 class TestNeuralNetwork(unittest.TestCase):
@@ -290,8 +290,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
+                and max(fitted) <= 1)
     
     @staticmethod
     def test_fit_simulated_annealing():
@@ -317,8 +317,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
+                and max(fitted) <= 1)
     
     @staticmethod
     def test_fit_genetic_alg():
@@ -342,8 +342,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+                and max(fitted) <= 1)
 
     @staticmethod
     def test_fit_gradient_descent():
@@ -369,8 +369,8 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
-            and max(fitted) <= 1
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+                and max(fitted) <= 1)
     
     @staticmethod
     def test_predict_no_bias():

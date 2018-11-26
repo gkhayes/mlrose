@@ -23,7 +23,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_hill_climb_continuous_max():
@@ -34,7 +34,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_hill_climb_discrete_min():
@@ -45,7 +45,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_hill_climb_continuous_min():
@@ -56,7 +56,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_hill_climb_max_iters():
@@ -81,7 +81,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_random_hill_climb_continuous_max():
@@ -94,7 +94,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_random_hill_climb_discrete_min():
@@ -107,7 +107,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_random_hill_climb_continuous_min():
@@ -120,7 +120,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_random_hill_climb_max_iters():
@@ -146,7 +146,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_simulated_annealing_continuous_max():
@@ -159,7 +159,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_simulated_annealing_discrete_min():
@@ -172,7 +172,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_simulated_annealing_continuous_min():
@@ -185,7 +185,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_simulated_annealing_max_iters():
@@ -210,7 +210,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_genetic_alg_continuous_max():
@@ -221,7 +221,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.allclose(best_state, x, atol=0.5) and best_fitness > 4
+        assert (np.allclose(best_state, x, atol=0.5) and best_fitness > 4)
 
     @staticmethod
     def test_genetic_alg_discrete_min():
@@ -232,7 +232,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
     @staticmethod
     def test_genetic_alg_continuous_min():
@@ -243,7 +243,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.allclose(best_state, x, atol=0.5) and best_fitness < 1
+        assert (np.allclose(best_state, x, atol=0.5) and best_fitness < 1)
 
     @staticmethod
     def test_mimic_discrete_max():
@@ -254,7 +254,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([1, 1, 1, 1, 1])
 
-        assert np.array_equal(best_state, x) and best_fitness == 5
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
 
     @staticmethod
     def test_mimic_discrete_min():
@@ -265,7 +265,7 @@ class TestAlgorithms(unittest.TestCase):
 
         x = np.array([0, 0, 0, 0, 0])
 
-        assert np.array_equal(best_state, x) and best_fitness == 0
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
 
 if __name__ == '__main__':
