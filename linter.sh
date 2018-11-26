@@ -1,6 +1,6 @@
 #!/bin/bash
 
-disable_options="--disable=R0201,R0902,R0903,R0904,R0913,R0914,C0103,C1801,W0612"
+disable_options="--disable=R0201,R0902,R0903,R0904,R0913,R0914,C0103,C0200,C1801,W0612"
 
 echo "Starting lint on algorithms.py"
 pylint algorithms.py --score=no $disable_options
@@ -27,6 +27,11 @@ pylint activation.py --score=no $disable_options
 pycodestyle activation.py
 flake8 activation.py
 
+echo "Starting lint on neural.py"
+pylint neural.py --score=no $disable_options
+pycodestyle neural.py
+flake8 neural.py
+
 echo "Starting lint on test_activation.py"
 pylint test_activation.py --score=no $disable_options
 pycodestyle test_activation.py
@@ -51,5 +56,10 @@ echo "Starting lint on test_opt_probs.py"
 pylint test_opt_probs.py --score=no $disable_options
 pycodestyle test_opt_probs.py
 flake8 test_opt_probs.py
+
+echo "Starting lint on test_neural.py"
+pylint test_neural.py --score=no $disable_options
+pycodestyle test_neural.py
+flake8 test_neural.py
 
 echo "Finished linting all files"

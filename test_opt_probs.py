@@ -10,6 +10,7 @@ from neural import NetworkWeights
 from activation import identity
 from opt_probs import OptProb, DiscreteOpt, ContinuousOpt
 
+
 class TestOptProb(unittest.TestCase):
     """Tests for OptProb class."""
 
@@ -473,28 +474,28 @@ class TestContinuousOpt(unittest.TestCase):
     @staticmethod
     def test_calculate_updates():
         """Test calculate_updates method"""
-        
+
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
                       [1, 1, 1, 1],
                       [1, 1, 1, 1],
                       [0, 0, 1, 1],
                       [1, 0, 0, 0]])
-        
+
         y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
 
         nodes = [4, 2, 1]
-        
-        fitness = NetworkWeights(X, y, nodes, activation = identity, 
-                                 bias = False, is_classifier = False,
-                                 learning_rate = 1)
-        
+
+        fitness = NetworkWeights(X, y, nodes, activation=identity,
+                                 bias=False, is_classifier=False,
+                                 learning_rate=1)
+
         a = list(np.arange(8) + 1)
         b = list(0.01*(np.arange(2) + 1))
-        
+
         weights = a + b
         fitness.evaluate(weights)
-        
+
         problem = ContinuousOpt(10, fitness, maximize=False)
 
         updates = problem.calculate_updates()
@@ -503,13 +504,13 @@ class TestContinuousOpt(unittest.TestCase):
                             [-0.0046, -0.0092],
                             [-0.0052, -0.0104],
                             [0.0014, 0.0028]])
-    
+
         update2 = np.array([[-3.17],
                             [-4.18]])
-        
+
         assert (np.allclose(updates[0], update1, atol=0.001)
                 and np.allclose(updates[1], update2, atol=0.001))
-                
+
     @staticmethod
     def test_find_neighbors_range_eq_step():
         """Test find_neighbors method when range equals step size"""
@@ -650,15 +651,15 @@ class TestContinuousOpt(unittest.TestCase):
         child = problem.reproduce(father, mother, mutation_prob=1)
 
         assert (len(child) == 5 and sum(child) > 0 and sum(child) < 10)
-    
+
     @staticmethod
     def test_update_state_in_range():
         """Test update_state method where all updated values are within the
         tolerated range"""
-        
+
         problem = ContinuousOpt(5, OneMax(), maximize=True,
                                 min_val=0, max_val=20, step=1)
-        
+
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
 
@@ -666,24 +667,25 @@ class TestContinuousOpt(unittest.TestCase):
         updated = problem.update_state(y)
 
         assert np.array_equal(updated, (x + y))
-    
+
     @staticmethod
     def test_update_state_outside_range():
         """Test update_state method where some updated values are outside the
         tolerated range"""
-        
+
         problem = ContinuousOpt(5, OneMax(), maximize=True,
                                 min_val=0, max_val=5, step=1)
-        
+
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
 
         y = np.array([2, -4, 6, -8, 10])
         updated = problem.update_state(y)
-        
+
         z = np.array([2, 0, 5, 0, 5])
-        
+
         assert np.array_equal(updated, z)
+
 
 if __name__ == '__main__':
     unittest.main()
