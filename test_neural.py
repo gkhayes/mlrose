@@ -80,7 +80,7 @@ class TestNeural(unittest.TestCase):
 
         best_state, best_fitness = gradient_descent(problem)
 
-        assert (len(best_state) == 10 and min(best_state) >= -1 
+        assert (len(best_state) == 10 and min(best_state) >= -1
                 and max(best_state) <= 1 and best_fitness < test_fitness)
 
     @staticmethod
@@ -344,7 +344,7 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y)
         fitted = network.fitted_weights
 
-        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
                 and max(fitted) <= 1)
 
     @staticmethod
@@ -371,7 +371,7 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y, init_weights=weights)
         fitted = network.fitted_weights
 
-        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
                 and max(fitted) <= 1)
 
     @staticmethod

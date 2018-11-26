@@ -44,10 +44,10 @@ def unflatten_weights(flat_weights, node_list):
     nodes = 0
     for i in range(len(node_list) - 1):
         nodes += node_list[i]*node_list[i + 1]
-        
+
     if len(flat_weights) != nodes:
         raise Exception("""flat_weights must have length %d""" % (nodes,))
-        
+
     weights = []
     start = 0
 
@@ -88,7 +88,7 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
 
     if init_state is not None and len(init_state) != problem.get_length():
         raise Exception("""init_state must have same length as problem.""")
-        
+
     # Initialize problem, time and attempts counter
     if init_state is None:
         problem.reset()
@@ -150,35 +150,35 @@ class NetworkWeights:
         """
         # Make sure y is an array and not a list
         y = np.array(y)
-        
+
         # Convert y to 2D if necessary
         if len(np.shape(y)) == 1:
             y = np.reshape(y, [len(y), 1])
-         
+
         # Verify X and y are the same length
         if not np.shape(X)[0] == np.shape(y)[0]:
             raise Exception("""The length of X and y must be equal.""")
-        
+
         if len(node_list) < 2:
             raise Exception("""node_list must contain at least 2 elements.""")
-            
+
         if not np.shape(X)[1] == (node_list[0] - bias):
             raise Exception("""The number of columns in X must equal %d"""
                             % ((node_list[0] - bias),))
-        
+
         if not np.shape(y)[1] == node_list[-1]:
             raise Exception("""The number of columns in y must equal %d"""
                             % (node_list[-1],))
-        
+
         if not isinstance(bias, bool):
             raise Exception("""bias must be True or False.""")
-            
+
         if not isinstance(is_classifier, bool):
             raise Exception("""is_classifier must be True or False.""")
-            
+
         if learning_rate <= 0:
             raise Exception("""learning_rate must be greater than 0.""")
-            
+
         self.X = X
         self.y_true = y
         self.node_list = node_list
@@ -203,11 +203,11 @@ class NetworkWeights:
         self.y_pred = y
         self.weights = []
         self.prob_type = 'continuous'
-        
+
         nodes = 0
         for i in range(len(node_list) - 1):
             nodes += node_list[i]*node_list[i + 1]
-        
+
         self.nodes = nodes
 
     def evaluate(self, state):
@@ -221,7 +221,7 @@ class NetworkWeights:
         """
         if not len(state) == self.nodes:
             raise Exception("""state must have length %d""" % (self.nodes,))
-            
+
         self.inputs_list = []
         self.weights = unflatten_weights(state, self.node_list)
 
@@ -293,10 +293,10 @@ class NetworkWeights:
                 delta = (self.y_pred - self.y_true)
             # Hidden layers
             else:
-                delta = np.dot(delta_list[-1], 
-                               np.transpose(self.weights[i+1]))*\
-                           self.activation(self.inputs_list[i+1], deriv=True)
-            
+                dot = np.dot(delta_list[-1], np.transpose(self.weights[i+1]))
+                activation = self.activation(self.inputs_list[i+1], deriv=True)
+                delta = dot * activation
+
             delta_list.append(delta)
 
             # Calculate updates
@@ -352,28 +352,28 @@ class NeuralNetwork:
         None
         """
         if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
+                and not max_iters.is_integer()) or (max_iters < 0):
             raise Exception("""max_iters must be a positive integer.""")
-        
+
         if not isinstance(bias, bool):
             raise Exception("""bias must be True or False.""")
-            
+
         if not isinstance(is_classifier, bool):
             raise Exception("""is_classifier must be True or False.""")
-            
+
         if learning_rate <= 0:
             raise Exception("""learning_rate must be greater than 0.""")
-        
+
         if not isinstance(early_stopping, bool):
             raise Exception("""early_stopping must be True or False.""")
-        
+
         if clip_max <= 0:
             raise Exception("""clip_max must be greater than 0.""")
-        
-        if (not isinstance(max_attempts, int) 
-            and not max_attempts.is_integer()) or (max_attempts < 0):
+
+        if (not isinstance(max_attempts, int)
+                and not max_attempts.is_integer()) or (max_attempts < 0):
             raise Exception("""max_attempts must be a positive integer.""")
-        
+
         if pop_size < 0:
             raise Exception("""pop_size must be a positive integer.""")
         elif not isinstance(pop_size, int):
@@ -381,10 +381,10 @@ class NeuralNetwork:
                 pop_size = int(pop_size)
             else:
                 raise Exception("""pop_size must be a positive integer.""")
-    
+
         if (mutation_prob < 0) or (mutation_prob > 1):
             raise Exception("""mutation_prob must be between 0 and 1.""")
-    
+
         self.hidden_nodes = hidden_nodes
         self.max_iters = max_iters
         self.bias = bias
@@ -454,8 +454,8 @@ class NeuralNetwork:
         num_nodes = 0
 
         for i in range(len(node_list) - 1):
-            num_nodes += node_list[i]*node_list[i+1]       
-        
+            num_nodes += node_list[i]*node_list[i+1]
+
         if init_weights is not None and len(init_weights) != num_nodes:
             raise Exception("""init_weights must be None or have length %d"""
                             % (num_nodes,))
@@ -518,7 +518,7 @@ class NeuralNetwork:
         if not np.shape(X)[1] == (self.node_list[0] - self.bias):
             raise Exception("""The number of columns in X must equal %d"""
                             % ((self.node_list[0] - self.bias),))
-            
+
         weights = unflatten_weights(self.fitted_weights, self.node_list)
 
         # Add bias column to inputs matrix, if required

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-disable_options="--disable=R0201,R0902,R0903,R0904,R0913,R0914,C0103,C0200,C1801,W0612"
+disable_options="--disable=R0201,R0902,R0903,R0904,R0912,R0913,R0914,R0915,C0103,C0200,C1801,W0612"
 
 echo "Starting lint on algorithms.py"
 pylint algorithms.py --score=no $disable_options
