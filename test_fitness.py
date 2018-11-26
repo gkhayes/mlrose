@@ -179,12 +179,8 @@ class TestFitness(unittest.TestCase):
     @staticmethod
     def test_max_k_color():
         """Test MaxKColor fitness function"""
-        edges = np.array([[0, 1, 1, 0, 1],
-                          [1, 0, 0, 1, 0],
-                          [1, 0, 0, 1, 0],
-                          [0, 1, 1, 0, 1],
-                          [1, 0, 0, 1, 0]])
-
+        edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
+        
         state = np.array([0, 1, 0, 1, 1])
         assert MaxKColor(edges).evaluate(state) == 3
 
