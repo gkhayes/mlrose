@@ -558,27 +558,17 @@ class MaxKColor:
         """Initialize MaxKColor object.
 
         Args:
-        edges: array. 0-1 array indicating whether or not each pair
-        of nodes is connected.
-        Array should be symmetric and with 0 diagonal.
-
+        edges: list of pairs. List of all pairs of connected nodes. Order 
+        does not matter, so (a, b) and (b, a) are considered to be the same.
+       
         Returns:
         None
         """
+        # Remove any duplicates from list
+        edges = list({tuple(sorted(edge)) for edge in edges})
+        
         self.edges = edges
         self.prob_type = 'discrete'
-
-        if not np.all(np.logical_or(self.edges == 0, self.edges == 1)):
-            raise Exception("""All elements of the edges array must be 0 or"""
-                            + """ 1.""")
-
-        if not np.array_equal(self.edges, np.rot90(np.fliplr(self.edges))):
-            raise Exception("""The edges matrix must be symmetric"""
-                            + """ about the main diag.""")
-
-        if not np.all(np.diag(self.edges) == 0):
-            raise Exception("""The main diag. of the edges matrix"""
-                            + """ should be all 0s.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
@@ -592,12 +582,11 @@ class MaxKColor:
         """
         fitness = 0
 
-        for i in range(len(state) - 1):
-            for j in range(i + 1, len(state)):
-                # Check for adjacent nodes of the same color
-                if (state[i] == state[j]) and (self.edges[i, j] == 1):
-                    fitness += 1
-
+        for i in range(len(self.edges)):
+            # Check for adjacent nodes of the same color
+            if state[self.edges[i][0]] == state[self.edges[i][1]]:
+                fitness += 1
+        
         return fitness
 
     def get_prob_type(self):
