@@ -5,10 +5,10 @@
 """
 import numpy as np
 from sklearn.metrics import mean_squared_error, log_loss
-from activation import identity, relu, sigmoid, softmax, tanh
-from algorithms import random_hill_climb, simulated_annealing, genetic_alg
-from opt_probs import ContinuousOpt
-from decay import GeomDecay
+from .activation import identity, relu, sigmoid, softmax, tanh
+from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
+from .opt_probs import ContinuousOpt
+from .decay import GeomDecay
 
 
 def flatten_weights(weights):
@@ -324,7 +324,7 @@ class NeuralNetwork:
         Args:
         hidden_nodes: list of ints. List giving the number of nodes in each
         hidden layer.
-        activation: function. Activation function for each of the hidden
+        activation: string. Activation function for each of the hidden
         layers. Must be one of: 'identity', 'relu', 'sigmoid' or 'tanh'.
         algorithm: string. Algorithm used to find optimal weights. Must be one
         of:'random_hill_climb', 'simulated_annealing', 'genetic_alg' or
