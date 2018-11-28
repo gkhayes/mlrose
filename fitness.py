@@ -422,65 +422,118 @@ class Knapsack:
 class TravellingSales:
     """Fitness function for Travelling Salesman optimization problem."""
 
-    def __init__(self, distances):
+    def __init__(self, coords=None, distances=None):
         """Initialize TravellingSales object.
 
         Args:
-        distances: matrix. n x n matrix giving the distances between
-        pairs of cities. In most cases, we would expect the lower triangle
-        to mirror the upper triangle and the lead diagonal to be zeros. Set
-        equal to -1 if there is no path between two cities.
+        coords: list of pairs. Ordered list of the (x, y) co-ordinates of all
+        nodes. This assumes that travel between all pairs of nodes is 
+        possible. If this is not the case, then use distances instead.
+        distances: list of triples. List giving the distances, d, between all 
+        pairs of nodes, u and v, for which travel is possible, with each 
+        list item in the form (u, v, d). Order of the nodes does not matter, 
+        so (u, v, d) and (v, u, d) are considered to be the same. If a pair is
+        missing from the list, it is assumed that travel between the two 
+        nodes is not possible. This argument is ignored if coords is not
+        None.
 
         Returns:
         None
         """
+        if coords is None and distances is None:
+            raise Exception("""At least one of coords and distances must be"""
+                            + """ specified.""")
+            
+        elif coords is not None:
+            self.is_coords = True
+            path_list = []
+            dist_list = []
+            
+        else:
+            self.is_coords = False
+            
+            # Remove any duplicates from list
+            distances = list({tuple(sorted(dist[0:2]) + [dist[2]]) \
+                              for dist in distances})            
+            
+            # Split into separate lists
+            node1_list, node2_list, dist_list = zip(*distances)
+            
+            if min(dist_list) <= 0:
+                raise Exception("""The distance between each pair of nodes"""
+                                + """ must be greater than 0.""")
+            if min(node1_list + node2_list) < 0:
+                raise Exception("""The minimum node value must be 0.""")
+            
+            if not max(node1_list + node2_list) == \
+                    (len(set(node1_list + node2_list)) - 1):
+                raise Exception("""All nodes must appear at least once in"""
+                                + """ distances.""")
+            
+            path_list = list(zip(node1_list, node2_list))     
+                
+        self.coords = coords
         self.distances = distances
-        self.prob_type = 'discrete'
-
-        if not np.array_equal(self.distances,
-                              np.rot90(np.fliplr(self.distances))):
-            raise Exception("""The distances matrix must be symmetric"""
-                            + """ about the main diag.""")
-
-        if not np.all(np.diag(self.distances) == 0):
-            raise Exception("""The main diag. of the distances matrix"""
-                            + """ should be all 0s.""")
+        self.path_list = path_list
+        self.dist_list = dist_list
+        self.prob_type = 'tsp'
 
     def evaluate(self, state):
         """Evaluate the fitness of a state
 
         Args:
-        state: array. State array for evaluation. Must contain the same number
-        of elements as the distances matrix
+        state: array. State array for evaluation. Each integer between 0 and 
+        (len(state) - 1) must appear exactly once in the array.
 
         Returns:
         fitness: float. Value of fitness function.
         """
-        # Reshape state array to match distance matrix
-        state_mat = np.reshape(state, np.shape(self.distances))
+        if self.is_coords and len(state) != len(self.coords):
+            raise Exception("""state must have the same length as coords.""")
+        
+        if not len(state) == len(set(state)):
+            raise Exception("""Each node must appear exactly once in state.""")
+            
+        if min(state) < 0:
+            raise Exception("""All elements of state must be non-negative"""
+                            + """ integers.""")
+            
+        if max(state) >= len(state):
+            raise Exception("""All elements of state must be less than"""
+                            + """ len(state).""")
+        
+        fitness = 0
+        
+        # Calculate length of each leg of journey
+        for i in range(len(state) - 1):
+            node1 = state[i]
+            node2 = state[i + 1]
+            
+            if self.is_coords:
+                fitness += np.linalg.norm(np.array(self.coords[node1]) \
+                                          - np.array(self.coords[node2]))
+            else:
+                path = (min(node1, node2), max(node1, node2))
+                
+                if path in self.path_list:
+                    fitness += self.dist_list[self.path_list.index(path)]
+                else:
+                    fitness += np.inf
 
-        # Determine upper limit on distances
-        max_dist = np.max(
-            self.distances[self.distances < np.inf])*np.shape(state_mat)[0]
-
-        # Replace invalid values with very large values (i.e. max_dist)
-        state_mat[state_mat == -1] = max_dist
-
-        # Calculate total distance and constraint values
-        total_dist = np.sum(self.distances*state_mat)
-
-        row_sums = np.sum(state_mat, axis=1)
-        col_sums = np.sum(state_mat, axis=0)
-        diag_sum = np.sum(np.diag(state_mat))
-
-        # Determine fitness
-        if (np.max(row_sums) == 1 and np.min(row_sums) == 1) \
-           and (np.max(col_sums) == 1 and np.min(col_sums) == 1) \
-           and diag_sum == 0:
-            fitness = total_dist
-
+        # Calculate length of final leg
+        node1 = state[-1]
+        node2 = state[0]
+        
+        if self.is_coords:
+            fitness += np.linalg.norm(np.array(self.coords[node1]) \
+                                      - np.array(self.coords[node2]))
         else:
-            fitness = 0
+            path = (min(node1, node2), max(node1, node2))
+            
+            if path in self.path_list:
+                fitness += self.dist_list[self.path_list.index(path)]
+            else:
+                fitness += np.inf
 
         return fitness
 

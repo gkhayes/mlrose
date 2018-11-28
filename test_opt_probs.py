@@ -8,7 +8,7 @@ import numpy as np
 from fitness import OneMax
 from neural import NetworkWeights
 from activation import identity
-from opt_probs import OptProb, DiscreteOpt, ContinuousOpt
+from opt_probs import OptProb, DiscreteOpt, ContinuousOpt, TSPOpt
 
 
 class TestOptProb(unittest.TestCase):
@@ -305,8 +305,9 @@ class TestDiscreteOpt(unittest.TestCase):
         problem.parent_nodes = np.array([2, 0, 1, 0])
 
         order = np.array([0, 2, 4, 1, 3])
+        problem.find_sample_order()
 
-        assert np.array_equal(np.array(problem.find_sample_order()), order)
+        assert np.array_equal(np.array(problem.sample_order), order)
 
     @staticmethod
     def test_find_top_pct_max():
@@ -687,5 +688,175 @@ class TestContinuousOpt(unittest.TestCase):
         assert np.array_equal(updated, z)
 
 
+class TestTSPOpt(unittest.TestCase):
+    """Tests for TSPOpt class."""
+    
+    @staticmethod
+    def test_adjust_probs_all_zero():
+        """Test adjust_probs method when all elements in input vector sum to 
+        zero."""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+        
+        probs = np.zeros(5)
+
+        assert np.array_equal(problem.adjust_probs(probs), np.zeros(5))
+
+    @staticmethod
+    def test_adjust_probs_non_zero():
+        """Test adjust_probs method when all elements in input vector sum to 
+        some value other than zero."""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+        
+        probs = np.array([0.1, 0.2, 0, 0, 0.5])
+        x = np.array([0.125, 0.25, 0, 0, 0.625])
+        
+        assert np.array_equal(problem.adjust_probs(probs), x)
+    
+    @staticmethod
+    def test_find_neighbors():
+        """Test find_neighbors method"""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+        
+        x = np.array([0, 1, 2, 3, 4])
+        problem.set_state(x)
+        problem.find_neighbors()
+
+        neigh = np.array([[1, 0, 2, 3, 4],
+                          [2, 1, 0, 3, 4],
+                          [3, 1, 2, 0, 4],
+                          [4, 1, 2, 3, 0],                        
+                          [0, 2, 1, 3, 4],
+                          [0, 3, 2, 1, 4],
+                          [0, 4, 2, 3, 1],
+                          [0, 1, 3, 2, 4],
+                          [0, 1, 4, 3, 2],
+                          [0, 1, 2, 4, 3]])
+
+        assert np.array_equal(np.array(problem.neighbors), neigh)
+
+    @staticmethod
+    def test_random():
+        """Test random method"""
+        
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+        rand = problem.random()
+        
+        assert (len(rand) == 5 and len(set(rand)) == 5)
+    
+    @staticmethod
+    def test_random_mimic():
+        """Test random_mimic method"""
+        
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        
+        pop = np.array([[1, 0, 3, 2, 4],
+                        [0, 2, 1, 3, 4],
+                        [0, 2, 4, 3, 1],
+                        [4, 1, 3, 2, 0],
+                        [3, 4, 0, 2, 1],
+                        [2, 4, 0, 3, 1]])
+        
+        problem = TSPOpt(5, distances = dists)
+        problem.keep_sample = pop
+        problem.eval_node_probs()
+        problem.find_sample_order()
+        
+        rand = problem.random_mimic()
+        
+        assert (len(rand) == 5 and len(set(rand)) == 5)
+    
+    @staticmethod
+    def test_random_neighbor(): 
+        """Test random_neighbor method"""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+
+        x = np.array([0, 1, 2, 3, 4])
+        problem.set_state(x)
+
+        neigh = problem.random_neighbor()
+        abs_diff = np.abs(x - neigh)
+        abs_diff[abs_diff > 0] = 1
+
+        sum_diff = np.sum(abs_diff)
+        
+        assert (len(neigh) == 5 and sum_diff == 2 and len(set(neigh)) == 5)
+    
+    @staticmethod
+    def test_reproduce_mut0():
+        """Test reproduce method when mutation_prob is 0"""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+        
+        father = np.array([0, 1, 2, 3, 4])
+        mother = np.array([0, 4, 3, 2, 1])
+
+        child = problem.reproduce(father, mother, mutation_prob=0)
+        
+        assert (len(child) == 5 and len(set(child)) == 5)
+    
+    @staticmethod
+    def test_reproduce_mut1():
+        """Test reproduce method when mutation_prob is 1"""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        problem = TSPOpt(5, distances = dists)
+        
+        father = np.array([0, 1, 2, 3, 4])
+        mother = np.array([4, 3, 2, 1, 0])
+        
+        child = problem.reproduce(father, mother, mutation_prob=1)
+        
+        assert (len(child) == 5 and len(set(child)) == 5)
+    
+    @staticmethod
+    def test_sample_pop():
+        """Test sample_pop method"""
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+                 (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+
+        pop = np.array([[1, 0, 3, 2, 4],
+                        [0, 2, 1, 3, 4],
+                        [0, 2, 4, 3, 1],
+                        [4, 1, 3, 2, 0],
+                        [3, 4, 0, 2, 1],
+                        [2, 4, 0, 3, 1]])
+        
+        problem = TSPOpt(5, distances = dists)
+        
+        problem.keep_sample = pop
+        problem.eval_node_probs()
+
+        sample = problem.sample_pop(100)
+        row_sums = np.sum(sample, axis = 1)
+
+        assert (np.shape(sample)[0] == 100 and np.shape(sample)[1] == 5
+                and max(row_sums) == 10 and min(row_sums) == 10)
+    
 if __name__ == '__main__':
     unittest.main()
