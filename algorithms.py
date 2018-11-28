@@ -323,7 +323,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     best_fitness: float. Value of fitness function at best state
     """
     if problem.get_prob_type() == 'continuous':
-        raise Exception("""problem type must be discrete.""")
+        raise Exception("""problem type must be discrete or tsp.""")
 
     if pop_size < 0:
         raise Exception("""pop_size must be a positive integer.""")
@@ -362,8 +362,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         # Generate new sample
         new_sample = problem.sample_pop(pop_size)
         problem.set_population(new_sample)
-
+        
         next_state = problem.best_child()
+
         next_fitness = problem.eval_fitness(next_state)
 
         # If best child is an improvement,
