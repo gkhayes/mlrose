@@ -6,8 +6,9 @@
 import unittest
 import numpy as np
 from neural import (flatten_weights, unflatten_weights, gradient_descent,
-                    NetworkWeights, NeuralNetwork)
-from activation import identity
+                    NetworkWeights, NeuralNetwork, LinearRegression, 
+                    LogisticRegression)
+from activation import identity, sigmoid
 from opt_probs import ContinuousOpt
 
 
@@ -424,6 +425,300 @@ class TestNeuralNetwork(unittest.TestCase):
 
         assert np.array_equal(network.predict(X), x)
 
+class TestLinearRegression(unittest.TestCase):
+    """Tests for LinearRegression class."""
+    
+    @staticmethod
+    def test_fit_random_hill_climb():
+        """Test fit method using the random hill climbing algorithm"""
 
+        network = LinearRegression(algorithm='random_hill_climb', bias=False, 
+                                learning_rate=1, clip_max=1, max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        weights = np.array([1, 1, 1, 1])
+
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
+                and max(fitted) <= 1)
+ 
+    @staticmethod
+    def test_fit_simulated_annealing():
+        """Test fit method using the simulated_annealing algorithm"""
+
+        network = LinearRegression(algorithm='simulated_annealing',
+                                bias=False, learning_rate=1, clip_max=1,
+                                max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        weights = np.array([1, 1, 1, 1])
+
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
+                and max(fitted) <= 1)
+
+    @staticmethod
+    def test_fit_genetic_alg():
+        """Test fit method using the genetic_alg algorithm"""
+
+        network = LinearRegression(algorithm='genetic_alg', bias=False,
+                                   learning_rate=1, clip_max=1, 
+                                   max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        network.fit(X, y)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1 \
+                and max(fitted) <= 1)
+    
+    @staticmethod
+    def test_fit_gradient_descent():
+        """Test fit method using the gradient_descent algorithm"""
+
+        network = LinearRegression(algorithm='gradient_descent',
+                                   bias=False, learning_rate=0.1, 
+                                   clip_max=1, max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        weights = np.array([1, 1, 1, 1])
+
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) <= 4 and len(fitted) == 4 and min(fitted) >= -1
+                and max(fitted) <= 1)
+        
+    @staticmethod
+    def test_predict_no_bias():
+        """Test predict method with no bias term"""
+
+        network = LinearRegression(algorithm='random_hill_climb', bias=False, 
+                                   learning_rate=1, clip_max=1, 
+                                   max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        network.fitted_weights = np.array([1, 1, 1, 1])
+        network.node_list = [4, 1]
+        network.output_activation = identity
+
+        x = np.reshape(np.array([2, 0, 4, 4, 2, 1]), [6, 1])
+
+        assert np.array_equal(network.predict(X), x)
+
+    @staticmethod
+    def test_predict_bias():
+        """Test predict method with bias term"""
+
+        network = LinearRegression(algorithm='random_hill_climb', bias=True, 
+                                   learning_rate=1, clip_max=1, 
+                                   max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        network.fitted_weights = np.array([1, 1, 1, 1, 1])
+        network.node_list = [5, 1]
+        network.output_activation = identity
+
+        x = np.reshape(np.array([3, 1, 5, 5, 3, 2]), [6, 1])
+
+        assert np.array_equal(network.predict(X), x)
+
+class TestLogisticRegression(unittest.TestCase):
+    """Tests for LogisticRegression class."""
+    
+    @staticmethod
+    def test_fit_random_hill_climb():
+        """Test fit method using the random hill climbing algorithm"""
+
+        network = LogisticRegression(algorithm='random_hill_climb', bias=False, 
+                                     learning_rate=1, clip_max=1, 
+                                     max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        weights = np.array([1, 1, 1, 1])
+
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
+                and max(fitted) <= 1)
+    
+    @staticmethod
+    def test_fit_simulated_annealing():
+        """Test fit method using the simulated_annealing algorithm"""
+
+        network = LogisticRegression(algorithm='simulated_annealing',
+                                     bias=False, learning_rate=1, clip_max=1,
+                                     max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        weights = np.array([1, 1, 1, 1])
+
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
+                and max(fitted) <= 1)
+    
+    @staticmethod
+    def test_fit_genetic_alg():
+        """Test fit method using the genetic_alg algorithm"""
+
+        network = LogisticRegression(algorithm='genetic_alg', bias=False,
+                                     learning_rate=1, clip_max=1,
+                                     max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        network.fit(X, y)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1 \
+                and max(fitted) <= 1)
+    
+    @staticmethod
+    def test_fit_gradient_descent():
+        """Test fit method using the gradient_descent algorithm"""
+
+        network = LogisticRegression(algorithm='gradient_descent',
+                                     bias=False, learning_rate=0.1, clip_max=1,
+                                     max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        y = np.reshape(np.array([1, 1, 0, 0, 1, 1]), [6, 1])
+
+        weights = np.array([1, 1, 1, 1])
+
+        network.fit(X, y, init_weights=weights)
+        fitted = network.fitted_weights
+
+        assert (sum(fitted) <= 4 and len(fitted) == 4 and min(fitted) >= -1
+                and max(fitted) <= 1)
+
+    @staticmethod
+    def test_predict_no_bias():
+        """Test predict method with no bias term"""
+
+        network = LogisticRegression(algorithm='random_hill_climb', bias=False, 
+                                     learning_rate=1, clip_max=1, 
+                                     max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        network.fitted_weights = np.array([1, 1, 1, 1])
+        network.node_list = [4, 1]
+        network.output_activation = sigmoid
+
+        x = np.reshape(np.array([0.88080, 0.5, 0.98201, 0.98201, 0.88080, 
+                                 0.73106]), [6, 1])
+
+        assert np.allclose(network.predict(X), x, atol=0.0001)
+
+    @staticmethod
+    def test_predict_bias():
+        """Test predict method with bias term"""
+
+        network = LogisticRegression(algorithm='random_hill_climb', bias=True, 
+                                     learning_rate=1, clip_max=1, 
+                                     max_attempts=100)
+
+        X = np.array([[0, 1, 0, 1],
+                      [0, 0, 0, 0],
+                      [1, 1, 1, 1],
+                      [1, 1, 1, 1],
+                      [0, 0, 1, 1],
+                      [1, 0, 0, 0]])
+
+        network.fitted_weights = np.array([1, 1, 1, 1, 1])
+        network.node_list = [5, 1]
+        network.output_activation = sigmoid
+
+        x = np.reshape(np.array([0.95257, 0.73106, 0.99331, 0.99331, 0.95257, 
+                                 0.88080]), [6, 1])
+
+        assert np.allclose(network.predict(X), x, atol=0.0001)
+    
 if __name__ == '__main__':
     unittest.main()

@@ -541,3 +541,87 @@ class NeuralNetwork:
                 y_pred = self.output_activation(outputs)
 
         return y_pred
+
+class LinearRegression(NeuralNetwork):
+    """Wrapper class for defining linear regression weights optimization 
+    problem."""
+
+    def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
+                 learning_rate=0.1, early_stopping=False, clip_max=1e+10, 
+                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1, 
+                 max_attempts=10):
+        """Initialize LinearRegression object.
+
+        Args:
+        algorithm: string. Algorithm used to find optimal weights. Must be one
+        of:'random_hill_climb', 'simulated_annealing', 'genetic_alg' or
+        'gradient_descent'.
+        max_iters: int. Maximum number of iterations used to fit the weights.
+        bias: bool. Whether to include a bias term at each layer.
+        learning_rate: float. Learning rate for gradient descent or step size
+        for randomized optimization algorithms.
+        early_stopping: bool. Whether to terminate algorithm early if the
+        loss is not improving. If True then stop after max_attempts iters with
+        no improvement.
+        clip_max: float. Used to limit weights to the range [-1*clip_max,
+        clip_max].
+        schedule: Schedule class object. Schedule used to determine the value
+        of the temperature parameter. Only required for simulated annealing.
+        pop_size: int. Size of population. Only required for genetic algorithm.
+        mutation_prob: float. Probability of a mutation at each element during
+        reproduction. Only required for genetic algorithm.
+        max_attempts: int. Maximum number of attempts to find a better state.
+        Only required if early_stopping is True.
+
+        Returns:
+        None
+        """
+        NeuralNetwork.__init__(self, hidden_nodes = [], activation='identity',
+             algorithm=algorithm, max_iters=max_iters, bias=bias,
+             is_classifier=False, learning_rate=learning_rate, 
+             early_stopping=early_stopping, clip_max=clip_max, 
+             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob, 
+             max_attempts=max_attempts)
+      
+        
+class LogisticRegression(NeuralNetwork):
+    """Wrapper class for defining logistic regression weights optimization 
+    problem."""
+
+    def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
+                 learning_rate=0.1, early_stopping=False, clip_max=1e+10, 
+                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1, 
+                 max_attempts=10):
+        """Initialize LogisticRegression object.
+
+        Args:
+        algorithm: string. Algorithm used to find optimal weights. Must be one
+        of:'random_hill_climb', 'simulated_annealing', 'genetic_alg' or
+        'gradient_descent'.
+        max_iters: int. Maximum number of iterations used to fit the weights.
+        bias: bool. Whether to include a bias term at each layer.
+        learning_rate: float. Learning rate for gradient descent or step size
+        for randomized optimization algorithms.
+        early_stopping: bool. Whether to terminate algorithm early if the
+        loss is not improving. If True then stop after max_attempts iters with
+        no improvement.
+        clip_max: float. Used to limit weights to the range [-1*clip_max,
+        clip_max].
+        schedule: Schedule class object. Schedule used to determine the value
+        of the temperature parameter. Only required for simulated annealing.
+        pop_size: int. Size of population. Only required for genetic algorithm.
+        mutation_prob: float. Probability of a mutation at each element during
+        reproduction. Only required for genetic algorithm.
+        max_attempts: int. Maximum number of attempts to find a better state.
+        Only required if early_stopping is True.
+
+        Returns:
+        None
+        """
+        NeuralNetwork.__init__(self, hidden_nodes = [], activation='sigmoid',
+             algorithm=algorithm, max_iters=max_iters, bias=bias,
+             is_classifier=True, learning_rate=learning_rate, 
+             early_stopping=early_stopping, clip_max=clip_max, 
+             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob, 
+             max_attempts=max_attempts)
+    
