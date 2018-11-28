@@ -558,15 +558,15 @@ class MaxKColor:
         """Initialize MaxKColor object.
 
         Args:
-        edges: list of pairs. List of all pairs of connected nodes. Order 
+        edges: list of pairs. List of all pairs of connected nodes. Order
         does not matter, so (a, b) and (b, a) are considered to be the same.
-       
+
         Returns:
         None
         """
         # Remove any duplicates from list
         edges = list({tuple(sorted(edge)) for edge in edges})
-        
+
         self.edges = edges
         self.prob_type = 'discrete'
 
@@ -586,7 +586,7 @@ class MaxKColor:
             # Check for adjacent nodes of the same color
             if state[self.edges[i][0]] == state[self.edges[i][1]]:
                 fitness += 1
-        
+
         return fitness
 
     def get_prob_type(self):
