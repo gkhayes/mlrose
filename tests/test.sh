@@ -15,7 +15,7 @@ python test_algorithms.py
 echo "Running tests on test_opt_probs.py"
 python test_opt_probs.py
 
-echo "Running tests on neural.py"
-python neural.py
+echo "Running tests on test_neural.py"
+python test_neural.py
 
 echo "Finished all tests"
