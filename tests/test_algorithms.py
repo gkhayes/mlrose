@@ -5,11 +5,9 @@
 """
 import unittest
 import numpy as np
-from fitness import OneMax
-from opt_probs import DiscreteOpt, ContinuousOpt
-from algorithms import (hill_climb, random_hill_climb, simulated_annealing,
-                        genetic_alg, mimic)
-
+from mlrose import (OneMax, DiscreteOpt, ContinuousOpt, hill_climb, 
+                    random_hill_climb, simulated_annealing, genetic_alg, 
+                    mimic)
 
 class TestAlgorithms(unittest.TestCase):
     """Tests for optimization algorithms."""

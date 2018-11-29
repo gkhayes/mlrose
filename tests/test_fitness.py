@@ -5,9 +5,9 @@
 """
 import unittest
 import numpy as np
-from fitness import (OneMax, FlipFlop, head, tail, max_run, FourPeaks,
-                     SixPeaks, ContinuousPeaks, Knapsack, TravellingSales,
-                     Queens, MaxKColor, CustomFitness)
+from mlrose import (OneMax, FlipFlop, head, tail, max_run, FourPeaks,
+                    SixPeaks, ContinuousPeaks, Knapsack, TravellingSales,
+                    Queens, MaxKColor, CustomFitness)
 
 
 class TestFitness(unittest.TestCase):

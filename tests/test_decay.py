@@ -4,7 +4,7 @@
     License: 3-clause BSD license.
 """
 import unittest
-from decay import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
+from mlrose import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 
 
 class TestDecay(unittest.TestCase):

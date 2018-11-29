@@ -5,10 +5,15 @@
 """
 import unittest
 import numpy as np
-from fitness import OneMax
-from neural import NetworkWeights
-from activation import identity
-from opt_probs import OptProb, DiscreteOpt, ContinuousOpt, TSPOpt
+
+from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
+
+# The following functions/classes are not automatically imported at 
+# initialization, so must be imported explicitly from neural.py, 
+# activation.py and opt_probs.py
+from mlrose.neural import NetworkWeights
+from mlrose.activation import identity
+from mlrose.opt_probs import OptProb
 
 
 class TestOptProb(unittest.TestCase):
