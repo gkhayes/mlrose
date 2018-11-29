@@ -7,7 +7,7 @@ import numpy as np
 from sklearn.metrics import mutual_info_score
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
-from fitness import TravellingSales
+from .fitness import TravellingSales
 
 class OptProb:
     """Base class for state optimisation problems."""

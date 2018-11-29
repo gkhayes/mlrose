@@ -664,12 +664,14 @@ class CustomFitness:
         Args:
         fitness_fn: function. Function for calculating fitness of a state
         problem_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        'continuous', 'tsp' or 'either'
         kwargs: dictionary. Additional arguments to be passed to fitness_fn
 
         Returns:
         None
         """
+        if problem_type not in ['discrete', 'continuous', 'tsp', 'either']:
+            raise Exception ("""problem_type does not exist.""")
         self.fitness_fn = fitness_fn
         self.problem_type = problem_type
         self.kwargs = kwargs
@@ -695,6 +697,6 @@ class CustomFitness:
 
         Returns:
         self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        'continuous', 'tsp' or 'either'
         """
-        return None  # 'return prob_type' does not exist as a variable name
+        return self.problem_type
