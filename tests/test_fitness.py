@@ -5,9 +5,12 @@
 """
 import unittest
 import numpy as np
-from mlrose import (OneMax, FlipFlop, head, tail, max_run, FourPeaks,
-                    SixPeaks, ContinuousPeaks, Knapsack, TravellingSales,
-                    Queens, MaxKColor, CustomFitness)
+from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
+                     Knapsack, TravellingSales, Queens, MaxKColor, 
+                     CustomFitness)
+from mlrose.fitness import head, tail, max_run
+# The above functions are not automatically imported at initialization, so 
+# must be imported explicitly from fitness.py.
 
 
 class TestFitness(unittest.TestCase):
