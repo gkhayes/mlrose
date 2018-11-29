@@ -543,12 +543,12 @@ class NeuralNetwork:
         return y_pred
 
 class LinearRegression(NeuralNetwork):
-    """Wrapper class for defining linear regression weights optimization 
+    """Wrapper class for defining linear regression weights optimization
     problem."""
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
-                 learning_rate=0.1, early_stopping=False, clip_max=1e+10, 
-                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1, 
+                 learning_rate=0.1, early_stopping=False, clip_max=1e+10,
+                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
                  max_attempts=10):
         """Initialize LinearRegression object.
 
@@ -578,19 +578,19 @@ class LinearRegression(NeuralNetwork):
         """
         NeuralNetwork.__init__(self, hidden_nodes = [], activation='identity',
              algorithm=algorithm, max_iters=max_iters, bias=bias,
-             is_classifier=False, learning_rate=learning_rate, 
-             early_stopping=early_stopping, clip_max=clip_max, 
-             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob, 
+             is_classifier=False, learning_rate=learning_rate,
+             early_stopping=early_stopping, clip_max=clip_max,
+             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
              max_attempts=max_attempts)
-      
-        
+
+
 class LogisticRegression(NeuralNetwork):
-    """Wrapper class for defining logistic regression weights optimization 
+    """Wrapper class for defining logistic regression weights optimization
     problem."""
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
-                 learning_rate=0.1, early_stopping=False, clip_max=1e+10, 
-                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1, 
+                 learning_rate=0.1, early_stopping=False, clip_max=1e+10,
+                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
                  max_attempts=10):
         """Initialize LogisticRegression object.
 
@@ -620,8 +620,7 @@ class LogisticRegression(NeuralNetwork):
         """
         NeuralNetwork.__init__(self, hidden_nodes = [], activation='sigmoid',
              algorithm=algorithm, max_iters=max_iters, bias=bias,
-             is_classifier=True, learning_rate=learning_rate, 
-             early_stopping=early_stopping, clip_max=clip_max, 
-             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob, 
+             is_classifier=True, learning_rate=learning_rate,
+             early_stopping=early_stopping, clip_max=clip_max,
+             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
              max_attempts=max_attempts)
-    

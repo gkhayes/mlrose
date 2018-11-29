@@ -109,11 +109,11 @@ class OptProb:
         None
         """
         pop_fitness = np.copy(self.pop_fitness)
-        
+
         # Set -1*inf values to 0 to avoid dividing by sum of infinity.
         # This forces mate_probs for these pop members to 0.
         pop_fitness[pop_fitness == -1.0*np.inf] = 0
-        
+
         if np.sum(pop_fitness) == 0:
             self.mate_probs = np.ones(len(pop_fitness)) \
                               / len(pop_fitness)
@@ -401,7 +401,7 @@ class DiscreteOpt(OptProb):
 
         # Determine sample for keeping
         self.keep_sample = self.population[keep_inds]
-    
+
     def get_keep_sample(self):
         """ Return the keep sample.
 
@@ -424,7 +424,7 @@ class DiscreteOpt(OptProb):
         self.prob_type: string. Returns problem type.
         """
         return self.prob_type
-    
+
     def random(self):
         """Return a random state vector
 
@@ -813,7 +813,7 @@ class ContinuousOpt(OptProb):
 class TSPOpt(DiscreteOpt):
     """Child class for travelling salesperson optimisation problems."""
 
-    def __init__(self, length, fitness_fn=None, maximize=False, coords=None, 
+    def __init__(self, length, fitness_fn=None, maximize=False, coords=None,
                  distances=None):
         """Initialize OptProb object.
 
@@ -825,28 +825,28 @@ class TSPOpt(DiscreteOpt):
         maximize: bool. Whether to maximize the fitness function.
         Set False for minimization problem.
         coords: list of pairs. Ordered list of the (x, y) co-ordinates of all
-        nodes. This assumes that travel between all pairs of nodes is 
-        possible. If this is not the case, then use distances instead. This 
+        nodes. This assumes that travel between all pairs of nodes is
+        possible. If this is not the case, then use distances instead. This
         argument is ignored if fitness_fn is not None.
-        distances: list of triples. List giving the distances, d, between all 
-        pairs of nodes, u and v, for which travel is possible, with each 
-        list item in the form (u, v, d). Order of the nodes does not matter, 
+        distances: list of triples. List giving the distances, d, between all
+        pairs of nodes, u and v, for which travel is possible, with each
+        list item in the form (u, v, d). Order of the nodes does not matter,
         so (u, v, d) and (v, u, d) are considered to be the same. If a pair is
-        missing from the list, it is assumed that travel between the two 
-        nodes is not possible. This argument is ignored if fitness_fn or 
+        missing from the list, it is assumed that travel between the two
+        nodes is not possible. This argument is ignored if fitness_fn or
         coords is not None.
 
         Returns:
         None
         """
-        
+
         if (fitness_fn is None) and (coords is None) and (distances is None):
             raise Exception("""At least one of fitness_fn, coords and"""
                             + """ distances must be specified.""")
         elif fitness_fn is None:
             fitness_fn = TravellingSales(coords=coords, distances=distances)
-        
-        DiscreteOpt.__init__(self, length, fitness_fn, maximize, 
+
+        DiscreteOpt.__init__(self, length, fitness_fn, maximize,
                              max_val = length)
 
         if self.fitness_fn.get_prob_type() != 'tsp':
@@ -856,22 +856,22 @@ class TSPOpt(DiscreteOpt):
 
     def adjust_probs(self, probs):
         """Normalize a vector of probabilities so that the vector sums to 1.
-        
+
         Args:
-        probs: array. Vector of probabilities that may or may not sum to 1. 
-        
+        probs: array. Vector of probabilities that may or may not sum to 1.
+
         Returns:
-        adj_probs: array. Vector of probabilities that sums to 1. Returns a 
+        adj_probs: array. Vector of probabilities that sums to 1. Returns a
         zero vector if sum(probs) = 0.
         """
         if np.sum(probs) == 0:
             adj_probs = np.zeros(np.shape(probs))
-        
+
         else:
             adj_probs = probs/np.sum(probs)
-        
+
         return adj_probs
-                    
+
     def find_neighbors(self):
         """Find all neighbors of the current state
 
@@ -882,11 +882,11 @@ class TSPOpt(DiscreteOpt):
         None
         """
         self.neighbors = []
-        
+
         for node1 in range(self.length - 1):
             for node2 in range(node1 + 1, self.length):
                 neighbor = np.copy(self.state)
-                
+
                 neighbor[node1] = self.state[node2]
                 neighbor[node2] = self.state[node1]
                 self.neighbors.append(neighbor)
@@ -901,19 +901,19 @@ class TSPOpt(DiscreteOpt):
         state: array. Randomly generated state vector.
         """
         '''
-        state = np.hstack(([self.start_node], 
+        state = np.hstack(([self.start_node],
                            np.random.permutation(self.node_vals)))
         '''
         state = np.random.permutation(self.length)
-        
+
         return state
 
     def random_mimic(self):
         """Generate single MIMIC sample from probability density
-        
+
         Args:
         None
-        
+
         Returns:
         state: array. State vector of MIMIC random sample.
         """
@@ -921,7 +921,7 @@ class TSPOpt(DiscreteOpt):
         state = np.zeros(self.length, dtype = np.int8)
         sample_order = self.sample_order[1:]
         node_probs = np.copy(self.node_probs)
-        
+
         # Get value of first element in new sample
         state[0] = np.random.choice(self.length, p=node_probs[0, 0])
         remaining.remove(state[0])
@@ -930,26 +930,26 @@ class TSPOpt(DiscreteOpt):
         # Get sample order
         self.find_sample_order()
         sample_order = self.sample_order[1:]
-        
+
         # Set values of remaining elements of state
         for i in sample_order:
             par_ind = self.parent_nodes[i-1]
             par_value = state[par_ind]
             probs = node_probs[i, par_value]
-            
+
             if np.sum(probs) == 0:
                 next_node = np.random.choice(remaining)
-                
+
             else:
                 adj_probs = self.adjust_probs(probs)
                 next_node = np.random.choice(self.length, p = adj_probs)
-                
+
             state[i] = next_node
             remaining.remove(next_node)
             node_probs[:, :, next_node] = 0
-        
-        return state        
-    
+
+        return state
+
     def random_neighbor(self):
         """Return random neighbor of current state vector
 
@@ -960,12 +960,12 @@ class TSPOpt(DiscreteOpt):
         neighbor: array. State vector of random neighbor.
         """
         neighbor = np.copy(self.state)
-        node1, node2 = np.random.choice(np.arange(self.length), 
+        node1, node2 = np.random.choice(np.arange(self.length),
                                         size = 2, replace = False)
-        
+
         neighbor[node1] = self.state[node2]
         neighbor[node2] = self.state[node1]
-        
+
         return neighbor
 
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
@@ -990,23 +990,23 @@ class TSPOpt(DiscreteOpt):
         _n = np.random.randint(self.length - 1)
         child = np.array([0]*self.length)
         child[0:_n+1] = parent_1[0:_n+1]
-        
+
         unvisited = [node for node in parent_2 if node not in parent_1[0:_n+1]]
         child[_n+1:] = unvisited
 
         # Mutate child
         rand = np.random.uniform(size=self.length)
         mutate = np.where(rand < mutation_prob)[0]
-        
+
         if len(mutate) > 0:
             mutate_perm = np.random.permutation(mutate)
             temp = np.copy(child)
-            
+
             for i in range(len(mutate)):
                 child[mutate[i]] = temp[mutate_perm[i]]
-        
+
         return child
-        
+
     def sample_pop(self, sample_size):
         """Generate new sample from probability density
 
@@ -1023,14 +1023,14 @@ class TSPOpt(DiscreteOpt):
                 sample_size = int(sample_size)
             else:
                 raise Exception("""sample_size must be a positive integer.""")
-        
+
         self.find_sample_order()
         new_sample = []
-        
+
         for _ in range(sample_size):
             state = self.random_mimic()
             new_sample.append(state)
-        
+
         new_sample = np.array(new_sample)
-        
+
         return new_sample

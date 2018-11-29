@@ -1,65 +1,25 @@
 #!/bin/bash
 
-disable_options="--disable=R0201,R0902,R0903,R0904,R0912,R0913,R0914,R0915,C0103,C0200,C1801,W0612"
+disable_options="R0201,R0902,R0903,R0904,R0912,R0913,R0914,R0915,C0103,C0200,C1801,W0612"
+python_files=("algorithms.py"
+              "test_algorithms.py"
+              "decay.py"
+              "test_decay.py"
+              "fitness.py"
+              "test_fitness.py"
+              "activation.py"
+              "test_activation.py"
+              "neural.py"
+              "test_neural.py"
+              "opt_probs.py"
+              "test_opt_probs.py")
 
-echo "Starting lint on algorithms.py"
-pylint algorithms.py --score=no $disable_options
-pycodestyle algorithms.py
-flake8 algorithms.py
-
-echo "Starting lint on decay.py"
-pylint decay.py --score=no $disable_options
-pycodestyle decay.py
-flake8 decay.py
-
-echo "Starting lint on fitness.py"
-pylint fitness.py --score=no $disable_options
-pycodestyle fitness.py
-flake8 fitness.py
-
-echo "Starting lint on opt_probs.py"
-pylint opt_probs.py --score=no $disable_options
-pycodestyle opt_probs.py
-flake8 opt_probs.py
-
-echo "Starting lint on activation.py"
-pylint activation.py --score=no $disable_options
-pycodestyle activation.py
-flake8 activation.py
-
-echo "Starting lint on neural.py"
-pylint neural.py --score=no $disable_options
-pycodestyle neural.py
-flake8 neural.py
-
-echo "Starting lint on test_activation.py"
-pylint test_activation.py --score=no $disable_options
-pycodestyle test_activation.py
-flake8 test_activation.py
-
-echo "Starting lint on test_decay.py"
-pylint test_decay.py --score=no $disable_options
-pycodestyle test_decay.py
-flake8 test_decay.py
-
-echo "Starting lint on test_fitness.py"
-pylint test_fitness.py --score=no $disable_options
-pycodestyle test_fitness.py
-flake8 test_fitness.py
-
-echo "Starting lint on test_algorithms.py"
-pylint test_algorithms.py --score=no $disable_options
-pycodestyle test_algorithms.py
-flake8 test_algorithms.py
-
-echo "Starting lint on test_opt_probs.py"
-pylint test_opt_probs.py --score=no $disable_options
-pycodestyle test_opt_probs.py
-flake8 test_opt_probs.py
-
-echo "Starting lint on test_neural.py"
-pylint test_neural.py --score=no $disable_options
-pycodestyle test_neural.py
-flake8 test_neural.py
+for filename in "${python_files[@]}"
+do
+    echo "Starting lint on ${filename}"
+    pylint ${filename} --score=no --disable=$disable_options
+    pycodestyle ${filename}
+    flake8 ${filename}
+done
 
 echo "Finished linting all files"
