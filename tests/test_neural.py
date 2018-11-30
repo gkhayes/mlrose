@@ -5,11 +5,20 @@
 """
 import unittest
 import numpy as np
+<<<<<<< HEAD
 from neural import (flatten_weights, unflatten_weights, gradient_descent,
                     NetworkWeights, NeuralNetwork, LinearRegression,
+=======
+from mlrose import (ContinuousOpt, NeuralNetwork, LinearRegression, 
+>>>>>>> upstream/master
                     LogisticRegression)
-from activation import identity, sigmoid
-from opt_probs import ContinuousOpt
+
+# The following functions/classes are not automatically imported at 
+# initialization, so must be imported explicitly from neural.py and 
+# activation.py.
+from mlrose.neural import (flatten_weights, unflatten_weights, 
+                           gradient_descent, NetworkWeights)
+from mlrose.activation import identity, sigmoid
 
 
 class TestNeural(unittest.TestCase):
