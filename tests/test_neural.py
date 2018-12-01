@@ -5,7 +5,12 @@
 """
 import unittest
 import numpy as np
+<<<<<<< HEAD
+from neural import (flatten_weights, unflatten_weights, gradient_descent,
+                    NetworkWeights, NeuralNetwork, LinearRegression,
+=======
 from mlrose import (ContinuousOpt, NeuralNetwork, LinearRegression, 
+>>>>>>> upstream/master
                     LogisticRegression)
 
 # The following functions/classes are not automatically imported at 
@@ -85,7 +90,7 @@ class TestNeural(unittest.TestCase):
 
         best_state, best_fitness = gradient_descent(problem)
 
-        assert (len(best_state) == 10 and min(best_state) >= -1 
+        assert (len(best_state) == 10 and min(best_state) >= -1
                 and max(best_state) <= 1 and best_fitness < test_fitness)
 
     @staticmethod
@@ -349,7 +354,7 @@ class TestNeuralNetwork(unittest.TestCase):
         network.fit(X, y)
         fitted = network.fitted_weights
 
-        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1 \
+        assert (sum(fitted) < 10 and len(fitted) == 10 and min(fitted) >= -1
                 and max(fitted) <= 1)
 
     @staticmethod
@@ -431,12 +436,12 @@ class TestNeuralNetwork(unittest.TestCase):
 
 class TestLinearRegression(unittest.TestCase):
     """Tests for LinearRegression class."""
-    
+
     @staticmethod
     def test_fit_random_hill_climb():
         """Test fit method using the random hill climbing algorithm"""
 
-        network = LinearRegression(algorithm='random_hill_climb', bias=False, 
+        network = LinearRegression(algorithm='random_hill_climb', bias=False,
                                 learning_rate=1, clip_max=1, max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -455,7 +460,7 @@ class TestLinearRegression(unittest.TestCase):
 
         assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
                 and max(fitted) <= 1)
- 
+
     @staticmethod
     def test_fit_simulated_annealing():
         """Test fit method using the simulated_annealing algorithm"""
@@ -486,7 +491,7 @@ class TestLinearRegression(unittest.TestCase):
         """Test fit method using the genetic_alg algorithm"""
 
         network = LinearRegression(algorithm='genetic_alg', bias=False,
-                                   learning_rate=1, clip_max=1, 
+                                   learning_rate=1, clip_max=1,
                                    max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -503,13 +508,13 @@ class TestLinearRegression(unittest.TestCase):
 
         assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1 \
                 and max(fitted) <= 1)
-    
+
     @staticmethod
     def test_fit_gradient_descent():
         """Test fit method using the gradient_descent algorithm"""
 
         network = LinearRegression(algorithm='gradient_descent',
-                                   bias=False, learning_rate=0.1, 
+                                   bias=False, learning_rate=0.1,
                                    clip_max=1, max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -528,13 +533,13 @@ class TestLinearRegression(unittest.TestCase):
 
         assert (sum(fitted) <= 4 and len(fitted) == 4 and min(fitted) >= -1
                 and max(fitted) <= 1)
-        
+
     @staticmethod
     def test_predict_no_bias():
         """Test predict method with no bias term"""
 
-        network = LinearRegression(algorithm='random_hill_climb', bias=False, 
-                                   learning_rate=1, clip_max=1, 
+        network = LinearRegression(algorithm='random_hill_climb', bias=False,
+                                   learning_rate=1, clip_max=1,
                                    max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -556,8 +561,8 @@ class TestLinearRegression(unittest.TestCase):
     def test_predict_bias():
         """Test predict method with bias term"""
 
-        network = LinearRegression(algorithm='random_hill_climb', bias=True, 
-                                   learning_rate=1, clip_max=1, 
+        network = LinearRegression(algorithm='random_hill_climb', bias=True,
+                                   learning_rate=1, clip_max=1,
                                    max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -577,13 +582,13 @@ class TestLinearRegression(unittest.TestCase):
 
 class TestLogisticRegression(unittest.TestCase):
     """Tests for LogisticRegression class."""
-    
+
     @staticmethod
     def test_fit_random_hill_climb():
         """Test fit method using the random hill climbing algorithm"""
 
-        network = LogisticRegression(algorithm='random_hill_climb', bias=False, 
-                                     learning_rate=1, clip_max=1, 
+        network = LogisticRegression(algorithm='random_hill_climb', bias=False,
+                                     learning_rate=1, clip_max=1,
                                      max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -602,7 +607,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
                 and max(fitted) <= 1)
-    
+
     @staticmethod
     def test_fit_simulated_annealing():
         """Test fit method using the simulated_annealing algorithm"""
@@ -627,7 +632,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
                 and max(fitted) <= 1)
-    
+
     @staticmethod
     def test_fit_genetic_alg():
         """Test fit method using the genetic_alg algorithm"""
@@ -650,7 +655,7 @@ class TestLogisticRegression(unittest.TestCase):
 
         assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1 \
                 and max(fitted) <= 1)
-    
+
     @staticmethod
     def test_fit_gradient_descent():
         """Test fit method using the gradient_descent algorithm"""
@@ -680,8 +685,8 @@ class TestLogisticRegression(unittest.TestCase):
     def test_predict_no_bias():
         """Test predict method with no bias term"""
 
-        network = LogisticRegression(algorithm='random_hill_climb', bias=False, 
-                                     learning_rate=1, clip_max=1, 
+        network = LogisticRegression(algorithm='random_hill_climb', bias=False,
+                                     learning_rate=1, clip_max=1,
                                      max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -695,7 +700,7 @@ class TestLogisticRegression(unittest.TestCase):
         network.node_list = [4, 1]
         network.output_activation = sigmoid
 
-        x = np.reshape(np.array([0.88080, 0.5, 0.98201, 0.98201, 0.88080, 
+        x = np.reshape(np.array([0.88080, 0.5, 0.98201, 0.98201, 0.88080,
                                  0.73106]), [6, 1])
 
         assert np.allclose(network.predict(X), x, atol=0.0001)
@@ -704,8 +709,8 @@ class TestLogisticRegression(unittest.TestCase):
     def test_predict_bias():
         """Test predict method with bias term"""
 
-        network = LogisticRegression(algorithm='random_hill_climb', bias=True, 
-                                     learning_rate=1, clip_max=1, 
+        network = LogisticRegression(algorithm='random_hill_climb', bias=True,
+                                     learning_rate=1, clip_max=1,
                                      max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
@@ -719,10 +724,10 @@ class TestLogisticRegression(unittest.TestCase):
         network.node_list = [5, 1]
         network.output_activation = sigmoid
 
-        x = np.reshape(np.array([0.95257, 0.73106, 0.99331, 0.99331, 0.95257, 
+        x = np.reshape(np.array([0.95257, 0.73106, 0.99331, 0.99331, 0.95257,
                                  0.88080]), [6, 1])
 
         assert np.allclose(network.predict(X), x, atol=0.0001)
-    
+
 if __name__ == '__main__':
     unittest.main()

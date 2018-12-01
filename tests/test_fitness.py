@@ -137,38 +137,38 @@ class TestFitness(unittest.TestCase):
 
         state = np.array([1, 0, 2, 1, 0])
         assert Knapsack(weights, values, max_weight_pct).evaluate(state) == 0
-    
+
     @staticmethod
     def test_travelling_sales_coords():
-        """Test TravellingSales fitness function for case where city nodes 
+        """Test TravellingSales fitness function for case where city nodes
         coords are specified."""
-        
+
         coords = [(0, 0), (3, 0), (3, 2), (2, 4), (1, 3)]
-        
+
         state = np.array([0, 1, 4, 3, 2])
 
         assert round(TravellingSales(coords = coords).evaluate(state), 4) \
                 == 13.8614
-    
+
     @staticmethod
     def test_travelling_sales_dists():
-        """Test TravellingSales fitness function for case where distances 
+        """Test TravellingSales fitness function for case where distances
         between node pairs are specified."""
-        
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
-        
+
         state = np.array([0, 1, 4, 3, 2])
 
         assert TravellingSales(distances = dists).evaluate(state) == 29
-    
+
     @staticmethod
     def test_travelling_sales_invalid():
         """Test TravellingSales fitness function for invalid tour"""
-        
-        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6), 
+
+        dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
-        
+
         state = np.array([0, 1, 2, 3, 4])
 
         assert TravellingSales(distances = dists).evaluate(state) == np.inf
@@ -183,7 +183,7 @@ class TestFitness(unittest.TestCase):
     def test_max_k_color():
         """Test MaxKColor fitness function"""
         edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
-        
+
         state = np.array([0, 1, 0, 1, 1])
         assert MaxKColor(edges).evaluate(state) == 3
 

@@ -362,7 +362,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         # Generate new sample
         new_sample = problem.sample_pop(pop_size)
         problem.set_population(new_sample)
-        
+
         next_state = problem.best_child()
 
         next_fitness = problem.eval_fitness(next_state)
