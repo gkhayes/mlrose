@@ -12,7 +12,8 @@ python_files=("mlrose/algorithms.py"
               "mlrose/neural.py"
               "tests/test_neural.py"
               "mlrose/opt_probs.py"
-              "tests/test_opt_probs.py")
+              "tests/test_opt_probs.py"
+              "setup.py")
 
 for filename in "${python_files[@]}"
 do
