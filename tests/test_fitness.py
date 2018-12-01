@@ -6,10 +6,10 @@
 import unittest
 import numpy as np
 from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
-                     Knapsack, TravellingSales, Queens, MaxKColor, 
-                     CustomFitness)
+                    Knapsack, TravellingSales, Queens, MaxKColor,
+                    CustomFitness)
 from mlrose.fitness import head, tail, max_run
-# The above functions are not automatically imported at initialization, so 
+# The above functions are not automatically imported at initialization, so
 # must be imported explicitly from fitness.py.
 
 
@@ -147,8 +147,8 @@ class TestFitness(unittest.TestCase):
 
         state = np.array([0, 1, 4, 3, 2])
 
-        assert round(TravellingSales(coords = coords).evaluate(state), 4) \
-                == 13.8614
+        assert (round(TravellingSales(coords=coords).evaluate(state), 4)
+                == 13.8614)
 
     @staticmethod
     def test_travelling_sales_dists():
@@ -160,7 +160,7 @@ class TestFitness(unittest.TestCase):
 
         state = np.array([0, 1, 4, 3, 2])
 
-        assert TravellingSales(distances = dists).evaluate(state) == 29
+        assert TravellingSales(distances=dists).evaluate(state) == 29
 
     @staticmethod
     def test_travelling_sales_invalid():
@@ -171,7 +171,7 @@ class TestFitness(unittest.TestCase):
 
         state = np.array([0, 1, 2, 3, 4])
 
-        assert TravellingSales(distances = dists).evaluate(state) == np.inf
+        assert TravellingSales(distances=dists).evaluate(state) == np.inf
 
     @staticmethod
     def test_queens():
