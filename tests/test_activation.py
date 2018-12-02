@@ -5,10 +5,10 @@
 """
 import unittest
 import numpy as np
-
 from mlrose.activation import identity, sigmoid, softmax, tanh, relu
-# The above functions are not automatically imported at initialization, so 
+# The above functions are not automatically imported at initialization, so
 # must be imported explicitly from activation.py.
+
 
 class TestActivation(unittest.TestCase):
     """Tests for activation.py."""

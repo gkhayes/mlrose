@@ -8,8 +8,8 @@ import numpy as np
 
 from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
 
-# The following functions/classes are not automatically imported at 
-# initialization, so must be imported explicitly from neural.py, 
+# The following functions/classes are not automatically imported at
+# initialization, so must be imported explicitly from neural.py,
 # activation.py and opt_probs.py
 from mlrose.neural import NetworkWeights
 from mlrose.activation import identity
@@ -704,7 +704,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         probs = np.zeros(5)
 
@@ -718,7 +718,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         probs = np.array([0.1, 0.2, 0, 0, 0.5])
         x = np.array([0.125, 0.25, 0, 0, 0.625])
@@ -732,7 +732,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
@@ -758,7 +758,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
         rand = problem.random()
 
         assert (len(rand) == 5 and len(set(rand)) == 5)
@@ -777,7 +777,7 @@ class TestTSPOpt(unittest.TestCase):
                         [3, 4, 0, 2, 1],
                         [2, 4, 0, 3, 1]])
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
         problem.keep_sample = pop
         problem.eval_node_probs()
         problem.find_sample_order()
@@ -793,7 +793,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         x = np.array([0, 1, 2, 3, 4])
         problem.set_state(x)
@@ -813,7 +813,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         father = np.array([0, 1, 2, 3, 4])
         mother = np.array([0, 4, 3, 2, 1])
@@ -829,7 +829,7 @@ class TestTSPOpt(unittest.TestCase):
         dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
                  (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         father = np.array([0, 1, 2, 3, 4])
         mother = np.array([4, 3, 2, 1, 0])
@@ -852,16 +852,17 @@ class TestTSPOpt(unittest.TestCase):
                         [3, 4, 0, 2, 1],
                         [2, 4, 0, 3, 1]])
 
-        problem = TSPOpt(5, distances = dists)
+        problem = TSPOpt(5, distances=dists)
 
         problem.keep_sample = pop
         problem.eval_node_probs()
 
         sample = problem.sample_pop(100)
-        row_sums = np.sum(sample, axis = 1)
+        row_sums = np.sum(sample, axis=1)
 
         assert (np.shape(sample)[0] == 100 and np.shape(sample)[1] == 5
                 and max(row_sums) == 10 and min(row_sums) == 10)
+
 
 if __name__ == '__main__':
     unittest.main()

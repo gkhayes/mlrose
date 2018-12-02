@@ -5,6 +5,7 @@
 """
 import numpy as np
 
+
 def identity(x, deriv=False):
     """Linear activation function
 
@@ -22,6 +23,7 @@ def identity(x, deriv=False):
         fx = np.ones(np.shape(x))
 
     return fx
+
 
 def relu(x, deriv=False):
     """ReLU activation function
@@ -43,6 +45,7 @@ def relu(x, deriv=False):
 
     return fx
 
+
 def sigmoid(x, deriv=False):
     """Sigmoid activation function
 
@@ -61,6 +64,7 @@ def sigmoid(x, deriv=False):
 
     return fx
 
+
 def softmax(x):
     """Softmax activation function
 
@@ -73,6 +77,7 @@ def softmax(x):
     fx = np.exp(x)/np.reshape(np.sum(np.exp(x), axis=1), [len(x), 1])
 
     return fx
+
 
 def tanh(x, deriv=False):
     """Hyperbolic tan activation function

@@ -453,7 +453,7 @@ class TravellingSales:
             self.is_coords = False
 
             # Remove any duplicates from list
-            distances = list({tuple(sorted(dist[0:2]) + [dist[2]]) \
+            distances = list({tuple(sorted(dist[0:2]) + [dist[2]])
                               for dist in distances})
 
             # Split into separate lists
@@ -510,7 +510,7 @@ class TravellingSales:
             node2 = state[i + 1]
 
             if self.is_coords:
-                fitness += np.linalg.norm(np.array(self.coords[node1]) \
+                fitness += np.linalg.norm(np.array(self.coords[node1])
                                           - np.array(self.coords[node2]))
             else:
                 path = (min(node1, node2), max(node1, node2))
@@ -525,7 +525,7 @@ class TravellingSales:
         node2 = state[0]
 
         if self.is_coords:
-            fitness += np.linalg.norm(np.array(self.coords[node1]) \
+            fitness += np.linalg.norm(np.array(self.coords[node1])
                                       - np.array(self.coords[node2]))
         else:
             path = (min(node1, node2), max(node1, node2))
@@ -671,7 +671,7 @@ class CustomFitness:
         None
         """
         if problem_type not in ['discrete', 'continuous', 'tsp', 'either']:
-            raise Exception ("""problem_type does not exist.""")
+            raise Exception("""problem_type does not exist.""")
         self.fitness_fn = fitness_fn
         self.problem_type = problem_type
         self.kwargs = kwargs

@@ -542,6 +542,7 @@ class NeuralNetwork:
 
         return y_pred
 
+
 class LinearRegression(NeuralNetwork):
     """Wrapper class for defining linear regression weights optimization
     problem."""
@@ -576,12 +577,13 @@ class LinearRegression(NeuralNetwork):
         Returns:
         None
         """
-        NeuralNetwork.__init__(self, hidden_nodes = [], activation='identity',
-             algorithm=algorithm, max_iters=max_iters, bias=bias,
-             is_classifier=False, learning_rate=learning_rate,
-             early_stopping=early_stopping, clip_max=clip_max,
-             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
-             max_attempts=max_attempts)
+        NeuralNetwork.__init__(
+            self, hidden_nodes=[], activation='identity',
+            algorithm=algorithm, max_iters=max_iters, bias=bias,
+            is_classifier=False, learning_rate=learning_rate,
+            early_stopping=early_stopping, clip_max=clip_max,
+            schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
+            max_attempts=max_attempts)
 
 
 class LogisticRegression(NeuralNetwork):
@@ -618,9 +620,10 @@ class LogisticRegression(NeuralNetwork):
         Returns:
         None
         """
-        NeuralNetwork.__init__(self, hidden_nodes = [], activation='sigmoid',
-             algorithm=algorithm, max_iters=max_iters, bias=bias,
-             is_classifier=True, learning_rate=learning_rate,
-             early_stopping=early_stopping, clip_max=clip_max,
-             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
-             max_attempts=max_attempts)
+        NeuralNetwork.__init__(
+            self, hidden_nodes=[], activation='sigmoid',
+            algorithm=algorithm, max_iters=max_iters, bias=bias,
+            is_classifier=True, learning_rate=learning_rate,
+            early_stopping=early_stopping, clip_max=clip_max,
+            schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
+            max_attempts=max_attempts)

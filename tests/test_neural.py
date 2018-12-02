@@ -5,19 +5,12 @@
 """
 import unittest
 import numpy as np
-<<<<<<< HEAD
-from neural import (flatten_weights, unflatten_weights, gradient_descent,
-                    NetworkWeights, NeuralNetwork, LinearRegression,
-=======
-from mlrose import (ContinuousOpt, NeuralNetwork, LinearRegression, 
->>>>>>> upstream/master
-                    LogisticRegression)
-
-# The following functions/classes are not automatically imported at 
-# initialization, so must be imported explicitly from neural.py and 
+# The following functions/classes are not automatically imported at
+# initialization, so must be imported explicitly from neural.py and
 # activation.py.
-from mlrose.neural import (flatten_weights, unflatten_weights, 
-                           gradient_descent, NetworkWeights)
+from mlrose.neural import (flatten_weights, unflatten_weights,
+                           gradient_descent, NetworkWeights, ContinuousOpt,
+                           NeuralNetwork, LogisticRegression, LinearRegression)
 from mlrose.activation import identity, sigmoid
 
 
@@ -434,6 +427,7 @@ class TestNeuralNetwork(unittest.TestCase):
 
         assert np.array_equal(network.predict(X), x)
 
+
 class TestLinearRegression(unittest.TestCase):
     """Tests for LinearRegression class."""
 
@@ -442,7 +436,8 @@ class TestLinearRegression(unittest.TestCase):
         """Test fit method using the random hill climbing algorithm"""
 
         network = LinearRegression(algorithm='random_hill_climb', bias=False,
-                                learning_rate=1, clip_max=1, max_attempts=100)
+                                   learning_rate=1, clip_max=1,
+                                   max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -466,8 +461,8 @@ class TestLinearRegression(unittest.TestCase):
         """Test fit method using the simulated_annealing algorithm"""
 
         network = LinearRegression(algorithm='simulated_annealing',
-                                bias=False, learning_rate=1, clip_max=1,
-                                max_attempts=100)
+                                   bias=False, learning_rate=1, clip_max=1,
+                                   max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -506,7 +501,7 @@ class TestLinearRegression(unittest.TestCase):
         network.fit(X, y)
         fitted = network.fitted_weights
 
-        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1 \
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
                 and max(fitted) <= 1)
 
     @staticmethod
@@ -579,6 +574,7 @@ class TestLinearRegression(unittest.TestCase):
         x = np.reshape(np.array([3, 1, 5, 5, 3, 2]), [6, 1])
 
         assert np.array_equal(network.predict(X), x)
+
 
 class TestLogisticRegression(unittest.TestCase):
     """Tests for LogisticRegression class."""
@@ -653,7 +649,7 @@ class TestLogisticRegression(unittest.TestCase):
         network.fit(X, y)
         fitted = network.fitted_weights
 
-        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1 \
+        assert (sum(fitted) < 4 and len(fitted) == 4 and min(fitted) >= -1
                 and max(fitted) <= 1)
 
     @staticmethod
@@ -728,6 +724,7 @@ class TestLogisticRegression(unittest.TestCase):
                                  0.88080]), [6, 1])
 
         assert np.allclose(network.predict(X), x, atol=0.0001)
+
 
 if __name__ == '__main__':
     unittest.main()

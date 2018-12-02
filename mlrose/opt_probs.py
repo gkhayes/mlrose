@@ -9,6 +9,7 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
 from .fitness import TravellingSales
 
+
 class OptProb:
     """Base class for state optimisation problems."""
 
@@ -847,7 +848,7 @@ class TSPOpt(DiscreteOpt):
             fitness_fn = TravellingSales(coords=coords, distances=distances)
 
         DiscreteOpt.__init__(self, length, fitness_fn, maximize,
-                             max_val = length)
+                             max_val=length)
 
         if self.fitness_fn.get_prob_type() != 'tsp':
             raise Exception("""fitness_fn must have problem type 'tsp'.""")
@@ -899,11 +900,10 @@ class TSPOpt(DiscreteOpt):
 
         Returns:
         state: array. Randomly generated state vector.
-        """
-        '''
+
         state = np.hstack(([self.start_node],
                            np.random.permutation(self.node_vals)))
-        '''
+        """
         state = np.random.permutation(self.length)
 
         return state
@@ -918,7 +918,7 @@ class TSPOpt(DiscreteOpt):
         state: array. State vector of MIMIC random sample.
         """
         remaining = list(np.arange(self.length))
-        state = np.zeros(self.length, dtype = np.int8)
+        state = np.zeros(self.length, dtype=np.int8)
         sample_order = self.sample_order[1:]
         node_probs = np.copy(self.node_probs)
 
@@ -942,7 +942,7 @@ class TSPOpt(DiscreteOpt):
 
             else:
                 adj_probs = self.adjust_probs(probs)
-                next_node = np.random.choice(self.length, p = adj_probs)
+                next_node = np.random.choice(self.length, p=adj_probs)
 
             state[i] = next_node
             remaining.remove(next_node)
@@ -961,7 +961,7 @@ class TSPOpt(DiscreteOpt):
         """
         neighbor = np.copy(self.state)
         node1, node2 = np.random.choice(np.arange(self.length),
-                                        size = 2, replace = False)
+                                        size=2, replace=False)
 
         neighbor[node1] = self.state[node2]
         neighbor[node2] = self.state[node1]
