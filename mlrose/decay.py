@@ -32,7 +32,8 @@ class GeomDecay:
     .. highlight:: python
     .. code-block:: python
 
-        >>> schedule = GeomDecay(init_temp=10, decay=0.95, min_temp=1)
+        >>> import mlrose
+        >>> schedule = mlrose.GeomDecay(init_temp=10, decay=0.95, min_temp=1)
         >>> schedule.evaluate(5)
         7.73780...
     """
@@ -105,7 +106,8 @@ class ArithDecay:
     .. highlight:: python
     .. code-block:: python
 
-        >>> schedule = ArithDecay(init_temp=10, decay=0.95, min_temp=1)
+        >>> import mlrose
+        >>> schedule = mlrose.ArithDecay(init_temp=10, decay=0.95, min_temp=1)
         >>> schedule.evaluate(5)
         5.25
     """
@@ -178,7 +180,9 @@ class ExpDecay:
     .. highlight:: python
     .. code-block:: python
 
-        >>> schedule = ExpDecay(init_temp=10, exp_const=0.05, min_temp=1)
+        >>> import mlrose
+        >>> schedule = mlrose.ExpDecay(init_temp=10, exp_const=0.05,\
+                                       min_temp=1)
         >>> schedule.evaluate(5)
         7.78800...
     """
@@ -239,9 +243,10 @@ class CustomSchedule:
     .. highlight:: python
     .. code-block:: python
 
+        >>> import mlrose
         >>> def custom(t, c): return t + c
         >>> kwargs = {'c': 10}
-        >>> schedule = CustomSchedule(custom, **kwargs)
+        >>> schedule = mlrose.CustomSchedule(custom, **kwargs)
         >>> schedule.evaluate(5)
         15
     """
