@@ -1,8 +1,8 @@
-""" Unit tests for algorithms.py
+""" Unit tests for algorithms.py"""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import unittest
 import numpy as np
 from mlrose import (OneMax, DiscreteOpt, ContinuousOpt, hill_climb,

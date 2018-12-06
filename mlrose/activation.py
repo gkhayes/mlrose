@@ -1,4 +1,8 @@
 """ Neural network activation functions."""
+
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import numpy as np
 
 

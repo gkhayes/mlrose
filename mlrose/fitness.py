@@ -1,5 +1,8 @@
 """ Classes for defining fitness functions."""
 
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import numpy as np
 
 

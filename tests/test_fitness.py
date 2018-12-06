@@ -1,8 +1,8 @@
-""" Unit tests for fitness.py
+""" Unit tests for fitness.py"""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import unittest
 import numpy as np
 from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,

@@ -1,5 +1,8 @@
 """ Classes for defining neural network weight optimization problems."""
 
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import numpy as np
 from sklearn.metrics import mean_squared_error, log_loss
 from .activation import identity, relu, sigmoid, softmax, tanh

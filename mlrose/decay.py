@@ -1,5 +1,8 @@
 """ Classes for defining decay schedules for simulated annealing."""
 
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import numpy as np
 
 

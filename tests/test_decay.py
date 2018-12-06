@@ -1,8 +1,8 @@
-""" Unit tests for decay.py
+""" Unit tests for decay.py"""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import unittest
 from mlrose import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 

@@ -1,8 +1,8 @@
-""" Unit tests for neural.py
+""" Unit tests for neural.py"""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import unittest
 import numpy as np
 # The following functions/classes are not automatically imported at

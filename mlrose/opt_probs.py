@@ -1,5 +1,8 @@
 """ Classes for defining optimization problem objects."""
 
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import numpy as np
 from sklearn.metrics import mutual_info_score
 from scipy.sparse import csr_matrix

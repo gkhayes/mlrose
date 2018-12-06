@@ -1,8 +1,8 @@
-""" Unit tests for opt_probs.py
+""" Unit tests for opt_probs.py"""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import unittest
 import numpy as np
 

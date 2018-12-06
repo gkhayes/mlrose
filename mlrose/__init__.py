@@ -1,8 +1,7 @@
-""" MLROSe initialization file.
+""" MLROSe initialization file."""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
 
 from .algorithms import (hill_climb, random_hill_climb, simulated_annealing,
                          genetic_alg, mimic)

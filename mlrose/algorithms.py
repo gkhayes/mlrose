@@ -1,6 +1,9 @@
 """ Functions to implement the randomized optimization and search algorithms.
 """
 
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 import numpy as np
 from .decay import GeomDecay
 
