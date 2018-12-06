@@ -1,28 +1,39 @@
 """ Functions to implement the randomized optimization and search algorithms.
-
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
 """
+
 import numpy as np
 from .decay import GeomDecay
 
 
 def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
     """Use standard hill climbing to find the optimum for a given
-    optimization problem, starting from a random state.
+    optimization problem.
 
-    Args:
-    problem: Optimization class object. Object containing
-    optimization problem to be solved.
-    max_iters: int. Maximum number of iterations of the algorithm.
-    restarts: int. Number of random restarts.
-    init_state: array. Numpy array containing starting state for algorithm.
-    If None then a random state is used.
+    Parameters
+    ----------
+    problem: optimization object
+        Object containing fitness function optimization problem to be solved.
+        For example, :code:`DiscreteOpt()`, :code:`ContinuousOpt()` or
+        :code:`TSPOpt()`.
+    max_iters: int, default: np.inf
+        Maximum number of iterations of the algorithm for each restart.
+    restarts: int, default: 0
+        Number of random restarts.
+    init_state: array, default: None
+        Numpy array containing starting state for algorithm.
+        If None, then a random state is used.
 
-    Returns:
-    best_state: array. NumPy array containing state that
-    optimizes fitness function.
-    best_fitness: float. Value of fitness function at best state
+    Returns
+    -------
+    best_state: array
+        Numpy array containing state that optimizes the fitness function.
+    best_fitness: float
+        Value of fitness function at best state.
+
+    References
+    ----------
+    Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
+    Approach*, 3rd edition. Prentice Hall, New Jersey, USA.
     """
     if (not isinstance(max_iters, int) and max_iters != np.inf
             and not max_iters.is_integer()) or (max_iters < 0):
@@ -74,22 +85,30 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
 def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                       init_state=None):
     """Use randomized hill climbing to find the optimum for a given
-    optimization problem, starting from a random state.
+    optimization problem.
 
-    Args:
-    problem: Optimization class object. Object containing
-    optimization problem to be solved.
-    max_attempts: int. Maximum number of attempts to find a
-    better neighbor at each step.
-    max_iters: int. Maximum number of iterations of the algorithm.
-    restarts: int. Number of random restarts.
-    init_state: array. Numpy array containing starting state for algorithm.
-    If None then a random state is used.
+    Parameters
+    ----------
+    problem: optimization object
+        Object containing fitness function optimization problem to be solved.
+        For example, :code:`DiscreteOpt()`, :code:`ContinuousOpt()` or
+        :code:`TSPOpt()`.
+    max_attempts: int, default: 10
+        Maximum number of attempts to find a better neighbor at each step.
+    max_iters: int, default: np.inf
+        Maximum number of iterations of the algorithm.
+    restarts: int, default: 0
+        Number of random restarts.
+    init_state: array, default: None
+        Numpy array containing starting state for algorithm.
+        If None, then a random state is used.
 
-    Returns:
-    best_state: array. NumPy array containing state that optimizes
-    fitness function.
-    best_fitness: float. Value of fitness function at best state
+    Returns
+    -------
+    best_state: array
+        Numpy array containing state that optimizes the fitness function.
+    best_fitness: float
+        Value of fitness function at best state.
     """
     if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
        or (max_attempts < 0):
@@ -147,24 +166,35 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                         max_iters=np.inf, init_state=None):
     """Use simulated annealing to find the optimum for a given
-    optimization problem, starting from a random state.
+    optimization problem.
 
-    Args:
-    problem: Optimization class object.
-    Object containing optimization problem to be solved.
-    schedule: Schedule class object. Schedule used to determine
-    the value of the temperature parameter.
-    max_attempts: int. Maximum number of attempts to find a better
-    neighbor at each step.
-    max_iters: int. Maximum number of iterations of the algorithm.
-    init_state: array. Numpy array containing starting state for algorithm.
-    If None then a random state is used.
+    Parameters
+    ----------
+    problem: optimization object
+        Object containing fitness function optimization problem to be solved.
+        For example, :code:`DiscreteOpt()`, :code:`ContinuousOpt()` or
+        :code:`TSPOpt()`.
+    schedule: schedule object, default: :code:`mlrose.GeomDecay()`
+        Schedule used to determine the value of the temperature parameter.
+    max_attempts: int, default: 10
+        Maximum number of attempts to find a better neighbor at each step.
+    max_iters: int, default: np.inf
+        Maximum number of iterations of the algorithm.
+    init_state: array, default: None
+        Numpy array containing starting state for algorithm.
+        If None, then a random state is used.
 
-    Returns:
-    best_state: array. NumPy array containing state that optimizes
-    fitness function.
+    Returns
+    -------
+    best_state: array
+        Numpy array containing state that optimizes the fitness function.
+    best_fitness: float
+        Value of fitness function at best state.
 
-    best_fitness: float. Value of fitness function at best state
+    References
+    ----------
+    Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
+    Approach*, 3rd edition. Prentice Hall, New Jersey, USA.
     """
     if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
        or (max_attempts < 0):
@@ -222,20 +252,33 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
-    Args:
-    problem: Optimization class object. Object containing optimization
-    problem to be solved.
-    pop_size: int. Size of population to be used in genetic algorithm.
-    mutation_prob: float. Probability of a mutation at each element
-    during reproduction.
-    max_attempts: int. Maximum number of attempts to find a better state
-    at each step.
-    max_iters: int. Maximum number of iterations of the algorithm.
+    Parameters
+    ----------
+    problem: optimization object
+        Object containing fitness function optimization problem to be solved.
+        For example, :code:`DiscreteOpt()`, :code:`ContinuousOpt()` or
+        :code:`TSPOpt()`.
+    pop_size: int, default: 200
+        Size of population to be used in genetic algorithm.
+    mutation_prob: float, default: 0.1
+        Probability of a mutation at each element during reproduction,
+        expressed as a value between 0 and 1.
+    max_attempts: int, default: 10
+        Maximum number of attempts to find a better state at each step.
+    max_iters: int, default: np.inf
+        Maximum number of iterations of the algorithm.
 
-    Returns:
-    best_state: array. NumPy array containing state that optimizes
-    fitness function.
-    best_fitness: float. Value of fitness function at best state
+    Returns
+    -------
+    best_state: array
+        Numpy array containing state that optimizes the fitness function.
+    best_fitness: float
+        Value of fitness function at best state.
+
+    References
+    ----------
+    Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
+    Approach*, 3rd edition. Prentice Hall, New Jersey, USA.
     """
     if pop_size < 0:
         raise Exception("""pop_size must be a positive integer.""")
@@ -307,20 +350,37 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf):
     """Use MIMIC to find the optimum for a given optimization problem.
 
-    Args:
-    problem: Optimization class object. Object containing optimization
-    problem to be solved.
-    pop_size: int. Size of population to be used in algorithm.
-    keep_pct: float. Proportion of samples to keep in each iteration
-    of the algorithm
-    max_attempts: int. Maximum number of attempts to find a better neighbor
-    at each step.
-    max_iters: int. Maximum number of iterations of the algorithm.
+    Parameters
+    ----------
+    problem: optimization object
+        Object containing fitness function optimization problem to be solved.
+        For example, :code:`DiscreteOpt()` or :code:`TSPOpt()`.
+    pop_size: int, default: 200
+        Size of population to be used in algorithm.
+    keep_pct: float, default: 0.2
+        Proportion of samples to keep at each iteration of the algorithm,
+        expressed as a value between 0 and 1.
+    max_attempts: int, default: 10
+        Maximum number of attempts to find a better neighbor at each step.
+    max_iters: int, default: np.inf
+        Maximum number of iterations of the algorithm.
 
-    Returns:
-    best_state: array. NumPy array containing state that optimizes
-    fitness function.
-    best_fitness: float. Value of fitness function at best state
+    Returns
+    -------
+    best_state: array
+        Numpy array containing state that optimizes the fitness function.
+    best_fitness: float
+        Value of fitness function at best state.
+
+    References
+    ----------
+    De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
+    Estimating Probability Densities. In *Advances in Neural Information
+    Processing Systems* (NIPS) 9, pp. 424–430.
+
+    Note
+    ----
+    MIMIC cannot be used for solving continuous-state optimization problems.
     """
     if problem.get_prob_type() == 'continuous':
         raise Exception("""problem type must be discrete or tsp.""")

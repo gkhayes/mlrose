@@ -1,8 +1,5 @@
-""" Classes for defining state optimization problems.
+""" Classes for defining optimization problem objects."""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
 import numpy as np
 from sklearn.metrics import mutual_info_score
 from scipy.sparse import csr_matrix
@@ -11,23 +8,21 @@ from .fitness import TravellingSales
 
 
 class OptProb:
-    """Base class for state optimisation problems."""
+    """Base class for optimisation problems.
+
+    Parameters
+    ----------
+    length: int
+        Number of elements in state vector.
+    fitness_fn: fitness function object
+        Object to implement fitness function for optimization.
+    maximize: bool, default: True
+        Whether to maximize the fitness function.
+        Set False for minimization problem.
+    """
 
     def __init__(self, length, fitness_fn, maximize=True):
-        """Initialize OptProb object.
 
-        Args:
-        length: int. Number of elements in state vector
-        fitness_fn: fitness function object. Object to implement
-        fitness function
-        for optimization.
-        max_val: int. Number of unique values that each element could take.
-        maximize: bool. Whether to maximize the fitness function.
-        Set False for minimization problem.
-
-        Returns:
-        None
-        """
         if length < 0:
             raise Exception("""length must be a positive integer.""")
         elif not isinstance(length, int):
@@ -54,24 +49,22 @@ class OptProb:
     def best_child(self):
         """Return the best state in the current population.
 
-        Args:
-        None
-
-        Returns:
-        best: array. State vector defining best child.
+        Returns
+        -------
+        best: array
+            State vector defining best child.
         """
         best = self.population[np.argmax(self.pop_fitness)]
 
         return best
 
     def best_neighbor(self):
-        """Return the best neighbor of current state
+        """Return the best neighbor of current state.
 
-        Args:
-        None
-
-        Returns:
-        best: array. State vector defining best neighbor.
+        Returns
+        -------
+        best: array
+            State vector defining best neighbor.
         """
         fitness_list = []
 
@@ -84,13 +77,17 @@ class OptProb:
         return best
 
     def eval_fitness(self, state):
-        """Evaluate the fitness of a state vector
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State vector for evaluation.
+        Parameters
+        ----------
+        state: array
+            State vector for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
         if len(state) != self.length:
             raise Exception("state length must match problem length")
@@ -102,12 +99,6 @@ class OptProb:
     def eval_mate_probs(self):
         """
         Calculate the probability of each member of the population reproducing.
-
-        Args:
-        None
-
-        Returns:
-        None
         """
         pop_fitness = np.copy(self.pop_fitness)
 
@@ -124,91 +115,83 @@ class OptProb:
     def get_fitness(self):
         """ Return the fitness of the current state vector.
 
-        Args:
-        None
-
-        Returns:
-        self.fitness: float. Fitness value of current state vector.
+        Returns
+        -------
+        self.fitness: float
+            Fitness value of current state vector.
         """
         return self.fitness
 
     def get_length(self):
         """ Return the state vector length.
 
-        Args:
-        None
-
-        Returns:
-        self.length: int. Length of state vector.
+        Returns
+        -------
+        self.length: int
+            Length of state vector.
         """
         return self.length
 
     def get_mate_probs(self):
-        """ Return the population mate probabilities
+        """ Return the population mate probabilities.
 
-        Args:
-        None
-
-        Returns:
-        self.mate_probs: array. Numpy array containing mate probabilities of
-        the current population
+        Returns
+        -------
+        self.mate_probs: array.
+            Numpy array containing mate probabilities of the current
+            population.
         """
         return self.mate_probs
 
     def get_maximize(self):
-        """ Return the maximization multiplier
+        """ Return the maximization multiplier.
 
-        Args:
-        None
-
-        Returns:
-        self.maximize: int. Maximization multiplier
+        Returns
+        -------
+        self.maximize: int
+            Maximization multiplier.
         """
         return self.maximize
 
     def get_pop_fitness(self):
-        """ Return the current population fitness array
+        """ Return the current population fitness array.
 
-        Args:
-        None
-
-        Returns:
-        self.pop_fitness: array. Numpy array containing the fitness values
-        for the current population.
+        Returns
+        -------
+        self.pop_fitness: array
+            Numpy array containing the fitness values for the current
+            population.
         """
         return self.pop_fitness
 
     def get_population(self):
-        """ Return the current population
+        """ Return the current population.
 
-        Args:
-        None
-
-        Returns:
-        self.population: array. Numpy array containing current population.
+        Returns
+        -------
+        self.population: array
+            Numpy array containing current population.
         """
         return self.population
 
     def get_state(self):
-        """ Return the current state vector
+        """ Return the current state vector.
 
-        Args:
-        None
-
-        Returns:
-        self.state: array. Current state vector.
+        Returns
+        -------
+        self.state: array
+            Current state vector.
         """
         return self.state
 
     def set_population(self, new_population):
         """ Change the current population to a specified new population and get
-        the fitness of all members
+        the fitness of all members.
 
-        Args:
-        new_population: array. Numpy array containing new population.
-
-        Returns:
-        None
+        Parameters
+        ----------
+        new_population: array
+            Numpy array containing new population.
         """
         self.population = new_population
 
@@ -224,13 +207,12 @@ class OptProb:
     def set_state(self, new_state):
         """
         Change the current state vector to a specified value
-        and get its fitness
+        and get its fitness.
 
-        Args:
-        new_state: array. New state vector value.
-
-        Returns:
-        None
+        Parameters
+        ----------
+        new_state: array
+            New state vector value.
         """
         if len(new_state) != self.length:
             raise Exception("""new_state length must match problem length""")
@@ -240,22 +222,28 @@ class OptProb:
 
 
 class DiscreteOpt(OptProb):
-    """Child class for discrete state optimisation problems."""
+    """Class for defining discrete-state optimization problems.
+
+    Parameters
+    ----------
+    length: int
+        Number of elements in state vector.
+
+    fitness_fn: fitness function object
+        Object to implement fitness function for optimization.
+
+    maximize: bool, default: True
+        Whether to maximize the fitness function.
+        Set False for minimization problem.
+
+    max_val: int, default: 2
+        Number of unique values that each element in the state vector
+        could take. Assumes values are integers in the range 0 to
+        (max_val - 1), inclusive.
+    """
 
     def __init__(self, length, fitness_fn, maximize=True, max_val=2):
-        """Initialize OptProb object.
 
-        Args:
-        length: int. Number of elements in state vector
-        fitness_fn: fitness function object. Object to implement
-        fitness function for optimization.
-        maximize: bool. Whether to maximize the fitness function.
-        Set False for minimization problem.
-        max_val: int. Number of unique values that each element could take.
-
-        Returns:
-        None
-        """
         OptProb.__init__(self, length, fitness_fn, maximize)
 
         if self.fitness_fn.get_prob_type() == 'continuous':
@@ -283,12 +271,6 @@ class DiscreteOpt(OptProb):
 
     def eval_node_probs(self):
         """Update probability density estimates.
-
-        Args:
-        None
-
-        Returns:
-        None
         """
         # Create mutual info matrix
         mutual_info = np.zeros([self.length, self.length])
@@ -332,13 +314,7 @@ class DiscreteOpt(OptProb):
         self.parent_nodes = parent
 
     def find_neighbors(self):
-        """Find all neighbors of the current state
-
-        Args:
-        None
-
-        Returns:
-        None
+        """Find all neighbors of the current state.
         """
         self.neighbors = []
 
@@ -359,13 +335,7 @@ class DiscreteOpt(OptProb):
                     self.neighbors.append(neighbor)
 
     def find_sample_order(self):
-        """Determine order in which to generate sample vector elements
-
-        Args:
-        None
-
-        Returns:
-        None
+        """Determine order in which to generate sample vector elements.
         """
         sample_order = []
         last = [0]
@@ -383,13 +353,12 @@ class DiscreteOpt(OptProb):
         self.sample_order = sample_order
 
     def find_top_pct(self, keep_pct):
-        """Select samples with fitness in the top n percentile.
+        """Select samples with fitness in the top keep_pct percentile.
 
-        Args:
-        keep_pct: float. Proportion of samples to keep.
-
-        Returns:
-        None
+        Parameters
+        ----------
+        keep_pct: float
+            Proportion of samples to keep.
         """
         if (keep_pct < 0) or (keep_pct > 1):
             raise Exception("""keep_pct must be between 0 and 1.""")
@@ -406,47 +375,43 @@ class DiscreteOpt(OptProb):
     def get_keep_sample(self):
         """ Return the keep sample.
 
-        Args:
-        None
-
-        Returns:
-        self.keep_sample: array. Numpy array containing samples with fitness
-        in the top n percentile.
+        Returns
+        -------
+        self.keep_sample: array
+            Numpy array containing samples with fitness in the top keep_pct
+            percentile.
         """
         return self.keep_sample
 
     def get_prob_type(self):
         """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Returns problem type.
+        Returns
+        -------
+        self.prob_type: string
+            Returns problem type.
         """
         return self.prob_type
 
     def random(self):
-        """Return a random state vector
+        """Return a random state vector.
 
-        Args:
-        None
-
-        Returns:
-        state: array. Randomly generated state vector.
+        Returns
+        -------
+        state: array
+            Randomly generated state vector.
         """
         state = np.random.randint(0, self.max_val, self.length)
 
         return state
 
     def random_neighbor(self):
-        """Return random neighbor of current state vector
+        """Return random neighbor of current state vector.
 
-        Args:
-        None
-
-        Returns:
-        neighbor: array. State vector of random neighbor.
+        Returns
+        -------
+        neighbor: array
+            State vector of random neighbor.
         """
         neighbor = np.copy(self.state)
         i = np.random.randint(0, self.length)
@@ -462,13 +427,12 @@ class DiscreteOpt(OptProb):
         return neighbor
 
     def random_pop(self, pop_size):
-        """Create a population of random state vectors
+        """Create a population of random state vectors.
 
-        Args:
-        pop_size: int. Size of population to be created.
-
-        Returns:
-        None
+        Parameters
+        ----------
+        pop_size: int
+            Size of population to be created.
         """
         if pop_size <= 0:
             raise Exception("""pop_size must be a positive integer.""")
@@ -494,14 +458,20 @@ class DiscreteOpt(OptProb):
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
 
-        Args:
-        parent_1: array. State vector for parent 1.
-        parent_2: array. State vector for parent 2.
-        mutation_prob: float. Probability of a mutation at each
-        state element during reproduction.
+        Parameters
+        ----------
+        parent_1: array
+            State vector for parent 1.
+        parent_2: array
+            State vector for parent 2.
+        mutation_prob: float
+            Probability of a mutation at each state element during
+            reproduction.
 
-        Returns:
-        child: array. Child state vector produced from parents 1 and 2.
+        Returns
+        -------
+        child: array
+            Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
             raise Exception("""Lengths of parents must match problem length""")
@@ -532,25 +502,23 @@ class DiscreteOpt(OptProb):
         return child
 
     def reset(self):
-        """Set the current state vector to a random value and get its fitness
-
-        Args:
-        None
-
-        Returns:
-        None
+        """Set the current state vector to a random value and get its fitness.
         """
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
 
     def sample_pop(self, sample_size):
-        """Generate new sample from probability density
+        """Generate new sample from probability density.
 
-        Args:
-        sample_size: int. Size of sample to be generated.
+        Parameters
+        ----------
+        sample_size: int
+            Size of sample to be generated.
 
-        Returns:
-        new_sample: array. Numpy array containing new sample.
+        Returns
+        -------
+        new_sample: array
+            Numpy array containing new sample.
         """
         if sample_size <= 0:
             raise Exception("""sample_size must be a positive integer.""")
@@ -585,25 +553,33 @@ class DiscreteOpt(OptProb):
 
 
 class ContinuousOpt(OptProb):
-    """Child class for continuous state optimisation problems."""
+    """Class for defining continuous-state optimisation problems.
+
+    Parameters
+    ----------
+    length: int
+        Number of elements in state vector.
+
+    fitness_fn: fitness function object
+        Object to implement fitness function for optimization.
+
+    maximize: bool, default: True
+        Whether to maximize the fitness function.
+        Set False for minimization problem.
+
+    min_val: float, default: 0
+        Minimum value that each element of the state vector can take.
+
+    max_val: float, default: 1
+        Maximum value that each element of the state vector can take.
+
+    step: float, default: 0.1
+        Step size used in determining neighbors of current state.
+    """
 
     def __init__(self, length, fitness_fn, maximize=True, min_val=0,
                  max_val=1, step=0.1):
-        """Initialize OptProb object.
 
-        Args:
-        length: int. Number of elements in state vector
-        fitness_fn: fitness function object. Object to implement
-        fitness function for optimization.
-        maximize: bool. Whether to maximize the fitness function.
-        Set False for minimization problem.
-        min_val: float. Minimum value that each element could take.
-        max_val: float. Maximum value that each element could take.
-        step: float. Step size used in determining neighbors.
-
-        Returns:
-        None
-        """
         OptProb.__init__(self, length, fitness_fn, maximize=maximize)
 
         if (self.fitness_fn.get_prob_type() != 'continuous') \
@@ -632,25 +608,18 @@ class ContinuousOpt(OptProb):
     def calculate_updates(self):
         """Calculate gradient descent updates.
 
-        Args:
-        None
-
-        Returns:
-        updates: list. List of back propagation weight updates.
+        Returns
+        -------
+        updates: list
+            List of back propagation weight updates.
         """
         updates = self.fitness_fn.calculate_updates()
 
         return updates
 
     def find_neighbors(self):
-        """Find all neighbors of the current state.
+        """Find all neighbors of the current state."""
 
-        Args:
-        None
-
-        Returns:
-        None
-        """
         self.neighbors = []
 
         for i in range(self.length):
@@ -670,35 +639,32 @@ class ContinuousOpt(OptProb):
     def get_prob_type(self):
         """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Returns problem type.
+        Returns
+        -------
+        self.prob_type: string
+            Returns problem type.
         """
         return self.prob_type
 
     def random(self):
-        """Return a random state vector
+        """Return a random state vector.
 
-        Args:
-        None
-
-        Returns:
-        state: array. Randomly generated state vector.
+        Returns
+        -------
+        state: array
+            Randomly generated state vector.
         """
         state = np.random.uniform(self.min_val, self.max_val, self.length)
 
         return state
 
     def random_neighbor(self):
-        """Return random neighbor of current state vector
+        """Return random neighbor of current state vector.
 
-        Args:
-        None
-
-        Returns:
-        neighbor: array. State vector of random neighbor.
+        Returns
+        -------
+        neighbor: array
+            State vector of random neighbor.
         """
         while True:
             neighbor = np.copy(self.state)
@@ -718,13 +684,12 @@ class ContinuousOpt(OptProb):
         return neighbor
 
     def random_pop(self, pop_size):
-        """Create a population of random state vectors
+        """Create a population of random state vectors.
 
-        Args:
-        pop_size: int. Size of population to be created.
-
-        Returns:
-        None
+        Parameters
+        ----------
+        pop_size: int
+            Size of population to be created.
         """
         if pop_size <= 0:
             raise Exception("""pop_size must be a positive integer.""")
@@ -750,14 +715,22 @@ class ContinuousOpt(OptProb):
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
 
-        Args:
-        parent_1: array. State vector for parent 1.
-        parent_2: array. State vector for parent 2.
-        mutation_prob: float. Probability of a mutation at each
-        state element during reproduction.
+        Parameters
+        ----------
+        parent_1: array
+            State vector for parent 1.
 
-        Returns:
-        child: array. Child state vector produced from parents 1 and 2.
+        parent_2: array
+            State vector for parent 2.
+
+        mutation_prob: float
+            Probability of a mutation at each state vector element during
+            reproduction.
+
+        Returns
+        -------
+        child: array
+            Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
             raise Exception("""Lengths of parents must match problem length""")
@@ -780,25 +753,23 @@ class ContinuousOpt(OptProb):
         return child
 
     def reset(self):
-        """Set the current state vector to a random value and get its fitness
-
-        Args:
-        None
-
-        Returns:
-        None
+        """Set the current state vector to a random value and get its fitness.
         """
         self.state = self.random()
         self.fitness = self.eval_fitness(self.state)
 
     def update_state(self, updates):
-        """Update current state given a vector of updates
+        """Update current state given a vector of updates.
 
-        Args:
-        updates: array. Update array.
+        Parameters
+        ----------
+        updates: array
+            Update array.
 
-        Returns:
-        updated_state: array. Current state adjusted for updates
+        Returns
+        -------
+        updated_state: array
+            Current state adjusted for updates.
         """
         if len(updates) != self.length:
             raise Exception("""Length of updates must match problem length""")
@@ -812,34 +783,40 @@ class ContinuousOpt(OptProb):
 
 
 class TSPOpt(DiscreteOpt):
-    """Child class for travelling salesperson optimisation problems."""
+    """Class for defining travelling salesperson optimisation problems.
+
+    Parameters
+    ----------
+    length: int
+        Number of elements in state vector. Must equal number of nodes in the
+        tour.
+
+    fitness_fn: fitness function object, default: None
+        Object to implement fitness function for optimization. If None, then
+        :code:`TravellingSales(coords=coords, distances=distances)` is used by
+        default.
+
+    maximize: bool, default: False
+        Whether to maximize the fitness function.
+        Set True for maximization problem.
+
+    coords: list of pairs, default: None
+        Ordered list of the (x, y) co-ordinates of all nodes. This assumes
+        that travel between all pairs of nodes is possible. If this is not the
+        case, then use distances instead. This argument is ignored if
+        fitness_fn is not None.
+
+    distances: list of triples, default: None
+        List giving the distances, d, between all pairs of nodes, u and v, for
+        which travel is possible, with each list item in the form (u, v, d).
+        Order of the nodes does not matter, so (u, v, d) and (v, u, d) are
+        considered to be the same. If a pair is missing from the list, it is
+        assumed that travel between the two nodes is not possible. This
+        argument is ignored if fitness_fn or coords is not None.
+    """
 
     def __init__(self, length, fitness_fn=None, maximize=False, coords=None,
                  distances=None):
-        """Initialize OptProb object.
-
-        Args:
-        length: int. Number of elements in state vector. Must equal number of
-        cities in the tour.
-        fitness_fn: fitness function object. Object to implement
-        fitness function for optimization.
-        maximize: bool. Whether to maximize the fitness function.
-        Set False for minimization problem.
-        coords: list of pairs. Ordered list of the (x, y) co-ordinates of all
-        nodes. This assumes that travel between all pairs of nodes is
-        possible. If this is not the case, then use distances instead. This
-        argument is ignored if fitness_fn is not None.
-        distances: list of triples. List giving the distances, d, between all
-        pairs of nodes, u and v, for which travel is possible, with each
-        list item in the form (u, v, d). Order of the nodes does not matter,
-        so (u, v, d) and (v, u, d) are considered to be the same. If a pair is
-        missing from the list, it is assumed that travel between the two
-        nodes is not possible. This argument is ignored if fitness_fn or
-        coords is not None.
-
-        Returns:
-        None
-        """
 
         if (fitness_fn is None) and (coords is None) and (distances is None):
             raise Exception("""At least one of fitness_fn, coords and"""
@@ -858,12 +835,16 @@ class TSPOpt(DiscreteOpt):
     def adjust_probs(self, probs):
         """Normalize a vector of probabilities so that the vector sums to 1.
 
-        Args:
-        probs: array. Vector of probabilities that may or may not sum to 1.
+        Parameters
+        ----------
+        probs: array
+            Vector of probabilities that may or may not sum to 1.
 
-        Returns:
-        adj_probs: array. Vector of probabilities that sums to 1. Returns a
-        zero vector if sum(probs) = 0.
+        Returns
+        -------
+        adj_probs: array
+            Vector of probabilities that sums to 1. Returns a zero vector if
+            sum(probs) = 0.
         """
         if np.sum(probs) == 0:
             adj_probs = np.zeros(np.shape(probs))
@@ -874,13 +855,7 @@ class TSPOpt(DiscreteOpt):
         return adj_probs
 
     def find_neighbors(self):
-        """Find all neighbors of the current state
-
-        Args:
-        None
-
-        Returns:
-        None
+        """Find all neighbors of the current state.
         """
         self.neighbors = []
 
@@ -893,29 +868,24 @@ class TSPOpt(DiscreteOpt):
                 self.neighbors.append(neighbor)
 
     def random(self):
-        """Return a random state vector
+        """Return a random state vector.
 
-        Args:
-        None
-
-        Returns:
-        state: array. Randomly generated state vector.
-
-        state = np.hstack(([self.start_node],
-                           np.random.permutation(self.node_vals)))
+        Returns
+        -------
+        state: array
+            Randomly generated state vector.
         """
         state = np.random.permutation(self.length)
 
         return state
 
     def random_mimic(self):
-        """Generate single MIMIC sample from probability density
+        """Generate single MIMIC sample from probability density.
 
-        Args:
-        None
-
-        Returns:
-        state: array. State vector of MIMIC random sample.
+        Returns
+        -------
+        state: array
+            State vector of MIMIC random sample.
         """
         remaining = list(np.arange(self.length))
         state = np.zeros(self.length, dtype=np.int8)
@@ -951,13 +921,12 @@ class TSPOpt(DiscreteOpt):
         return state
 
     def random_neighbor(self):
-        """Return random neighbor of current state vector
+        """Return random neighbor of current state vector.
 
-        Args:
-        None
-
-        Returns:
-        neighbor: array. State vector of random neighbor.
+        Returns
+        -------
+        neighbor: array
+            State vector of random neighbor.
         """
         neighbor = np.copy(self.state)
         node1, node2 = np.random.choice(np.arange(self.length),
@@ -971,14 +940,22 @@ class TSPOpt(DiscreteOpt):
     def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
         """Create child state vector from two parent state vectors.
 
-        Args:
-        parent_1: array. State vector for parent 1.
-        parent_2: array. State vector for parent 2.
-        mutation_prob: float. Probability of a mutation at each
-        state element during reproduction.
+        Parameters
+        ----------
+        parent_1: array
+            State vector for parent 1.
 
-        Returns:
-        child: array. Child state vector produced from parents 1 and 2.
+        parent_2: array
+            State vector for parent 2.
+
+        mutation_prob: float
+            Probability of a mutation at each state element during
+            reproduction.
+
+        Returns
+        -------
+        child: array
+            Child state vector produced from parents 1 and 2.
         """
         if len(parent_1) != self.length or len(parent_2) != self.length:
             raise Exception("""Lengths of parents must match problem length""")
@@ -1008,13 +985,17 @@ class TSPOpt(DiscreteOpt):
         return child
 
     def sample_pop(self, sample_size):
-        """Generate new sample from probability density
+        """Generate new sample from probability density.
 
-        Args:
-        sample_size: int. Size of sample to be generated.
+        Parameters
+        ----------
+        sample_size: int
+            Size of sample to be generated.
 
-        Returns:
-        new_sample: array. Numpy array containing new sample.
+        Returns
+        -------
+        new_sample: array
+            Numpy array containing new sample.
         """
         if sample_size <= 0:
             raise Exception("""sample_size must be a positive integer.""")

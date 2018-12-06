@@ -1,21 +1,23 @@
-""" Neural network activation functions.
-
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+""" Neural network activation functions."""
 import numpy as np
 
 
 def identity(x, deriv=False):
     """Linear activation function
 
-    Args:
-    x: array. Array containing input data.
-    deriv: bool. Whether to return the function or its derivative. Set True
-    for derivative.
+    Parameters
+    ----------
+    x: array
+        Array containing input data.
 
-    Returns:
-    fx: array. Value of activation function at x
+    deriv: bool, default: False
+        Whether to return the function or its derivative.
+        Set True for derivative.
+
+    Returns
+    -------
+    fx: array
+        Value of activation function at x
     """
     if not deriv:
         fx = x
@@ -28,14 +30,19 @@ def identity(x, deriv=False):
 def relu(x, deriv=False):
     """ReLU activation function
 
-    Args:
-    Args:
-    x: array. Array containing input data.
-    deriv: bool. Whether to return the function or its derivative. Set True
-    for derivative.
+    Parameters
+    ----------
+    x: array
+        Array containing input data.
 
-    Returns:
-    fx: array. Value of activation function at x
+    deriv: bool, default: False
+        Whether to return the function or its derivative.
+        Set True for derivative.
+
+    Returns
+    -------
+    fx: array
+        Value of activation function at x
     """
     fx = np.copy(x)
     fx[np.where(fx < 0)] = 0
@@ -49,13 +56,19 @@ def relu(x, deriv=False):
 def sigmoid(x, deriv=False):
     """Sigmoid activation function
 
-    Args:
-    x: array. Array containing input data.
-    deriv: bool. Whether to return the function or its derivative. Set True
-    for derivative.
+    Parameters
+    ----------
+    x: array
+        Array containing input data.
 
-    Returns:
-    fx: array. Value of activation function at x
+    deriv: bool, default: False
+        Whether to return the function or its derivative.
+        Set True for derivative.
+
+    Returns
+    -------
+    fx: array
+        Value of activation function at x
     """
     fx = 1/(1 + np.exp(-x))
 
@@ -68,11 +81,15 @@ def sigmoid(x, deriv=False):
 def softmax(x):
     """Softmax activation function
 
-    Args:
-    x: array. Array containing input data.
+    Parameters
+    ----------
+    x: array
+        Array containing input data.
 
-    Returns:
-    fx: array. Value of activation function at x
+    Returns
+    -------
+    fx: array
+        Value of activation function at x
     """
     fx = np.exp(x)/np.reshape(np.sum(np.exp(x), axis=1), [len(x), 1])
 
@@ -82,13 +99,19 @@ def softmax(x):
 def tanh(x, deriv=False):
     """Hyperbolic tan activation function
 
-    Args:
-    x: array. Array containing input data.
-    deriv: bool. Whether to return the function or its derivative. Set True
-    for derivative.
+    Parameters
+    ----------
+    x: array
+        Array containing input data.
 
-    Returns:
-    fx: array. Value of activation function at x
+    deriv: bool, default: False
+        Whether to return the function or its derivative.
+        Set True for derivative.
+
+    Returns
+    -------
+    fx: array
+        Value of activation function at x
     """
     fx = np.tanh(x)
 

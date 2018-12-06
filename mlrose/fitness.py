@@ -1,74 +1,107 @@
-""" Classes for defining fitness functions.
+""" Classes for defining fitness functions."""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
 import numpy as np
 
 
 class OneMax:
-    """Fitness function for One Max optimization problem."""
+    """Fitness function for One Max optimization problem. Evaluates the
+    fitness of an n-dimensional state vector
+    :math:`x = [x_{0}, x_{1}, \\ldots, x_{n-1}]` as:
+
+    .. math::
+        Fitness(x) = \\sum_{i = 0}^{n-1}x_{i}
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> fitness = OneMax()
+        >>> state = np.array([0, 1, 0, 1, 1, 1, 1])
+        >>> fitness.evaluate(state)
+        5
+
+    Note
+    -----
+    The One Max fitness function is suitable for use in either discrete or
+    continuous-state optimization problems.
+    """
 
     def __init__(self):
-        """Initialize OneMax object.
 
-        Args:
-        None
-
-        Returns:
-        None
-        """
         self.prob_type = 'either'
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state vector
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
 
         fitness = sum(state)
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class FlipFlop:
-    """Fitness function for Flip Flop optimization problem."""
+    """Fitness function for Flip Flop optimization problem. Evaluates the
+    fitness of a state vector :math:`x` as the total number of pairs of
+    consecutive elements of :math:`x`, (:math:`x_{i}` and :math:`x_{i+1}`)
+    where :math:`x_{i} \\neq x_{i+1}`.
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> fitness = FlipFlop()
+        >>> state = np.array([0, 1, 0, 1, 1, 1, 1])
+        >>> fitness.evaluate(state)
+        3
+
+    Note
+    ----
+    The Flip Flop fitness function is suitable for use in discrete-state
+    optimization problems *only*.
+    """
 
     def __init__(self):
-        """Initialize FlipFlop object.
 
-        Args:
-        None
-
-        Returns:
-        None
-        """
         self.prob_type = 'discrete'
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state vector
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
+
         fitness = 0
 
         for i in range(1, len(state)):
@@ -78,27 +111,31 @@ class FlipFlop:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 def head(_b, _x):
-    """Determine the number of leading b's in vector x
+    """Determine the number of leading b's in vector x.
 
-    Args:
-    b: int. Integer for counting at head of vector.
-    x: array. Vector of integers.
+    Parameters
+    ----------
+    b: int
+        Integer for counting at head of vector.
+    x: array
+        Vector of integers.
 
-    Returns:
-    head: int. Number of leading b's in x.
+    Returns
+    -------
+    head: int
+        Number of leading b's in x.
     """
 
     # Initialize counter
@@ -115,14 +152,20 @@ def head(_b, _x):
 
 
 def tail(_b, _x):
-    """Determine the number of trailing b's in vector x
+    """Determine the number of trailing b's in vector x.
 
-    Args:
-    b: int. Integer for counting at tail of vector.
-    x: array. Vector of integers.
+    Parameters
+    ----------
+    b: int
+        Integer for counting at tail of vector.
 
-    Returns:
-    tail: int. Number of trailing b's in x.
+    x: array
+        Vector of integers.
+
+    Returns
+    -------
+    tail: int
+        Number of trailing b's in x.
     """
 
     # Initialize counter
@@ -139,14 +182,20 @@ def tail(_b, _x):
 
 
 def max_run(_b, _x):
-    """Determine the length of the maximum run of b's in vector x
+    """Determine the length of the maximum run of b's in vector x.
 
-    Args:
-    b: int. Integer for counting.
-    x: array. Vector of integers.
+    Parameters
+    ----------
+    b: int
+        Integer for counting.
 
-    Returns:
-    max: int. Length of maximum run of b's
+    x: array
+        Vector of integers.
+
+    Returns
+    -------
+    max: int
+        Length of maximum run of b's.
     """
     # Initialize counter
     _max = 0
@@ -169,17 +218,52 @@ def max_run(_b, _x):
 
 
 class FourPeaks:
-    """Fitness function for Four Peaks optimization problem."""
+    """Fitness function for Four Peaks optimization problem. Evaluates the
+    fitness of an n-dimensional state vector :math:`x`, given parameter T, as:
+
+    .. math::
+        Fitness(x, T) = \\max(tail(0, x), head(1, x)) + R(x, T)
+
+    where:
+
+    * :math:`tail(b, x)` is the number of trailing b's in :math:`x`;
+    * :math:`head(b, x)` is the number of leading b's in :math:`x`; and
+    * :math:`R(x, T) = n`, if :math:`tail(0, x) > T` and
+      :math:`head(1, x) > T`; and
+    * :math:`R(x, T) = 0`, otherwise.
+
+    Parameters
+    ----------
+    t_pct: float, default: 0.1
+        Threshold parameter (T) for Four Peaks fitness function, expressed as
+        a percentage of the state space dimension, n (i.e.
+        :math:`T = t_{pct} \\times n`).
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> fitness = FourPeaks(t_pct=0.15)
+        >>> state = np.array([1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
+        >>> fitness.evaluate(state)
+        16
+
+    References
+    ----------
+    De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
+    Estimating Probability Densities. In *Advances in Neural Information
+    Processing Systems* (NIPS) 9, pp. 424–430.
+
+    Note
+    ----
+    The Four Peaks fitness function is suitable for use in bit-string
+    (discrete-state with :code:`max_val = 2`) optimization problems *only*.
+    """
 
     def __init__(self, t_pct=0.1):
-        """Initialize FourPeaks object.
 
-        Args:
-        t_pct: float. Threshold parameter (T) for four peaks fitness function.
-
-        Returns:
-        None
-        """
         self.t_pct = t_pct
         self.prob_type = 'discrete'
 
@@ -187,13 +271,17 @@ class FourPeaks:
             raise Exception("""t_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float.
+            Value of fitness function.
         """
         _n = len(state)
         _t = np.ceil(self.t_pct*_n)
@@ -214,30 +302,65 @@ class FourPeaks:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class SixPeaks:
-    """Fitness function for Six Peaks optimization problem."""
+    """Fitness function for Six Peaks optimization problem. Evaluates the
+    fitness of an n-dimensional state vector :math:`x`, given parameter T, as:
+
+    .. math::
+        Fitness(x, T) = \\max(tail(0, x), head(1, x)) + R(x, T)
+
+    where:
+
+    * :math:`tail(b, x)` is the number of trailing b's in :math:`x`;
+    * :math:`head(b, x)` is the number of leading b's in :math:`x`; and
+    * :math:`R(x, T) = n`, if (:math:`tail(0, x) > T` and
+      :math:`head(1, x) > T`) or (:math:`tail(1, x) > T` and
+      :math:`head(0, x) > T`); and
+    * :math:`R(x, T) = 0`, otherwise.
+
+    Parameters
+    ----------
+    t_pct: float, default: 0.1
+        Threshold parameter (T) for Six Peaks fitness function, expressed as
+        a percentage of the state space dimension, n (i.e.
+        :math:`T = t_{pct} \\times n`).
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> fitness = SixPeaks(t_pct=0.15)
+        >>> state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
+        >>> fitness.evaluate(state)
+        12
+
+    References
+    ----------
+    De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
+    Estimating Probability Densities. In *Advances in Neural Information
+    Processing Systems* (NIPS) 9, pp. 424–430.
+
+    Note
+    ----
+    The Six Peaks fitness function is suitable for use in bit-string
+    (discrete-state with :code:`max_val = 2`) optimization problems *only*.
+    """
 
     def __init__(self, t_pct=0.1):
-        """Initialize SixPeaks object.
 
-        Args:
-        t_pct: float. Threshold parameter (T) for six peaks fitness function.
-
-        Returns:
-        None
-        """
         self.t_pct = t_pct
         self.prob_type = 'discrete'
 
@@ -245,13 +368,17 @@ class SixPeaks:
             raise Exception("""t_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
         _n = len(state)
         _t = np.ceil(self.t_pct*_n)
@@ -274,31 +401,59 @@ class SixPeaks:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class ContinuousPeaks:
-    """Fitness function for Continuous Peaks optimization problem."""
+    """Fitness function for Continuous Peaks optimization problem. Evaluates
+    the fitness of an n-dimensional state vector :math:`x`, given parameter T,
+    as:
+
+    .. math::
+        Fitness(x, T) = \\max(max\\_run(0, x), max\\_run(1, x)) + R(x, T)
+
+    where:
+
+    * :math:`max\\_run(b, x)` is the length of the maximum run of b's
+      in :math:`x`; and
+    * :math:`R(x, T) = n`, if (:math:`max\\_run(0, x) > T` and
+      :math:`max\\_run(1, x) > T`); and
+    * :math:`R(x, T) = 0`, otherwise.
+
+    Parameters
+    ----------
+    t_pct: float, default: 0.1
+        Threshold parameter (T) for Continuous Peaks fitness function,
+        expressed as a percentage of the state space dimension, n (i.e.
+        :math:`T = t_{pct} \\times n`).
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> fitness = ContinuousPeaks(t_pct=0.15)
+        >>> state = np.array([0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1])
+        >>> fitness.evaluate(state)
+        17
+
+    Note
+    ----
+    The Continuous Peaks fitness function is suitable for use in bit-string
+    (discrete-state with :code:`max_val = 2`) optimization problems *only*.
+    """
 
     def __init__(self, t_pct=0.1):
-        """Initialize ContinuousPeaks object.
 
-        Args:
-        t_pct: float. Threshold parameter (T) for continuous peaks
-        fitness function.
-
-        Returns:
-        None
-        """
         self.t_pct = t_pct
         self.prob_type = 'discrete'
 
@@ -306,13 +461,17 @@ class ContinuousPeaks:
             raise Exception("""t_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
         _n = len(state)
         _t = np.ceil(self.t_pct*_n)
@@ -333,35 +492,67 @@ class ContinuousPeaks:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class Knapsack:
-    """Fitness function for Knapsack optimization problem."""
+    """Fitness function for Knapsack optimization problem. Given a set of n
+    items, where item i has known weight :math:`w_{i}` and known value
+    :math:`v_{i}`, and maximum knapsack capacity, :math:`W`, the Knapsack
+    fitness function evaluates the fitness of a state vector
+    :math:`x = [x_{0}, x_{1}, \\ldots, x_{n-1}]` as:
+
+    .. math::
+        Fitness(x) = \\sum_{i = 0}^{n-1}v_{i}x_{i}, \\text{ if}
+        \\sum_{i = 0}^{n-1}w_{i}x_{i} \\leq W, \\text{ and 0, otherwise,}
+
+    where :math:`x_{i}` denotes the number of copies of item i included in the
+    knapsack.
+
+    Parameters
+    ----------
+    weights: list
+        List of weights for each of the n items.
+
+    values: list
+        List of values for each of the n items. Must be same length as the
+        weights list.
+
+    max_weight_pct: float, default: 0.35
+        Parameter used to set maximum capacity of knapsack (W) as a percentage
+        of the total of the weights list
+        (:math:`W =` max_weight_pct :math:`\\times` total_weight).
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> weights = [10, 5, 2, 8, 15]
+        >>> values = [1, 2, 3, 4, 5]
+        >>> max_weight_pct = 0.6
+        >>> fitness = Knapsack(weights, values, max_weight_pct)
+        >>> state = np.array([1, 0, 2, 1, 0])
+        >>> fitness.evaluate(state)
+        11
+
+    Note
+    ----
+    The Knapsack fitness function is suitable for use in discrete-state
+    optimization problems *only*.
+    """
 
     def __init__(self, weights, values, max_weight_pct=0.35):
-        """Initialize Knapsack object.
 
-        Args:
-        weights: array. Array of weights for each of the possible items.
-        values: array. Array of values for each of the possible items.
-        Must be same length as weights array.
-        max_weight_pct: float. Parameter used to set maximum capacity
-        of knapsack (W) as a percentage of the total of the weights array
-        (W = max_weight_pct*total_weight)
-
-        Returns:
-        None
-        """
         self.weights = weights
         self.values = values
         self._w = np.ceil(sum(self.weights)*max_weight_pct)
@@ -381,15 +572,20 @@ class Knapsack:
             raise Exception("""max_weight_pct must be between 0 and 1.""")
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation. Must be same length as
-        weights and values arrays.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation. Must be the same length as the weights
+            and values arrays.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
+
         if len(state) != len(self.weights):
             raise Exception("""The state array must be the same size as the"""
                             + """ weight and values arrays.""")
@@ -407,39 +603,70 @@ class Knapsack:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class TravellingSales:
-    """Fitness function for Travelling Salesman optimization problem."""
+    """Fitness function for Travelling Salesman optimization problem.
+    Evaluates the fitness of a tour of n nodes, represented by state vector
+    :math:`x`, giving the order in which the nodes are visited, as the total
+    distance travelled on the tour (including the distance travelled between
+    the final node in the state vector and the first node in the state vector
+    during the return leg of the tour). Each node must be visited exactly
+    once for a tour to be considered valid.
+
+    Parameters
+    ----------
+    coords: list of pairs, default: None
+        Ordered list of the (x, y) coordinates of all nodes (where element i
+        gives the coordinates of node i). This assumes that travel between
+        all pairs of nodes is possible. If this is not the case, then use
+        :code:`distances` instead.
+
+    distances: list of triples, default: None
+        List giving the distances, d, between all pairs of nodes, u and v, for
+        which travel is possible, with each list item in the form (u, v, d).
+        Order of the nodes does not matter, so (u, v, d) and (v, u, d) are
+        considered to be the same. If a pair is missing from the list, it is
+        assumed that travel between the two nodes is not possible. This
+        argument is ignored if coords is not None.
+
+    Examples
+    --------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> coords = [(0, 0), (3, 0), (3, 2), (2, 4), (1, 3)]
+        >>> dists = [(0, 1, 3), (0, 2, 5), (0, 3, 1), (0, 4, 7), (1, 3, 6),
+                     (4, 1, 9), (2, 3, 8), (2, 4, 2), (3, 2, 8), (3, 4, 4)]
+        >>> fitness_coords = TravellingSales(coords=coords)
+        >>> state = np.array([0, 1, 4, 3, 2])
+        >>> fitness_coords.evaluate(state)
+        13.86138...
+        >>> fitness_dists = TravellingSales(distances=dists)
+        >>> fitness_dists.evaluate(state)
+        29
+
+    Note
+    ----
+    1. The TravellingSales fitness function is suitable for use in travelling
+       salesperson (tsp) optimization problems *only*.
+    2. It is necessary to specify at least one of :code:`coords` and
+       :code:`distances` in initializing a TravellingSales fitness function
+       object.
+    """
 
     def __init__(self, coords=None, distances=None):
-        """Initialize TravellingSales object.
 
-        Args:
-        coords: list of pairs. Ordered list of the (x, y) co-ordinates of all
-        nodes. This assumes that travel between all pairs of nodes is
-        possible. If this is not the case, then use distances instead.
-        distances: list of triples. List giving the distances, d, between all
-        pairs of nodes, u and v, for which travel is possible, with each
-        list item in the form (u, v, d). Order of the nodes does not matter,
-        so (u, v, d) and (v, u, d) are considered to be the same. If a pair is
-        missing from the list, it is assumed that travel between the two
-        nodes is not possible. This argument is ignored if coords is not
-        None.
-
-        Returns:
-        None
-        """
         if coords is None and distances is None:
             raise Exception("""At least one of coords and distances must be"""
                             + """ specified.""")
@@ -479,15 +706,21 @@ class TravellingSales:
         self.prob_type = 'tsp'
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation. Each integer between 0 and
-        (len(state) - 1) must appear exactly once in the array.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation. Each integer between 0 and
+            (len(state) - 1), inclusive must appear exactly once in the array.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function. Returns :code:`np.inf` if travel between
+            two consecutive nodes on the tour is not possible.
         """
+
         if self.is_coords and len(state) != len(self.coords):
             raise Exception("""state must have the same length as coords.""")
 
@@ -538,41 +771,64 @@ class TravellingSales:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class Queens:
-    """Fitness function for N-Queens optimization problem."""
+    """Fitness function for N-Queens optimization problem. Evaluates the
+    fitness of an n-dimensional state vector
+    :math:`x = [x_{0}, x_{1}, \\ldots, x_{n-1}]`, where :math:`x_{i}`
+    represents the row position (between 0 and n-1, inclusive) of the 'queen'
+    in column i, as the number of pairs of attacking queens.
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> fitness = Queens()
+        >>> state = np.array([1, 4, 1, 3, 5, 5, 2, 7])
+        >>> fitness.evaluate(state)
+        6
+
+    References
+    ----------
+    Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
+    Approach*, 3rd edition. Prentice Hall, New Jersey, USA.
+
+    Note
+    ----
+    The Queens fitness function is suitable for use in discrete-state
+    optimization problems *only*.
+    """
 
     def __init__(self):
-        """Initialize Queens object.
 
-        Args:
-        None
-
-        Returns:
-        None
-        """
         self.prob_type = 'discrete'
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state vector
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation.
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
+
         fitness = 0
 
         for i in range(len(state) - 1):
@@ -592,31 +848,50 @@ class Queens:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class MaxKColor:
-    """Fitness function for max-k color optimization problem."""
+    """Fitness function for Max-k color optimization problem. Evaluates the
+    fitness of an n-dimensional state vector
+    :math:`x = [x_{0}, x_{1}, \\ldots, x_{n-1}]`, where :math:`x_{i}`
+    represents the color of node i, as the number of pairs of adjacent nodes
+    of the same color.
+
+    Parameters
+    ----------
+    edges: list of pairs
+        List of all pairs of connected nodes. Order does not matter, so (a, b)
+        and (b, a) are considered to be the same.
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> import numpy as np
+        >>> edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
+        >>> fitness = MaxKColor(edges)
+        >>> state = np.array([0, 1, 0, 1, 1])
+        >>> fitness.evaluate(state)
+        3
+
+    Note
+    ----
+    The MaxKColor fitness function is suitable for use in discrete-state
+    optimization problems *only*.
+    """
 
     def __init__(self, edges):
-        """Initialize MaxKColor object.
 
-        Args:
-        edges: list of pairs. List of all pairs of connected nodes. Order
-        does not matter, so (a, b) and (b, a) are considered to be the same.
-
-        Returns:
-        None
-        """
         # Remove any duplicates from list
         edges = list({tuple(sorted(edge)) for edge in edges})
 
@@ -624,15 +899,19 @@ class MaxKColor:
         self.prob_type = 'discrete'
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation. Must contain the same number
-        of elements as the distances matrix
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
+
         fitness = 0
 
         for i in range(len(self.edges)):
@@ -643,33 +922,48 @@ class MaxKColor:
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.prob_type
 
 
 class CustomFitness:
-    """Class for generating your own fitness function."""
+    """Class for generating your own fitness function.
+
+    Parameters
+    ----------
+    fitness_fn: callable
+        Function for calculating fitness of a state with the signature
+        :code:`fitness_fn(state, **kwargs)`.
+
+    problem_type: string, default: 'either'
+        Specifies problem type as 'discrete', 'continuous', 'tsp' or 'either'
+        (denoting either discrete or continuous).
+
+    kwargs: additional arguments
+        Additional parameters to be passed to the fitness function.
+
+    Example
+    -------
+    .. highlight:: python
+    .. code-block:: python
+
+        >>> def cust_fn(state, c): return c*np.sum(state)
+        >>> kwargs = {'c': 10}
+        >>> fitness = CustomFitness(cust_fn, **kwargs)
+        >>> state = np.array([1, 2, 3, 4, 5])
+        >>> fitness.evaluate(state)
+        150
+    """
 
     def __init__(self, fitness_fn, problem_type='either', **kwargs):
-        """Initialize CustomFitness object.
 
-        Args:
-        fitness_fn: function. Function for calculating fitness of a state
-        problem_type: string. Specifies problem type as 'discrete',
-        'continuous', 'tsp' or 'either'
-        kwargs: dictionary. Additional arguments to be passed to fitness_fn
-
-        Returns:
-        None
-        """
         if problem_type not in ['discrete', 'continuous', 'tsp', 'either']:
             raise Exception("""problem_type does not exist.""")
         self.fitness_fn = fitness_fn
@@ -677,26 +971,29 @@ class CustomFitness:
         self.kwargs = kwargs
 
     def evaluate(self, state):
-        """Evaluate the fitness of a state
+        """Evaluate the fitness of a state vector.
 
-        Args:
-        state: array. State array for evaluation. Must contain the same number
-        of elements as the distances matrix
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
 
-        Returns:
-        fitness: float. Value of fitness function.
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
         """
+
         fitness = self.fitness_fn(state, **self.kwargs)
         return fitness
 
     def get_prob_type(self):
-        """ Return the problem type
+        """ Return the problem type.
 
-        Args:
-        None
-
-        Returns:
-        self.prob_type: string. Specifies problem type as 'discrete',
-        'continuous', 'tsp' or 'either'
+        Returns
+        -------
+        self.prob_type: string
+            Specifies problem type as 'discrete', 'continuous', 'tsp'
+            or 'either'.
         """
         return self.problem_type
