@@ -112,6 +112,11 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
+        
+    References
+    ----------
+    Brownlee, J (2011). *Clever Algorithms: Nature-Inspired Programming
+    Recipes*. www.cleveralgorithms.com. 
     """
     if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
        or (max_attempts < 0):
