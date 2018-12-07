@@ -116,7 +116,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     References
     ----------
     Brownlee, J (2011). *Clever Algorithms: Nature-Inspired Programming
-    Recipes*. www.cleveralgorithms.com. 
+    Recipes*. `<www.cleveralgorithms.com>`_. 
     """
     if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
        or (max_attempts < 0):
