@@ -11,7 +11,7 @@ import numpy as np
 from mlrose.neural import (flatten_weights, unflatten_weights,
                            gradient_descent, NetworkWeights, ContinuousOpt,
                            NeuralNetwork, LogisticRegression, LinearRegression)
-from mlrose.activation import identity, sigmoid
+from mlrose.activation import identity, sigmoid, softmax
 
 
 class TestNeural(unittest.TestCase):
@@ -394,13 +394,27 @@ class TestNeuralNetwork(unittest.TestCase):
                       [0, 0, 1, 1],
                       [1, 0, 0, 0]])
 
-        network.fitted_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        network.node_list = [4, 2, 1]
-        network.output_activation = identity
+        network.fitted_weights = np.array([0.2, 0.5, 0.3, 0.4, 0.4, 0.3,
+                                           0.5, 0.2, -1, 1, 1, -1])
+        network.node_list = [4, 2, 2]
+        network.output_activation = softmax
 
-        x = np.reshape(np.array([4, 0, 8, 8, 4, 2]), [6, 1])
+        probs = np.array([[0.40131, 0.59869],
+                          [0.5, 0.5],
+                          [0.5, 0.5],
+                          [0.5, 0.5],
+                          [0.31003, 0.68997],
+                          [0.64566, 0.35434]])
 
-        assert np.array_equal(network.predict(X), x)
+        labels = np.array([[0, 1],
+                           [1, 0],
+                           [1, 0],
+                           [1, 0],
+                           [0, 1],
+                           [1, 0]])
+
+        assert (np.array_equal(network.predict(X), labels)
+                and np.allclose(network.predicted_probs, probs, atol=0.0001))
 
     @staticmethod
     def test_predict_bias():
@@ -419,13 +433,28 @@ class TestNeuralNetwork(unittest.TestCase):
                       [0, 0, 1, 1],
                       [1, 0, 0, 0]])
 
-        network.fitted_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        network.node_list = [5, 2, 1]
-        network.output_activation = identity
+        network.fitted_weights = np.array([0.2, 0.5, 0.3, 0.4, 0.4, 0.3,
+                                           0.5, 0.2, 1, -1, -0.1, 0.1,
+                                           0.1, -0.1])
+        network.node_list = [5, 2, 2]
+        network.output_activation = softmax
 
-        x = np.reshape(np.array([6, 2, 10, 10, 6, 4]), [6, 1])
+        probs = np.array([[0.39174, 0.60826],
+                          [0.40131, 0.59869],
+                          [0.40131, 0.59869],
+                          [0.40131, 0.59869],
+                          [0.38225, 0.61775],
+                          [0.41571, 0.58419]])
 
-        assert np.array_equal(network.predict(X), x)
+        labels = np.array([[0, 1],
+                           [0, 1],
+                           [0, 1],
+                           [0, 1],
+                           [0, 1],
+                           [0, 1]])
+
+        assert (np.array_equal(network.predict(X), labels)
+                and np.allclose(network.predicted_probs, probs, atol=0.0001))
 
 
 class TestLinearRegression(unittest.TestCase):
@@ -692,14 +721,16 @@ class TestLogisticRegression(unittest.TestCase):
                       [0, 0, 1, 1],
                       [1, 0, 0, 0]])
 
-        network.fitted_weights = np.array([1, 1, 1, 1])
+        network.fitted_weights = np.array([-1, 1, 1, 1])
         network.node_list = [4, 1]
         network.output_activation = sigmoid
 
-        x = np.reshape(np.array([0.88080, 0.5, 0.98201, 0.98201, 0.88080,
-                                 0.73106]), [6, 1])
+        probs = np.reshape(np.array([0.88080, 0.5, 0.88080, 0.88080, 0.88080,
+                                     0.26894]), [6, 1])
+        labels = np.reshape(np.array([1, 0, 1, 1, 1, 0]), [6, 1])
 
-        assert np.allclose(network.predict(X), x, atol=0.0001)
+        assert (np.array_equal(network.predict(X), labels)
+                and np.allclose(network.predicted_probs, probs, atol=0.0001))
 
     @staticmethod
     def test_predict_bias():
@@ -716,14 +747,16 @@ class TestLogisticRegression(unittest.TestCase):
                       [0, 0, 1, 1],
                       [1, 0, 0, 0]])
 
-        network.fitted_weights = np.array([1, 1, 1, 1, 1])
+        network.fitted_weights = np.array([-1, 1, 1, 1, -1])
         network.node_list = [5, 1]
         network.output_activation = sigmoid
 
-        x = np.reshape(np.array([0.95257, 0.73106, 0.99331, 0.99331, 0.95257,
-                                 0.88080]), [6, 1])
+        probs = np.reshape(np.array([0.73106, 0.26894, 0.73106, 0.73106,
+                                     0.73106, 0.11920]), [6, 1])
+        labels = np.reshape(np.array([1, 0, 1, 1, 1, 0]), [6, 1])
 
-        assert np.allclose(network.predict(X), x, atol=0.0001)
+        assert (np.array_equal(network.predict(X), labels)
+                and np.allclose(network.predicted_probs, probs, atol=0.0001))
 
 
 if __name__ == '__main__':

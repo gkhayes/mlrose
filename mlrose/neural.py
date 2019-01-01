@@ -477,6 +477,7 @@ class NeuralNetwork:
         self.fitted_weights = []
         self.loss = np.inf
         self.output_activation = None
+        self.predicted_probs = []
 
     def fit(self, X, y, init_weights=None):
         """Fit neural network to data.
@@ -603,6 +604,17 @@ class NeuralNetwork:
                 inputs = self.activation(outputs)
             else:
                 y_pred = self.output_activation(outputs)
+
+        # For classifier, convert predicted probabilities to 0-1 labels
+        if self.is_classifier:
+            self.predicted_probs = y_pred
+
+            if self.node_list[-1] == 1:
+                y_pred = np.round(y_pred).astype(int)
+            else:
+                zeros = np.zeros_like(y_pred)
+                zeros[np.arange(len(y_pred)), np.argmax(y_pred, axis=1)] = 1
+                y_pred = zeros.astype(int)
 
         return y_pred
 
