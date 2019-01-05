@@ -23,8 +23,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
     restarts: int, default: 0
         Number of random restarts.
     init_state: array, default: None
-        Numpy array containing starting state for algorithm.
-        If None, then a random state is used.
+        1-D Numpy array containing starting state for algorithm.
+        If :code:`None`, then a random state is used.
 
     Returns
     -------
@@ -103,8 +103,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     restarts: int, default: 0
         Number of random restarts.
     init_state: array, default: None
-        Numpy array containing starting state for algorithm.
-        If None, then a random state is used.
+        1-D Numpy array containing starting state for algorithm.
+        If :code:`None`, then a random state is used.
 
     Returns
     -------
@@ -116,7 +116,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     References
     ----------
     Brownlee, J (2011). *Clever Algorithms: Nature-Inspired Programming
-    Recipes*. `<www.cleveralgorithms.com>`_.
+    Recipes*. `<http://www.cleveralgorithms.com>`_.
     """
     if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
        or (max_attempts < 0):
@@ -189,8 +189,8 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     max_iters: int, default: np.inf
         Maximum number of iterations of the algorithm.
     init_state: array, default: None
-        Numpy array containing starting state for algorithm.
-        If None, then a random state is used.
+        1-D Numpy array containing starting state for algorithm.
+        If :code:`None`, then a random state is used.
 
     Returns
     -------
@@ -269,8 +269,8 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     pop_size: int, default: 200
         Size of population to be used in genetic algorithm.
     mutation_prob: float, default: 0.1
-        Probability of a mutation at each element during reproduction,
-        expressed as a value between 0 and 1.
+        Probability of a mutation at each element of the state vector
+        during reproduction, expressed as a value between 0 and 1.
     max_attempts: int, default: 10
         Maximum number of attempts to find a better state at each step.
     max_iters: int, default: np.inf

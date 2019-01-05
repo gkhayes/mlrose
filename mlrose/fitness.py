@@ -232,7 +232,7 @@ class FourPeaks:
     where:
 
     * :math:`tail(b, x)` is the number of trailing b's in :math:`x`;
-    * :math:`head(b, x)` is the number of leading b's in :math:`x`; and
+    * :math:`head(b, x)` is the number of leading b's in :math:`x`;
     * :math:`R(x, T) = n`, if :math:`tail(0, x) > T` and
       :math:`head(1, x) > T`; and
     * :math:`R(x, T) = 0`, otherwise.
@@ -329,7 +329,7 @@ class SixPeaks:
     where:
 
     * :math:`tail(b, x)` is the number of trailing b's in :math:`x`;
-    * :math:`head(b, x)` is the number of leading b's in :math:`x`; and
+    * :math:`head(b, x)` is the number of leading b's in :math:`x`;
     * :math:`R(x, T) = n`, if (:math:`tail(0, x) > T` and
       :math:`head(1, x) > T`) or (:math:`tail(1, x) > T` and
       :math:`head(0, x) > T`); and
@@ -430,7 +430,7 @@ class ContinuousPeaks:
     where:
 
     * :math:`max\\_run(b, x)` is the length of the maximum run of b's
-      in :math:`x`; and
+      in :math:`x`;
     * :math:`R(x, T) = n`, if (:math:`max\\_run(0, x) > T` and
       :math:`max\\_run(1, x) > T`); and
     * :math:`R(x, T) = 0`, otherwise.
@@ -514,7 +514,7 @@ class ContinuousPeaks:
 class Knapsack:
     """Fitness function for Knapsack optimization problem. Given a set of n
     items, where item i has known weight :math:`w_{i}` and known value
-    :math:`v_{i}`, and maximum knapsack capacity, :math:`W`, the Knapsack
+    :math:`v_{i}`; and maximum knapsack capacity, :math:`W`, the Knapsack
     fitness function evaluates the fitness of a state vector
     :math:`x = [x_{0}, x_{1}, \\ldots, x_{n-1}]` as:
 
@@ -531,8 +531,7 @@ class Knapsack:
         List of weights for each of the n items.
 
     values: list
-        List of values for each of the n items. Must be same length as the
-        weights list.
+        List of values for each of the n items.
 
     max_weight_pct: float, default: 0.35
         Parameter used to set maximum capacity of knapsack (W) as a percentage
@@ -577,8 +576,8 @@ class Knapsack:
         if min(self.values) <= 0:
             raise Exception("""All values must be greater than 0.""")
 
-        if (max_weight_pct <= 0) or (max_weight_pct > 1):
-            raise Exception("""max_weight_pct must be between 0 and 1.""")
+        if max_weight_pct <= 0:
+            raise Exception("""max_weight_pct must be greater than 0.""")
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -646,7 +645,7 @@ class TravellingSales:
         Order of the nodes does not matter, so (u, v, d) and (v, u, d) are
         considered to be the same. If a pair is missing from the list, it is
         assumed that travel between the two nodes is not possible. This
-        argument is ignored if coords is not None.
+        argument is ignored if coords is not :code:`None`.
 
     Examples
     --------

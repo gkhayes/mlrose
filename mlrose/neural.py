@@ -359,11 +359,11 @@ class NeuralNetwork:
         Maximum number of iterations used to fit the weights.
 
     bias: bool, default: True
-        Whether to include a bias term at each layer.
+        Whether to include a bias term.
 
     is_classifer: bool, default: True
-        Whether the network is for classification or regression. Set True for
-        classification and False for regression.
+        Whether the network is for classification or regression. Set
+        :code:`True` for classification and :code:`False` for regression.
 
     learning_rate: float, default: 0.1
         Learning rate for gradient descent or step size for randomized
@@ -371,26 +371,27 @@ class NeuralNetwork:
 
     early_stopping: bool, default: False
         Whether to terminate algorithm early if the loss is not improving.
-        If True, then stop after max_attempts iters with no improvement.
+        If :code:`True`, then stop after max_attempts iters with no
+        improvement.
 
     clip_max: float, default: 1e+10
         Used to limit weights to the range [-1*clip_max, clip_max].
 
     schedule: schedule object, default = mlrose.GeomDecay()
         Schedule used to determine the value of the temperature parameter.
-        Only required if algorithm = 'simulated_annealing'.
+        Only required if :code:`algorithm = 'simulated_annealing'`.
 
     pop_size: int, default: 200
-        Size of population. Only required if algorithm = 'genetic_alg'.
+        Size of population. Only required if :code:`algorithm = 'genetic_alg'`.
 
     mutation_prob: float, default: 0.1
-        Probability of a mutation at each element during reproduction,
-        expressed as a value between 0 and 1. Only required if
-        algorithm = 'genetic_alg'.
+        Probability of a mutation at each element of the state vector during
+        reproduction, expressed as a value between 0 and 1. Only required if
+        :code:`algorithm = 'genetic_alg'`.
 
     max_attempts: int, default: 10
         Maximum number of attempts to find a better state. Only required if
-        early_stopping = True.
+        :code:`early_stopping = True`.
 
     Attributes
     ----------
@@ -400,6 +401,12 @@ class NeuralNetwork:
     loss: float
         Value of loss function for fitted weights when :code:`fit` is
         performed.
+
+    predicted_probs: array
+        Numpy array giving the predicted probabilities for each class when
+        :code:`predict` is performed for multi-class classification data; or
+        the predicted probability for class 1 when :code:`predict` is performed
+        for binary classification data.
     """
 
     def __init__(self, hidden_nodes, activation='relu',
@@ -494,7 +501,7 @@ class NeuralNetwork:
 
         init_state: array, default: None
             Numpy array containing starting weights for algorithm.
-            If None, then a random state is used.
+            If :code:`None`, then a random state is used.
         """
         # Make sure y is an array and not a list
         y = np.array(y)
@@ -635,7 +642,7 @@ class LinearRegression(NeuralNetwork):
         Maximum number of iterations used to fit the weights.
 
     bias: bool, default: True
-        Whether to include a bias term at each layer.
+        Whether to include a bias term.
 
     learning_rate: float, default: 0.1
         Learning rate for gradient descent or step size for randomized
@@ -643,26 +650,27 @@ class LinearRegression(NeuralNetwork):
 
     early_stopping: bool, default: False
         Whether to terminate algorithm early if the loss is not improving.
-        If True, then stop after max_attempts iters with no improvement.
+        If :code:`True`, then stop after max_attempts iters with no
+        improvement.
 
     clip_max: float, default: 1e+10
         Used to limit weights to the range [-1*clip_max, clip_max].
 
     schedule: schedule object, default = mlrose.GeomDecay()
         Schedule used to determine the value of the temperature parameter.
-        Only required if algorithm = 'simulated_annealing'.
+        Only required if :code:`algorithm = 'simulated_annealing'`.
 
     pop_size: int, default: 200
-        Size of population. Only required if algorithm = 'genetic_alg'.
+        Size of population. Only required if :code:`algorithm = 'genetic_alg'`.
 
     mutation_prob: float, default: 0.1
-        Probability of a mutation at each element during reproduction,
-        expressed as a value between 0 and 1. Only required if
-        algorithm = 'genetic_alg'.
+        Probability of a mutation at each element of the state vector during
+        reproduction, expressed as a value between 0 and 1. Only required if
+        :code:`algorithm = 'genetic_alg'`.
 
     max_attempts: int, default: 10
         Maximum number of attempts to find a better state. Only required if
-        early_stopping = True.
+        :code:`early_stopping = True`.
 
     Attributes
     ----------
@@ -704,7 +712,7 @@ class LogisticRegression(NeuralNetwork):
         Maximum number of iterations used to fit the weights.
 
     bias: bool, default: True
-        Whether to include a bias term at each layer.
+        Whether to include a bias term.
 
     learning_rate: float, default: 0.1
         Learning rate for gradient descent or step size for randomized
@@ -712,26 +720,27 @@ class LogisticRegression(NeuralNetwork):
 
     early_stopping: bool, default: False
         Whether to terminate algorithm early if the loss is not improving.
-        If True, then stop after max_attempts iters with no improvement.
+        If :code:`True`, then stop after max_attempts iters with no
+        improvement.
 
     clip_max: float, default: 1e+10
         Used to limit weights to the range [-1*clip_max, clip_max].
 
     schedule: schedule object, default = mlrose.GeomDecay()
         Schedule used to determine the value of the temperature parameter.
-        Only required if algorithm = 'simulated_annealing'.
+        Only required if :code:`algorithm = 'simulated_annealing'`.
 
     pop_size: int, default: 200
-        Size of population. Only required if algorithm = 'genetic_alg'.
+        Size of population. Only required if :code:`algorithm = 'genetic_alg'`.
 
     mutation_prob: float, default: 0.1
-        Probability of a mutation at each element during reproduction,
-        expressed as a value between 0 and 1. Only required if
-        algorithm = 'genetic_alg'.
+        Probability of a mutation at each element of the state vector during
+        reproduction, expressed as a value between 0 and 1. Only required if
+        :code:`algorithm = 'genetic_alg'`.
 
     max_attempts: int, default: 10
         Maximum number of attempts to find a better state. Only required if
-        early_stopping = True.
+        :code:`early_stopping = True`.
 
     Attributes
     ----------

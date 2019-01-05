@@ -21,7 +21,7 @@ class OptProb:
         Object to implement fitness function for optimization.
     maximize: bool, default: True
         Whether to maximize the fitness function.
-        Set False for minimization problem.
+        Set :code:`False` for minimization problem.
     """
 
     def __init__(self, length, fitness_fn, maximize=True):
@@ -237,11 +237,11 @@ class DiscreteOpt(OptProb):
 
     maximize: bool, default: True
         Whether to maximize the fitness function.
-        Set False for minimization problem.
+        Set :code:`False` for minimization problem.
 
     max_val: int, default: 2
         Number of unique values that each element in the state vector
-        could take. Assumes values are integers in the range 0 to
+        can take. Assumes values are integers in the range 0 to
         (max_val - 1), inclusive.
     """
 
@@ -568,7 +568,7 @@ class ContinuousOpt(OptProb):
 
     maximize: bool, default: True
         Whether to maximize the fitness function.
-        Set False for minimization problem.
+        Set :code:`False` for minimization problem.
 
     min_val: float, default: 0
         Minimum value that each element of the state vector can take.
@@ -795,19 +795,19 @@ class TSPOpt(DiscreteOpt):
         tour.
 
     fitness_fn: fitness function object, default: None
-        Object to implement fitness function for optimization. If None, then
-        :code:`TravellingSales(coords=coords, distances=distances)` is used by
-        default.
+        Object to implement fitness function for optimization. If :code:`None`,
+        then :code:`TravellingSales(coords=coords, distances=distances)` is
+        used by default.
 
     maximize: bool, default: False
         Whether to maximize the fitness function.
-        Set True for maximization problem.
+        Set :code:`False` for minimization problem.
 
     coords: list of pairs, default: None
         Ordered list of the (x, y) co-ordinates of all nodes. This assumes
         that travel between all pairs of nodes is possible. If this is not the
         case, then use distances instead. This argument is ignored if
-        fitness_fn is not None.
+        fitness_fn is not :code:`None`.
 
     distances: list of triples, default: None
         List giving the distances, d, between all pairs of nodes, u and v, for
@@ -815,7 +815,7 @@ class TSPOpt(DiscreteOpt):
         Order of the nodes does not matter, so (u, v, d) and (v, u, d) are
         considered to be the same. If a pair is missing from the list, it is
         assumed that travel between the two nodes is not possible. This
-        argument is ignored if fitness_fn or coords is not None.
+        argument is ignored if fitness_fn or coords is not :code:`None`.
     """
 
     def __init__(self, length, fitness_fn=None, maximize=False, coords=None,
