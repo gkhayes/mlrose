@@ -59,7 +59,7 @@ Clearly, in an optimal solution to this problem, there will be exactly one queen
 
 The chessboard pictured below could, therefore, be described by the state vector :math:`x = [6, 1, 7, 5, 0, 2, 3, 4]`, where the bottom left corner of the chessboard is assumed to be in column 0 and row 0. 
 
-.. image:: pictures/chess1.jpg
+.. image:: pictures/chess1.JPG
    :width: 250px
    :height: 250px
    :alt: chessboard example 1
@@ -182,7 +182,7 @@ The algorithm returns the best state it can find, given the parameter values it 
 
 Running this code gives us a good solution to the 8-Queens problem, but not the optimal solution. The solution found by the algorithm, is pictured below:
 
-.. image:: pictures/chess2.jpg
+.. image:: pictures/chess2.JPG
    :width: 250px
    :height: 250px
    :alt: chessboard example 2
@@ -211,7 +211,7 @@ We can try to improve on our solution by tuning the parameters of our algorithm.
 
 This time when we run our code, we get a solution with a fitness value of 0, indicating that none of the queens on the chessboard are attacking each other. This can be verified below:
 
-.. image:: pictures/chess3.jpg
+.. image:: pictures/chess3.JPG
    :width: 250px
    :height: 250px
    :alt: chessboard example 3
