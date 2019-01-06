@@ -5,3 +5,6 @@ mlrose/__pycache__/*
 build/*
 mlrose.egg-info/*
 dist/*
+docs/_build/*
+docs/_static/*
+docs/_templates/*
