@@ -34,7 +34,9 @@ pip install mlrose
 ```
 
 ## Documentation
-The official mlrose documentation can be found here: <Insert link>
+The official mlrose documentation can be found [here](https://mlrose.readthedocs.io/en/latest/). 
+
+A Jupyter notebook containing the examples used in the documentation is also available [here](https://github.com/gkhayes/mlrose/blob/master/tutorial_examples.ipynb).
 
 ## Licensing, Authors, Acknowledgements
 mlrose was written by Genevieve Hayes and is distributed under the [3-Clause BSD license](https://github.com/gkhayes/mlrose/blob/master/LICENSE). 
