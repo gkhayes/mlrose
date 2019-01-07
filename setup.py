@@ -1,8 +1,8 @@
-""" MLROSe setup file.
+""" MLROSe setup file."""
 
-    Author: Genevieve Hayes
-    License: 3-clause BSD license.
-"""
+# Author: Genevieve Hayes
+# License: BSD 3 clause
+
 from setuptools import setup
 
 
