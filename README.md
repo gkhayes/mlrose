@@ -34,7 +34,7 @@ pip install mlrose
 ```
 
 ## Documentation
-The official mlrose documentation can be found [here](https://mlrose.readthedocs.io/en/latest/). 
+The official mlrose documentation can be found [here](https://mlrose.readthedocs.io/). 
 
 A Jupyter notebook containing the examples used in the documentation is also available [here](https://github.com/gkhayes/mlrose/blob/master/tutorial_examples.ipynb).
 

@@ -15,7 +15,7 @@ def readme():
 
 
 setup(name='mlrose',
-      version='1.1.0',
+      version='0.2.0',
       description="MLROSe: Machine Learning, Randomized Optimization and"
       + " Search",
       long_description=readme(),
