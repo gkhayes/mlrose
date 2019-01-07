@@ -20,13 +20,13 @@ sys.path.insert(0, os.path.abspath('../'))
 # -- Project information -----------------------------------------------------
 
 project = 'mlrose'
-copyright = '2018, Genevieve Hayes'
+copyright = '2019, Genevieve Hayes'
 author = 'Genevieve Hayes'
 
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = '1.1.0'
 
 
 # -- General configuration ---------------------------------------------------
