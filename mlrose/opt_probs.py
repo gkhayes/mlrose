@@ -288,7 +288,7 @@ class DiscreteOpt(OptProb):
 
         # Convert minimum spanning tree to depth first tree with node 0 as root
         dft = depth_first_tree(csr_matrix(mst.toarray()), 0, directed=False)
-        dft = dft.toarray()
+        dft = np.round(dft.toarray(), 10)
 
         # Determine parent of each node
         parent = np.argmin(dft[:, 1:], axis=0)
@@ -347,8 +347,14 @@ class DiscreteOpt(OptProb):
         while len(sample_order) < self.length:
             inds = []
 
-            for i in last:
-                inds += list(np.where(parent == i)[0] + 1)
+            # If last nodes list is empty, select random node than has not
+            # previously been selected
+            if len(last) == 0:
+                inds = [np.random.choice(list(set(np.arange(self.length)) -
+                                              set(sample_order)))]
+            else:
+                for i in last:
+                    inds += list(np.where(parent == i)[0] + 1)
 
             sample_order += last
             last = inds
