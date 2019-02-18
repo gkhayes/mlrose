@@ -8,7 +8,7 @@ import numpy as np
 from .decay import GeomDecay
 
 
-def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
+def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None, curve=False):
     """Use standard hill climbing to find the optimum for a given
     optimization problem.
 
@@ -25,6 +25,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
     init_state: array, default: None
         1-D Numpy array containing starting state for algorithm.
         If :code:`None`, then a random state is used.
+    curve: bool, default: False
+        Boolean to keep fitness values for a curve.
+        If :code:`False`, then no curve is stored.
+        If :code:`True`, then a history of fitness values is provided as a third return value.
 
     Returns
     -------
@@ -32,6 +36,9 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
+    fitness_curve: array
+        Numpy array containing the fitness at every iteration.
+        Only returned if input argument :code:`curve` is :code:`True`.
 
     References
     ----------
@@ -51,6 +58,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
 
     best_fitness = -1*np.inf
     best_state = None
+
+    if curve:
+        fitness_curve = np.array([])
+
 
     for _ in range(restarts + 1):
         # Initialize optimization problem
@@ -80,13 +91,18 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None):
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
+        if curve:
+            fitness_curve = np.append(fitness_curve, problem.get_fitness())
 
     best_fitness = problem.get_maximize()*best_fitness
-    return best_state, best_fitness
+    if curve:
+        return best_state, best_fitness, fitness_curve
+    else:
+        return best_state, best_fitness
 
 
 def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
-                      init_state=None):
+                      init_state=None, curve=False):
     """Use randomized hill climbing to find the optimum for a given
     optimization problem.
 
@@ -105,6 +121,10 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     init_state: array, default: None
         1-D Numpy array containing starting state for algorithm.
         If :code:`None`, then a random state is used.
+    curve: bool, default: False
+        Boolean to keep fitness values for a curve.
+        If :code:`False`, then no curve is stored.
+        If :code:`True`, then a history of fitness values is provided as a third return value.
 
     Returns
     -------
@@ -112,6 +132,9 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
+    fitness_curve: array
+        Numpy array containing the fitness at every iteration.
+        Only returned if input argument :code:`curve` is :code:`True`.
 
     References
     ----------
@@ -135,6 +158,9 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
     best_fitness = -1*np.inf
     best_state = None
+
+    if curve:
+        fitness_curve = np.array([])
 
     for _ in range(restarts + 1):
         # Initialize optimization problem and attempts counter
@@ -167,12 +193,20 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
 
+        if curve:
+            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+
+
     best_fitness = problem.get_maximize()*best_fitness
-    return best_state, best_fitness
+
+    if curve:
+        return best_state, best_fitness, fitness_curve
+    else:
+        return best_state, best_fitness
 
 
 def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
-                        max_iters=np.inf, init_state=None):
+                        max_iters=np.inf, init_state=None, curve=False):
     """Use simulated annealing to find the optimum for a given
     optimization problem.
 
@@ -191,6 +225,10 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     init_state: array, default: None
         1-D Numpy array containing starting state for algorithm.
         If :code:`None`, then a random state is used.
+    curve: bool, default: False
+        Boolean to keep fitness values for a curve.
+        If :code:`False`, then no curve is stored.
+        If :code:`True`, then a history of fitness values is provided as a third return value.
 
     Returns
     -------
@@ -198,6 +236,9 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
+    fitness_curve: array
+        Numpy array containing the fitness at every iteration.
+        Only returned if input argument :code:`curve` is :code:`True`.
 
     References
     ----------
@@ -220,6 +261,9 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         problem.reset()
     else:
         problem.set_state(init_state)
+
+    if curve:
+        fitness_curve = np.array([])
 
     attempts = 0
     iters = 0
@@ -248,15 +292,21 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
             else:
                 attempts += 1
+            
+        if curve:
+            fitness_curve = np.append(fitness_curve, problem.get_fitness())
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
-    return best_state, best_fitness
+    if curve:
+        return best_state, best_fitness, fitness_curve
+    else:
+        return best_state, best_fitness
 
 
 def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
-                max_iters=np.inf):
+                max_iters=np.inf, curve=False):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
@@ -275,6 +325,10 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         Maximum number of attempts to find a better state at each step.
     max_iters: int, default: np.inf
         Maximum number of iterations of the algorithm.
+    curve: bool, default: False
+        Boolean to keep fitness values for a curve.
+        If :code:`False`, then no curve is stored.
+        If :code:`True`, then a history of fitness values is provided as a third return value.
 
     Returns
     -------
@@ -282,6 +336,9 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
+   fitness_curve: array
+        Numpy array containing the fitness at every iteration.
+        Only returned if input argument :code:`curve` is :code:`True`.
 
     References
     ----------
@@ -306,6 +363,11 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     if (not isinstance(max_iters, int) and max_iters != np.inf
             and not max_iters.is_integer()) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
+
+
+    if curve:
+        fitness_curve = np.array([])
+
 
     # Initialize problem, population and attempts counter
     problem.reset()
@@ -348,14 +410,21 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         else:
             attempts += 1
 
+        if curve:
+            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+
+
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
-    return best_state, best_fitness
+    if curve:
+        return best_state, best_fitness, fitness_curve
+    else:
+        return best_state, best_fitness
 
 
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
-          max_iters=np.inf):
+          max_iters=np.inf, curve=False):
     """Use MIMIC to find the optimum for a given optimization problem.
 
     Parameters
@@ -372,6 +441,10 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         Maximum number of attempts to find a better neighbor at each step.
     max_iters: int, default: np.inf
         Maximum number of iterations of the algorithm.
+    curve: bool, default: False
+        Boolean to keep fitness values for a curve.
+        If :code:`False`, then no curve is stored.
+        If :code:`True`, then a history of fitness values is provided as a third return value.
 
     Returns
     -------
@@ -379,6 +452,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
+    fitness_curve: array
+        Numpy array containing the fitness at every iteration.
+        Only returned if input argument :code:`curve` is :code:`True`.
 
     References
     ----------
@@ -412,6 +488,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
             and not max_iters.is_integer()) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
+    if curve:
+        fitness_curve = np.array([])
+
     # Initialize problem, population and attempts counter
     problem.reset()
     problem.random_pop(pop_size)
@@ -444,7 +523,14 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         else:
             attempts += 1
 
+        if curve:
+            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+
+
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state().astype(int)
 
-    return best_state, best_fitness
+    if curve:
+        return best_state, best_fitness, fitness_curve
+    else:
+        return best_state, best_fitness
