@@ -188,13 +188,13 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             else:
                 attempts += 1
 
+            if curve:
+                fitness_curve = np.append(fitness_curve, problem.get_fitness())
+
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
-
-        if curve:
-            fitness_curve = np.append(fitness_curve, problem.get_fitness())
 
 
     best_fitness = problem.get_maximize()*best_fitness
@@ -489,7 +489,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         raise Exception("""max_iters must be a positive integer.""")
 
     if curve:
-        fitness_curve = np.array([])
+        fitness_curve = []
 
     # Initialize problem, population and attempts counter
     problem.reset()
@@ -524,13 +524,13 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
             attempts += 1
 
         if curve:
-            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+            fitness_curve.append(problem.get_pop_fitness())
 
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state().astype(int)
 
     if curve:
-        return best_state, best_fitness, fitness_curve
+        return best_state, best_fitness, np.asarray(fitness_curve)
     else:
         return best_state, best_fitness
