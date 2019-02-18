@@ -337,7 +337,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     best_fitness: float
         Value of fitness function at best state.
    fitness_curve: array
-        Numpy array containing the fitness at every iteration.
+        Numpy array of arrays containing the fitness of the entire population at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.
 
     References
@@ -366,7 +366,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
 
 
     if curve:
-        fitness_curve = np.array([])
+        fitness_curve = []
 
 
     # Initialize problem, population and attempts counter
@@ -411,14 +411,14 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
             attempts += 1
 
         if curve:
-            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+            fitness_curve.append(problem.get_pop_fitness())
 
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
     if curve:
-        return best_state, best_fitness, fitness_curve
+        return best_state, best_fitness, np.asarray(fitness_curve)
     else:
         return best_state, best_fitness
 
