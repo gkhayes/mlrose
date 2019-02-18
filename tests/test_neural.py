@@ -10,7 +10,7 @@ import numpy as np
 # activation.py.
 from mlrose.neural import (flatten_weights, unflatten_weights,
                            gradient_descent, NetworkWeights, ContinuousOpt,
-                           NeuralNetwork, LogisticRegression, LinearRegression)
+                           NeuralNetworkClassifier, LogisticRegression, LinearRegression)
 from mlrose.activation import identity, sigmoid, softmax
 
 
@@ -275,11 +275,11 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_fit_random_hill_climb():
         """Test fit method using the random hill climbing algorithm"""
 
-        network = NeuralNetwork(hidden_nodes=[2], activation='identity',
-                                algorithm='random_hill_climb',
-                                bias=False, is_classifier=True,
-                                learning_rate=1, clip_max=1,
-                                max_attempts=100)
+        network = NeuralNetworkClassifier(hidden_nodes=[2], activation='identity',
+                                          algorithm='random_hill_climb',
+                                          bias=False,
+                                          learning_rate=1, clip_max=1,
+                                          max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -302,11 +302,11 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_fit_simulated_annealing():
         """Test fit method using the simulated_annealing algorithm"""
 
-        network = NeuralNetwork(hidden_nodes=[2], activation='identity',
-                                algorithm='simulated_annealing',
-                                bias=False, is_classifier=True,
-                                learning_rate=1, clip_max=1,
-                                max_attempts=100)
+        network = NeuralNetworkClassifier(hidden_nodes=[2], activation='identity',
+                                          algorithm='simulated_annealing',
+                                          bias=False,
+                                          learning_rate=1, clip_max=1,
+                                          max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -329,11 +329,11 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_fit_genetic_alg():
         """Test fit method using the genetic_alg algorithm"""
 
-        network = NeuralNetwork(hidden_nodes=[2], activation='identity',
-                                algorithm='genetic_alg',
-                                bias=False, is_classifier=True,
-                                learning_rate=1, clip_max=1,
-                                max_attempts=100)
+        network = NeuralNetworkClassifier(hidden_nodes=[2], activation='identity',
+                                          algorithm='genetic_alg',
+                                          bias=False,
+                                          learning_rate=1, clip_max=1,
+                                          max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -354,11 +354,11 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_fit_gradient_descent():
         """Test fit method using the gradient_descent algorithm"""
 
-        network = NeuralNetwork(hidden_nodes=[2], activation='identity',
-                                algorithm='gradient_descent',
-                                bias=False, is_classifier=True,
-                                learning_rate=1, clip_max=1,
-                                max_attempts=100)
+        network = NeuralNetworkClassifier(hidden_nodes=[2], activation='identity',
+                                          algorithm='gradient_descent',
+                                          bias=False,
+                                          learning_rate=1, clip_max=1,
+                                          max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -381,11 +381,11 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_predict_no_bias():
         """Test predict method with no bias term"""
 
-        network = NeuralNetwork(hidden_nodes=[2], activation='identity',
-                                algorithm='random_hill_climb',
-                                bias=False, is_classifier=True,
-                                learning_rate=1, clip_max=1,
-                                max_attempts=100)
+        network = NeuralNetworkClassifier(hidden_nodes=[2], activation='identity',
+                                          algorithm='random_hill_climb',
+                                          bias=False,
+                                          learning_rate=1, clip_max=1,
+                                          max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],
@@ -420,11 +420,11 @@ class TestNeuralNetwork(unittest.TestCase):
     def test_predict_bias():
         """Test predict method with bias term"""
 
-        network = NeuralNetwork(hidden_nodes=[2], activation='identity',
-                                algorithm='random_hill_climb',
-                                bias=True, is_classifier=True,
-                                learning_rate=1, clip_max=1,
-                                max_attempts=100)
+        network = NeuralNetworkClassifier(hidden_nodes=[2], activation='identity',
+                                          algorithm='random_hill_climb',
+                                          bias=True,
+                                          learning_rate=1, clip_max=1,
+                                          max_attempts=100)
 
         X = np.array([[0, 1, 0, 1],
                       [0, 0, 0, 0],

@@ -4,11 +4,16 @@
 # License: BSD 3 clause
 
 import numpy as np
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.metrics import mean_squared_error, log_loss
 from .activation import identity, relu, sigmoid, softmax, tanh
 from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
 from .opt_probs import ContinuousOpt
 from .decay import GeomDecay
+
+from abc import ABCMeta
+from abc import abstractmethod
+from sklearn.externals import six
 
 
 def flatten_weights(weights):
@@ -220,7 +225,7 @@ class NetworkWeights:
         self.activation = activation
         self.bias = bias
         self.is_classifier = is_classifier
-        self.lr = learning_rate
+        self.learning_rate = learning_rate
 
         # Determine appropriate loss function and output activation function
         if self.is_classifier:
@@ -335,7 +340,7 @@ class NetworkWeights:
             delta_list.append(delta)
 
             # Calculate updates
-            updates = -1.0*self.lr*np.dot(np.transpose(self.inputs_list[i]),
+            updates = -1.0*self.learning_rate*np.dot(np.transpose(self.inputs_list[i]),
                                           delta)
 
             updates_list.append(updates)
@@ -346,158 +351,49 @@ class NetworkWeights:
         return updates_list
 
 
-class NeuralNetwork:
-    """Class for defining neural network weights optimization problem.
+class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
+    """Base class for neural networks.
 
-    Parameters
-    ----------
-    hidden_nodes: list of ints
-        List giving the number of nodes in each hidden layer.
-
-    activation: string, default: 'relu'
-        Activation function for each of the hidden layers. Must be one of:
-        'identity', 'relu', 'sigmoid' or 'tanh'.
-
-    algorithm: string, default: 'random_hill_climb'
-        Algorithm used to find optimal network weights. Must be one
-        of:'random_hill_climb', 'simulated_annealing', 'genetic_alg' or
-        'gradient_descent'.
-
-    max_iters: int, default: 100
-        Maximum number of iterations used to fit the weights.
-
-    bias: bool, default: True
-        Whether to include a bias term.
-
-    is_classifer: bool, default: True
-        Whether the network is for classification or regression. Set
-        :code:`True` for classification and :code:`False` for regression.
-
-    learning_rate: float, default: 0.1
-        Learning rate for gradient descent or step size for randomized
-        optimization algorithms.
-
-    early_stopping: bool, default: False
-        Whether to terminate algorithm early if the loss is not improving.
-        If :code:`True`, then stop after max_attempts iters with no
-        improvement.
-
-    clip_max: float, default: 1e+10
-        Used to limit weights to the range [-1*clip_max, clip_max].
-
-    restarts: int, default: 0
-        Number of random restarts.
-        Only required if :code:`algorithm = 'random_hill_climb'`.
-
-    schedule: schedule object, default = mlrose.GeomDecay()
-        Schedule used to determine the value of the temperature parameter.
-        Only required if :code:`algorithm = 'simulated_annealing'`.
-
-    pop_size: int, default: 200
-        Size of population. Only required if :code:`algorithm = 'genetic_alg'`.
-
-    mutation_prob: float, default: 0.1
-        Probability of a mutation at each element of the state vector during
-        reproduction, expressed as a value between 0 and 1. Only required if
-        :code:`algorithm = 'genetic_alg'`.
-
-    max_attempts: int, default: 10
-        Maximum number of attempts to find a better state. Only required if
-        :code:`early_stopping = True`.
-
-    random_state: int, default: None
-        If random_state is a positive integer, random_state is the seed used
-        by np.random.seed(); otherwise, the random seed is not set.
-
-    Attributes
-    ----------
-    fitted_weights: array
-        Numpy array giving the fitted weights when :code:`fit` is performed.
-
-    loss: float
-        Value of loss function for fitted weights when :code:`fit` is
-        performed.
-
-    predicted_probs: array
-        Numpy array giving the predicted probabilities for each class when
-        :code:`predict` is performed for multi-class classification data; or
-        the predicted probability for class 1 when :code:`predict` is performed
-        for binary classification data.
+    Warning: This class should not be used directly.
+    Use derived classes instead.
     """
 
-    def __init__(self, hidden_nodes, activation='relu',
-                 algorithm='random_hill_climb', max_iters=100, bias=True,
-                 is_classifier=True, learning_rate=0.1, early_stopping=False,
-                 clip_max=1e+10, restarts=0, schedule=GeomDecay(),
-                 pop_size=200, mutation_prob=0.1, max_attempts=10,
+    @abstractmethod
+    def __init__(self, hidden_nodes=[10],
+                 activation='relu',
+                 algorithm='random_hill_climb',
+                 max_iters=100,
+                 bias=True,
+                 learning_rate=0.1,
+                 early_stopping=False,
+                 clip_max=1e+10,
+                 restarts=0,
+                 schedule=GeomDecay(),
+                 pop_size=200,
+                 mutation_prob=0.1,
+                 max_attempts=10,
                  random_state=None):
 
-        if (not isinstance(max_iters, int) and max_iters != np.inf
-                and not max_iters.is_integer()) or (max_iters < 0):
-            raise Exception("""max_iters must be a positive integer.""")
-
-        if not isinstance(bias, bool):
-            raise Exception("""bias must be True or False.""")
-
-        if not isinstance(is_classifier, bool):
-            raise Exception("""is_classifier must be True or False.""")
-
-        if learning_rate <= 0:
-            raise Exception("""learning_rate must be greater than 0.""")
-
-        if not isinstance(early_stopping, bool):
-            raise Exception("""early_stopping must be True or False.""")
-
-        if clip_max <= 0:
-            raise Exception("""clip_max must be greater than 0.""")
-
-        if (not isinstance(max_attempts, int)
-                and not max_attempts.is_integer()) or (max_attempts < 0):
-            raise Exception("""max_attempts must be a positive integer.""")
-
-        if pop_size < 0:
-            raise Exception("""pop_size must be a positive integer.""")
-        elif not isinstance(pop_size, int):
-            if pop_size.is_integer():
-                pop_size = int(pop_size)
-            else:
-                raise Exception("""pop_size must be a positive integer.""")
-
-        if (mutation_prob < 0) or (mutation_prob > 1):
-            raise Exception("""mutation_prob must be between 0 and 1.""")
-
         self.hidden_nodes = hidden_nodes
+
+        self.activation_dict = {'identity': identity,
+                                'relu': relu,
+                                'sigmoid': sigmoid,
+                                'tanh': tanh}
+        self.activation = activation
+
+        self.algorithm = algorithm
         self.max_iters = max_iters
         self.bias = bias
-        self.is_classifier = is_classifier
-        self.lr = learning_rate
+        self.learning_rate = learning_rate
         self.early_stopping = early_stopping
         self.clip_max = clip_max
         self.restarts = restarts
         self.schedule = schedule
         self.pop_size = pop_size
         self.mutation_prob = mutation_prob
+        self.max_attempts = max_attempts
         self.random_state = random_state
-
-        activation_dict = {'identity': identity, 'relu': relu,
-                           'sigmoid': sigmoid, 'tanh': tanh}
-        if activation in activation_dict.keys():
-            self.activation = activation_dict[activation]
-        else:
-            raise Exception("""Activation function must be one of: 'identity',
-            'relu', 'sigmoid' or 'tanh'.""")
-
-        if algorithm in ['random_hill_climb', 'simulated_annealing',
-                         'genetic_alg', 'gradient_descent']:
-            self.algorithm = algorithm
-        else:
-            raise Exception("""Algorithm must be one of: 'random_hill_climb',
-            'simulated_annealing', 'genetic_alg', 'gradient_descent'.""")
-
-        if self.early_stopping:
-            self.max_attempts = max_attempts
-        else:
-            self.max_attempts = self.max_iters
 
         self.node_list = []
         self.fitted_weights = []
@@ -505,7 +401,52 @@ class NeuralNetwork:
         self.output_activation = None
         self.predicted_probs = []
 
-    def fit(self, X, y, init_weights=None):
+    @abstractmethod
+    def _is_classifier(self):
+        pass
+
+    def _validate(self):
+        if (not isinstance(self.max_iters, int) and self.max_iters != np.inf
+                and not self.max_iters.is_integer()) or (self.max_iters < 0):
+            raise Exception("""max_iters must be a positive integer.""")
+
+        if not isinstance(self.bias, bool):
+            raise Exception("""bias must be True or False.""")
+
+        if self.learning_rate <= 0:
+            raise Exception("""learning_rate must be greater than 0.""")
+
+        if not isinstance(self.early_stopping, bool):
+            raise Exception("""early_stopping must be True or False.""")
+
+        if self.clip_max <= 0:
+            raise Exception("""clip_max must be greater than 0.""")
+
+        if (not isinstance(self.max_attempts, int)
+                and not self.max_attempts.is_integer()) or (self.max_attempts < 0):
+            raise Exception("""max_attempts must be a positive integer.""")
+
+        if self.pop_size < 0:
+            raise Exception("""pop_size must be a positive integer.""")
+        elif not isinstance(self.pop_size, int):
+            if self.pop_size.is_integer():
+                self.pop_size = int(self.pop_size)
+            else:
+                raise Exception("""pop_size must be a positive integer.""")
+
+        if (self.mutation_prob < 0) or (self.mutation_prob > 1):
+            raise Exception("""mutation_prob must be between 0 and 1.""")
+
+        if self.activation is None or self.activation not in self.activation_dict.keys():
+            raise Exception("""Activation function must be one of: 'identity',
+                    'relu', 'sigmoid' or 'tanh'.""")
+
+        if self.algorithm not in ['random_hill_climb', 'simulated_annealing',
+                                  'genetic_alg', 'gradient_descent']:
+            raise Exception("""Algorithm must be one of: 'random_hill_climb',
+                    'simulated_annealing', 'genetic_alg', 'gradient_descent'.""")
+
+    def fit(self, X, y=None, init_weights=None):
         """Fit neural network to data.
 
         Parameters
@@ -522,6 +463,8 @@ class NeuralNetwork:
             Numpy array containing starting weights for algorithm.
             If :code:`None`, then a random state is used.
         """
+        self._validate()
+
         # Make sure y is an array and not a list
         y = np.array(y)
 
@@ -552,12 +495,14 @@ class NeuralNetwork:
             np.random.seed(self.random_state)
 
         # Initialize optimization problem
-        fitness = NetworkWeights(X, y, node_list, self.activation, self.bias,
-                                 self.is_classifier, learning_rate=self.lr)
+        fitness = NetworkWeights(X, y, node_list,
+                                 self.activation_dict[self.activation],
+                                 self.bias,
+                                 self._is_classifier(), learning_rate=self.learning_rate)
 
         problem = ContinuousOpt(num_nodes, fitness, maximize=False,
                                 min_val=-1*self.clip_max,
-                                max_val=self.clip_max, step=self.lr)
+                                max_val=self.clip_max, step=self.learning_rate)
 
         if self.algorithm == 'random_hill_climb':
             fitted_weights = None
@@ -571,7 +516,7 @@ class NeuralNetwork:
 
                 current_weights, current_loss = random_hill_climb(
                     problem,
-                    max_attempts=self.max_attempts, max_iters=self.max_iters,
+                    max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters,
                     restarts=0, init_state=init_weights)
 
                 if current_loss < loss:
@@ -583,21 +528,21 @@ class NeuralNetwork:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
             fitted_weights, loss = simulated_annealing(
                 problem,
-                schedule=self.schedule, max_attempts=self.max_attempts,
+                schedule=self.schedule, max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
                 max_iters=self.max_iters, init_state=init_weights)
 
         elif self.algorithm == 'genetic_alg':
             fitted_weights, loss = genetic_alg(
                 problem,
                 pop_size=self.pop_size, mutation_prob=self.mutation_prob,
-                max_attempts=self.max_attempts, max_iters=self.max_iters)
+                max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters)
 
         else:  # Gradient descent case
             if init_weights is None:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
             fitted_weights, loss = gradient_descent(
                 problem,
-                max_attempts=self.max_attempts, max_iters=self.max_iters,
+                max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters,
                 init_state=init_weights)
 
         # Save fitted weights and node list
@@ -606,7 +551,9 @@ class NeuralNetwork:
         self.loss = loss
         self.output_activation = fitness.get_output_activation()
 
-    def predict(self, X):
+        return self
+
+    def predict(self, X, y=None):
         """Use model to predict data labels for given feature array.
 
         Parameters
@@ -641,12 +588,12 @@ class NeuralNetwork:
 
             # Transform outputs to get inputs for next layer (or final preds)
             if i < len(weights) - 1:
-                inputs = self.activation(outputs)
+                inputs = self.activation_dict[self.activation](outputs)
             else:
                 y_pred = self.output_activation(outputs)
 
         # For classifier, convert predicted probabilities to 0-1 labels
-        if self.is_classifier:
+        if self._is_classifier():
             self.predicted_probs = y_pred
 
             if self.node_list[-1] == 1:
@@ -712,7 +659,112 @@ class NeuralNetwork:
             self.mutation_prob = in_params['mutation_prob']
 
 
-class LinearRegression(NeuralNetwork):
+class NeuralNetworkClassifier(BaseNeuralNetwork, ClassifierMixin):
+    """Class for defining neural network classifier weights optimization problem.
+
+    Parameters
+    ----------
+    hidden_nodes: list of ints
+        List giving the number of nodes in each hidden layer.
+
+    activation: string, default: 'relu'
+        Activation function for each of the hidden layers. Must be one of:
+        'identity', 'relu', 'sigmoid' or 'tanh'.
+
+    algorithm: string, default: 'random_hill_climb'
+        Algorithm used to find optimal network weights. Must be one
+        of:'random_hill_climb', 'simulated_annealing', 'genetic_alg' or
+        'gradient_descent'.
+
+    max_iters: int, default: 100
+        Maximum number of iterations used to fit the weights.
+
+    bias: bool, default: True
+        Whether to include a bias term.
+
+    learning_rate: float, default: 0.1
+        Learning rate for gradient descent or step size for randomized
+        optimization algorithms.
+
+    early_stopping: bool, default: False
+        Whether to terminate algorithm early if the loss is not improving.
+        If :code:`True`, then stop after max_attempts iters with no
+        improvement.
+
+    clip_max: float, default: 1e+10
+        Used to limit weights to the range [-1*clip_max, clip_max].
+
+    restarts: int, default: 0
+        Number of random restarts.
+        Only required if :code:`algorithm = 'random_hill_climb'`.
+
+    schedule: schedule object, default = mlrose.GeomDecay()
+        Schedule used to determine the value of the temperature parameter.
+        Only required if :code:`algorithm = 'simulated_annealing'`.
+
+    pop_size: int, default: 200
+        Size of population. Only required if :code:`algorithm = 'genetic_alg'`.
+
+    mutation_prob: float, default: 0.1
+        Probability of a mutation at each element of the state vector during
+        reproduction, expressed as a value between 0 and 1. Only required if
+        :code:`algorithm = 'genetic_alg'`.
+
+    max_attempts: int, default: 10
+        Maximum number of attempts to find a better state. Only required if
+        :code:`early_stopping = True`.
+
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
+
+    Attributes
+    ----------
+    fitted_weights: array
+        Numpy array giving the fitted weights when :code:`fit` is performed.
+
+    loss: float
+        Value of loss function for fitted weights when :code:`fit` is
+        performed.
+
+    predicted_probs: array
+        Numpy array giving the predicted probabilities for each class when
+        :code:`predict` is performed for multi-class classification data; or
+        the predicted probability for class 1 when :code:`predict` is performed
+        for binary classification data.
+    """
+
+    def __init__(self, hidden_nodes=[10],
+                 activation='relu',
+                 algorithm='random_hill_climb',
+                 max_iters=100,
+                 bias=True,
+                 learning_rate=0.1,
+                 early_stopping=False,
+                 clip_max=1e+10,
+                 schedule=GeomDecay(),
+                 pop_size=200,
+                 mutation_prob=0.1,
+                 max_attempts=10):
+        super(NeuralNetworkClassifier, self).__init__(
+            hidden_nodes=hidden_nodes,
+            activation=activation,
+            algorithm=algorithm,
+            max_iters=max_iters,
+            bias=bias,
+            learning_rate=learning_rate,
+            early_stopping=early_stopping,
+            clip_max=clip_max,
+            schedule=schedule,
+            pop_size=pop_size,
+            mutation_prob=mutation_prob,
+            max_attempts=max_attempts)
+
+    def _is_classifier(self):
+        return True
+
+
+class LinearRegression(BaseNeuralNetwork, RegressorMixin):
     """Class for defining linear regression weights optimization
     problem. Inherits :code:`fit` and :code:`predict` methods from
     :code:`NeuralNetwork()` class.
@@ -780,17 +832,19 @@ class LinearRegression(NeuralNetwork):
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
                  restarts=0, schedule=GeomDecay(), pop_size=200,
                  mutation_prob=0.1, max_attempts=10, random_state=None):
-
-        NeuralNetwork.__init__(
+        BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='identity',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
-            is_classifier=False, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max, restarts=0,
+            learning_rate=learning_rate,
+            early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
             max_attempts=max_attempts, random_state=random_state)
 
+    def _is_classifier(self):
+        return False
 
-class LogisticRegression(NeuralNetwork):
+
+class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
     """Class for defining logistic regression weights optimization
     problem. Inherits :code:`fit` and :code:`predict` methods from
     :code:`NeuralNetwork()` class.
@@ -856,13 +910,15 @@ class LogisticRegression(NeuralNetwork):
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
-                 restarts=0, schedule=GeomDecay(), pop_size=200,
-                 mutation_prob=0.1, max_attempts=10, random_state=None):
-
-        NeuralNetwork.__init__(
+                 restarts=0, schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
+                 max_attempts=10, random_state=None):
+        BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
-            is_classifier=True, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max, restarts=0,
+            learning_rate=learning_rate,
+            early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
             max_attempts=max_attempts, random_state=random_state)
+
+    def _is_classifier(self):
+        return True
