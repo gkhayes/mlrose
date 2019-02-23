@@ -625,6 +625,37 @@ class NeuralNetwork:
 
         return y_pred
 
+    def get_params(self, deep=True):
+        params = {'hidden_nodes':self.hidden_nodes, 'max_iters':self.max_iters, 
+            'bias':self.bias, 'is_classifier':self.is_classifier, 
+            'learning_rate':self.lr, 'early_stopping':self.early_stopping, 
+            'clip_max':self.clip_max, 'schedule':self.schedule, 
+            'pop_size':self.pop_size, 'mutation_prob':self.mutation_prob}
+        
+        return params
+
+    def set_params(self, **in_params):
+        if 'hidden_nodes' in in_params.keys():
+            self.hidden_nodes = in_params['hidden_nodes']
+        if 'max_iters' in in_params.keys():
+            self.max_iters = in_params['max_iters']
+        if 'bias' in in_params.keys():
+            self.bias = in_params['bias']
+        if 'is_classifier' in in_params.keys():
+            self.is_classifier = in_params['is_classifier']
+        if 'learning_rate' in in_params.keys():
+            self.lr = in_params['learning_rate']
+        if 'early_stopping' in in_params.keys():
+            self.early_stopping = in_params['early_stopping']
+        if 'clip_max' in in_params.keys():
+            self.clip_max = in_params['clip_max']
+        if 'schedule' in in_params.keys():
+            self.schedule = in_params['schedule']
+        if 'pop_size' in in_params.keys():
+            self.pop_size = in_params['pop_size']
+        if 'mutation_prob' in in_params.keys():
+            self.mutation_prob = in_params['mutation_prob']
+    
 
 class LinearRegression(NeuralNetwork):
     """Class for defining linear regression weights optimization
