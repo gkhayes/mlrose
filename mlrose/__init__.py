@@ -9,5 +9,5 @@ from .decay import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       Knapsack, TravellingSales, Queens, MaxKColor, 
                       CustomFitness)
-from .neural import NeuralNetworkClassifier, NeuralNetworkRegressor, LinearRegression, LogisticRegression
+from .neural import NeuralNetworkClassifier, LinearRegression, LogisticRegression
 from .opt_probs import DiscreteOpt, ContinuousOpt, TSPOpt
