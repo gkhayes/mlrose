@@ -96,10 +96,9 @@ def softmax(x):
         Value of activation function at x
     """
     max_prob = np.max(x, axis=1).reshape((-1, 1))
-    fx = x - max_prob
-    np.exp(fx, fx)
+    fx = np.exp(x - max_prob)
     sum_prob = np.sum(fx, axis=1).reshape((-1, 1))
-    fx /= sum_prob
+    fx = np.divide(fx, sum_prob)
 
     return fx
 
