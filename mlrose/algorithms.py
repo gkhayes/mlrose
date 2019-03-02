@@ -341,7 +341,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         Numpy array containing state that optimizes the fitness function.
     best_fitness: float
         Value of fitness function at best state.
-   fitness_curve: array
+    fitness_curve: array
         Numpy array of arrays containing the fitness of the entire population
         at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.

@@ -489,10 +489,15 @@ class DiscreteOpt(OptProb):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
         # Reproduce parents
-        _n = np.random.randint(self.length - 1)
-        child = np.array([0]*self.length)
-        child[0:_n+1] = parent_1[0:_n+1]
-        child[_n+1:] = parent_2[_n+1:]
+        if self.length > 1:
+            _n = np.random.randint(self.length - 1)
+            child = np.array([0]*self.length)
+            child[0:_n+1] = parent_1[0:_n+1]
+            child[_n+1:] = parent_2[_n+1:]
+        elif np.random.randint(2) == 0:
+            child = np.copy(parent_1)
+        else:
+            child = np.copy(parent_2)
 
         # Mutate child
         rand = np.random.uniform(size=self.length)
@@ -748,10 +753,16 @@ class ContinuousOpt(OptProb):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
         # Reproduce parents
-        _n = np.random.randint(self.length - 1)
-        child = np.array([0.0]*self.length)
-        child[0:_n+1] = parent_1[0:_n+1]
-        child[_n+1:] = parent_2[_n+1:]
+        if self.length > 1:
+            _n = np.random.randint(self.length - 1)
+            child = np.array([0.0]*self.length)
+            child[0:_n+1] = parent_1[0:_n+1]
+            child[_n+1:] = parent_2[_n+1:]
+        elif np.random.randint(2) == 0:
+            child = np.copy(parent_1)
+        else:
+            child = np.copy(parent_2)
+
         # Mutate child
         rand = np.random.uniform(size=self.length)
         mutate = np.where(rand < mutation_prob)[0]
@@ -973,12 +984,18 @@ class TSPOpt(DiscreteOpt):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
         # Reproduce parents
-        _n = np.random.randint(self.length - 1)
-        child = np.array([0]*self.length)
-        child[0:_n+1] = parent_1[0:_n+1]
+        if self.length > 1:
+            _n = np.random.randint(self.length - 1)
+            child = np.array([0]*self.length)
+            child[0:_n+1] = parent_1[0:_n+1]
 
-        unvisited = [node for node in parent_2 if node not in parent_1[0:_n+1]]
-        child[_n+1:] = unvisited
+            unvisited = \
+                [node for node in parent_2 if node not in parent_1[0:_n+1]]
+            child[_n+1:] = unvisited
+        elif np.random.randint(2) == 0:
+            child = np.copy(parent_1)
+        else:
+            child = np.copy(parent_2)
 
         # Mutate child
         rand = np.random.uniform(size=self.length)
