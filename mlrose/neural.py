@@ -71,7 +71,7 @@ def unflatten_weights(flat_weights, node_list):
 
 
 def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
-                     init_state=None):
+                     init_state=None, random_state=None):
     """Use gradient_descent to find the optimal neural network weights.
 
     Parameters
@@ -88,6 +88,10 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
     init_state: array, default: None
         Numpy array containing starting state for algorithm.
         If None, then a random state is used.
+
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
 
     Returns
     -------
@@ -107,6 +111,10 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
 
     if init_state is not None and len(init_state) != problem.get_length():
         raise Exception("""init_state must have same length as problem.""")
+
+    # Set random seed
+    if isinstance(random_state, int) and random_state > 0:
+        np.random.seed(random_state)
 
     # Initialize problem, time and attempts counter
     if init_state is None:
@@ -393,6 +401,10 @@ class NeuralNetwork:
         Maximum number of attempts to find a better state. Only required if
         :code:`early_stopping = True`.
 
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
+
     Attributes
     ----------
     fitted_weights: array
@@ -413,7 +425,7 @@ class NeuralNetwork:
                  algorithm='random_hill_climb', max_iters=100, bias=True,
                  is_classifier=True, learning_rate=0.1, early_stopping=False,
                  clip_max=1e+10, schedule=GeomDecay(), pop_size=200,
-                 mutation_prob=0.1, max_attempts=10):
+                 mutation_prob=0.1, max_attempts=10, random_state=None):
 
         if (not isinstance(max_iters, int) and max_iters != np.inf
                 and not max_iters.is_integer()) or (max_iters < 0):
@@ -459,6 +471,7 @@ class NeuralNetwork:
         self.schedule = schedule
         self.pop_size = pop_size
         self.mutation_prob = mutation_prob
+        self.random_state = random_state
 
         activation_dict = {'identity': identity, 'relu': relu,
                            'sigmoid': sigmoid, 'tanh': tanh}
@@ -527,6 +540,10 @@ class NeuralNetwork:
         if init_weights is not None and len(init_weights) != num_nodes:
             raise Exception("""init_weights must be None or have length %d"""
                             % (num_nodes,))
+
+        # Set random seed
+        if isinstance(self.random_state, int) and self.random_state > 0:
+            np.random.seed(self.random_state)
 
         # Initialize optimization problem
         fitness = NetworkWeights(X, y, node_list, self.activation, self.bias,
@@ -722,6 +739,10 @@ class LinearRegression(NeuralNetwork):
         Maximum number of attempts to find a better state. Only required if
         :code:`early_stopping = True`.
 
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
+
     Attributes
     ----------
     fitted_weights: array
@@ -735,7 +756,7 @@ class LinearRegression(NeuralNetwork):
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
                  schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
-                 max_attempts=10):
+                 max_attempts=10, random_state=None):
 
         NeuralNetwork.__init__(
             self, hidden_nodes=[], activation='identity',
@@ -743,7 +764,7 @@ class LinearRegression(NeuralNetwork):
             is_classifier=False, learning_rate=learning_rate,
             early_stopping=early_stopping, clip_max=clip_max,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
-            max_attempts=max_attempts)
+            max_attempts=max_attempts, random_state=random_state)
 
 
 class LogisticRegression(NeuralNetwork):
@@ -792,6 +813,10 @@ class LogisticRegression(NeuralNetwork):
         Maximum number of attempts to find a better state. Only required if
         :code:`early_stopping = True`.
 
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
+
     Attributes
     ----------
     fitted_weights: array
@@ -805,7 +830,7 @@ class LogisticRegression(NeuralNetwork):
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
                  schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
-                 max_attempts=10):
+                 max_attempts=10, random_state=None):
 
         NeuralNetwork.__init__(
             self, hidden_nodes=[], activation='sigmoid',
@@ -813,4 +838,4 @@ class LogisticRegression(NeuralNetwork):
             is_classifier=True, learning_rate=learning_rate,
             early_stopping=early_stopping, clip_max=clip_max,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
-            max_attempts=max_attempts)
+            max_attempts=max_attempts, random_state=random_state)

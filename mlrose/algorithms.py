@@ -9,7 +9,7 @@ from .decay import GeomDecay
 
 
 def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
-               curve=False):
+               curve=False, random_state=None):
     """Use standard hill climbing to find the optimum for a given
     optimization problem.
 
@@ -31,6 +31,9 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
         If :code:`False`, then no curve is stored.
         If :code:`True`, then a history of fitness values is provided as a
         third return value.
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
 
     Returns
     -------
@@ -57,6 +60,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
     if init_state is not None and len(init_state) != problem.get_length():
         raise Exception("""init_state must have same length as problem.""")
+
+    # Set random seed
+    if isinstance(random_state, int) and random_state > 0:
+        np.random.seed(random_state)
 
     best_fitness = -1*np.inf
     best_state = None
@@ -105,7 +112,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
 
 def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
-                      init_state=None, curve=False):
+                      init_state=None, curve=False, random_state=None):
     """Use randomized hill climbing to find the optimum for a given
     optimization problem.
 
@@ -129,6 +136,9 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         If :code:`False`, then no curve is stored.
         If :code:`True`, then a history of fitness values is provided as a
         third return value.
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
 
     Returns
     -------
@@ -159,6 +169,10 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
     if init_state is not None and len(init_state) != problem.get_length():
         raise Exception("""init_state must have same length as problem.""")
+
+    # Set random seed
+    if isinstance(random_state, int) and random_state > 0:
+        np.random.seed(random_state)
 
     best_fitness = -1*np.inf
     best_state = None
@@ -209,7 +223,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
 
 def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
-                        max_iters=np.inf, init_state=None, curve=False):
+                        max_iters=np.inf, init_state=None, curve=False,
+                        random_state=None):
     """Use simulated annealing to find the optimum for a given
     optimization problem.
 
@@ -233,6 +248,9 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         If :code:`False`, then no curve is stored.
         If :code:`True`, then a history of fitness values is provided as a
         third return value.
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
 
     Returns
     -------
@@ -259,6 +277,10 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
     if init_state is not None and len(init_state) != problem.get_length():
         raise Exception("""init_state must have same length as problem.""")
+
+    # Set random seed
+    if isinstance(random_state, int) and random_state > 0:
+        np.random.seed(random_state)
 
     # Initialize problem, time and attempts counter
     if init_state is None:
@@ -310,7 +332,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
 
 def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
-                max_iters=np.inf, curve=False):
+                max_iters=np.inf, curve=False, random_state=None):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
@@ -334,6 +356,9 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         If :code:`False`, then no curve is stored.
         If :code:`True`, then a history of fitness values is provided as a
         third return value.
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
 
     Returns
     -------
@@ -369,6 +394,10 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     if (not isinstance(max_iters, int) and max_iters != np.inf
             and not max_iters.is_integer()) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
+
+    # Set random seed
+    if isinstance(random_state, int) and random_state > 0:
+        np.random.seed(random_state)
 
     if curve:
         fitness_curve = []
@@ -427,7 +456,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
 
 
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
-          max_iters=np.inf, curve=False):
+          max_iters=np.inf, curve=False, random_state=None):
     """Use MIMIC to find the optimum for a given optimization problem.
 
     Parameters
@@ -449,6 +478,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         If :code:`False`, then no curve is stored.
         If :code:`True`, then a history of fitness values is provided as a
         third return value.
+    random_state: int, default: None
+        If random_state is a positive integer, random_state is the seed used
+        by np.random.seed(); otherwise, the random seed is not set.
 
     Returns
     -------
@@ -491,6 +523,10 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if (not isinstance(max_iters, int) and max_iters != np.inf
             and not max_iters.is_integer()) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
+
+    # Set random seed
+    if isinstance(random_state, int) and random_state > 0:
+        np.random.seed(random_state)
 
     if curve:
         fitness_curve = []

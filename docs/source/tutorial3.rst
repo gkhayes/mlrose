@@ -126,13 +126,11 @@ This model is initialized and fitted to our preprocessed data below:
 .. code-block:: python
 
     # Initialize neural network object and fit object
-
-    np.random.seed(3)
-
     nn_model1 = mlrose.NeuralNetwork(hidden_nodes = [2], activation = 'relu', \
                                      algorithm = 'random_hill_climb', max_iters = 1000, \
                                      bias = True, is_classifier = True, learning_rate = 0.0001, \
-                                     early_stopping = True, clip_max = 5, max_attempts = 100)
+                                     early_stopping = True, clip_max = 5, max_attempts = 100, \
+                                     random_state = 3)
 
     nn_model1.fit(X_train_scaled, y_train_hot)
 	
@@ -167,12 +165,11 @@ We can potentially improve on the accuracy of our model by tuning the parameters
 .. code-block:: python
 
     # Initialize neural network object and fit object
-    np.random.seed(3)
-
     nn_model2 = mlrose.NeuralNetwork(hidden_nodes = [2], activation = 'relu', \
                                      algorithm = 'gradient_descent', max_iters = 1000, \
                                      bias = True, is_classifier = True, learning_rate = 0.0001, \
-                                     early_stopping = True, clip_max = 5, max_attempts = 100)
+                                     early_stopping = True, clip_max = 5, max_attempts = 100, \
+                                     random_state = 3)
 
     nn_model2.fit(X_train_scaled, y_train_hot)
 	
@@ -206,7 +203,8 @@ For example, suppose we wished to fit a logistic regression to our Iris data usi
     lr_nn_model1 = mlrose.NeuralNetwork(hidden_nodes = [], activation = 'sigmoid', \
                                         algorithm = 'random_hill_climb', max_iters = 1000, \
                                         bias = True, is_classifier = True, learning_rate = 0.0001, \
-                                        early_stopping = True, clip_max = 5, max_attempts = 100)
+                                        early_stopping = True, clip_max = 5, max_attempts = 100, \
+                                        random_state = 3)
 
 However, for convenience, mlrose provides the :code:`LinearRegression()` and :code:`LogisticRegression()` wrapper classes, which simplify model initialization. 
 
@@ -216,12 +214,10 @@ In our Iris dataset example, we can, thus, initialize and fit our logistic regre
 .. code-block:: python
 
     # Initialize logistic regression object and fit object
-
-    np.random.seed(3)
-
     lr_model1 = mlrose.LogisticRegression(algorithm = 'random_hill_climb', max_iters = 1000, \
                                           bias = True, learning_rate = 0.0001, \
-                                          early_stopping = True, clip_max = 5, max_attempts = 100)
+                                          early_stopping = True, clip_max = 5, max_attempts = 100, \
+                                          random_state = 3)
 
     lr_model1.fit(X_train_scaled, y_train_hot)
 
@@ -251,12 +247,10 @@ Suppose we increase our learning rate to 0.01.
 .. code-block:: python
 
     # Initialize logistic regression object and fit object
-
-    np.random.seed(3)
-
     lr_model2 = mlrose.LogisticRegression(algorithm = 'random_hill_climb', max_iters = 1000, \
                                           bias = True, learning_rate = 0.01, \
-                                          early_stopping = True, clip_max = 5, max_attempts = 100)
+                                          early_stopping = True, clip_max = 5, max_attempts = 100, \
+                                          random_state = 3)
 
     lr_model2.fit(X_train_scaled, y_train_hot)
 
