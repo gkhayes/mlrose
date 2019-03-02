@@ -8,7 +8,8 @@ import numpy as np
 from .decay import GeomDecay
 
 
-def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None, curve=False):
+def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
+               curve=False):
     """Use standard hill climbing to find the optimum for a given
     optimization problem.
 
@@ -28,7 +29,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None, curve=Fal
     curve: bool, default: False
         Boolean to keep fitness values for a curve.
         If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a third return value.
+        If :code:`True`, then a history of fitness values is provided as a
+        third return value.
 
     Returns
     -------
@@ -60,8 +62,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None, curve=Fal
     best_state = None
 
     if curve:
-        fitness_curve = np.array([])
-
+        fitness_curve = []
 
     for _ in range(restarts + 1):
         # Initialize optimization problem
@@ -91,14 +92,16 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None, curve=Fal
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
+
         if curve:
-            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+            fitness_curve.append(problem.get_fitness())
 
     best_fitness = problem.get_maximize()*best_fitness
+
     if curve:
-        return best_state, best_fitness, fitness_curve
-    else:
-        return best_state, best_fitness
+        return best_state, best_fitness, np.asarray(fitness_curve)
+
+    return best_state, best_fitness
 
 
 def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
@@ -124,7 +127,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     curve: bool, default: False
         Boolean to keep fitness values for a curve.
         If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a third return value.
+        If :code:`True`, then a history of fitness values is provided as a
+        third return value.
 
     Returns
     -------
@@ -160,7 +164,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     best_state = None
 
     if curve:
-        fitness_curve = np.array([])
+        fitness_curve = []
 
     for _ in range(restarts + 1):
         # Initialize optimization problem and attempts counter
@@ -189,20 +193,19 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                 attempts += 1
 
             if curve:
-                fitness_curve = np.append(fitness_curve, problem.get_fitness())
+                fitness_curve.append(problem.get_pop_fitness())
 
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
 
-
     best_fitness = problem.get_maximize()*best_fitness
 
     if curve:
-        return best_state, best_fitness, fitness_curve
-    else:
-        return best_state, best_fitness
+        return best_state, best_fitness, np.asarray(fitness_curve)
+
+    return best_state, best_fitness
 
 
 def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
@@ -228,7 +231,8 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     curve: bool, default: False
         Boolean to keep fitness values for a curve.
         If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a third return value.
+        If :code:`True`, then a history of fitness values is provided as a
+        third return value.
 
     Returns
     -------
@@ -263,7 +267,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         problem.set_state(init_state)
 
     if curve:
-        fitness_curve = np.array([])
+        fitness_curve = []
 
     attempts = 0
     iters = 0
@@ -292,17 +296,17 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
             else:
                 attempts += 1
-            
+
         if curve:
-            fitness_curve = np.append(fitness_curve, problem.get_fitness())
+            fitness_curve.append(problem.get_pop_fitness())
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
     if curve:
-        return best_state, best_fitness, fitness_curve
-    else:
-        return best_state, best_fitness
+        return best_state, best_fitness, np.asarray(fitness_curve)
+
+    return best_state, best_fitness
 
 
 def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
@@ -328,7 +332,8 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     curve: bool, default: False
         Boolean to keep fitness values for a curve.
         If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a third return value.
+        If :code:`True`, then a history of fitness values is provided as a
+        third return value.
 
     Returns
     -------
@@ -337,7 +342,8 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
     best_fitness: float
         Value of fitness function at best state.
    fitness_curve: array
-        Numpy array of arrays containing the fitness of the entire population at every iteration.
+        Numpy array of arrays containing the fitness of the entire population
+        at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.
 
     References
@@ -364,10 +370,8 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
             and not max_iters.is_integer()) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
 
-
     if curve:
         fitness_curve = []
-
 
     # Initialize problem, population and attempts counter
     problem.reset()
@@ -413,14 +417,13 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         if curve:
             fitness_curve.append(problem.get_pop_fitness())
 
-
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
-    else:
-        return best_state, best_fitness
+
+    return best_state, best_fitness
 
 
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
@@ -444,7 +447,8 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     curve: bool, default: False
         Boolean to keep fitness values for a curve.
         If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a third return value.
+        If :code:`True`, then a history of fitness values is provided as a
+        third return value.
 
     Returns
     -------
@@ -526,11 +530,10 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         if curve:
             fitness_curve.append(problem.get_pop_fitness())
 
-
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state().astype(int)
 
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
-    else:
-        return best_state, best_fitness
+
+    return best_state, best_fitness
