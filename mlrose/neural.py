@@ -625,16 +625,35 @@ class NeuralNetwork:
 
         return y_pred
 
-    def get_params(self, deep=True):
-        params = {'hidden_nodes':self.hidden_nodes, 'max_iters':self.max_iters, 
-            'bias':self.bias, 'is_classifier':self.is_classifier, 
-            'learning_rate':self.lr, 'early_stopping':self.early_stopping, 
-            'clip_max':self.clip_max, 'schedule':self.schedule, 
-            'pop_size':self.pop_size, 'mutation_prob':self.mutation_prob}
-        
+    def get_params(self):
+        """Get parameters for this estimator.
+
+        Returns
+        -------
+        params : dictionary
+            Parameter names mapped to their values.
+        """
+        params = {'hidden_nodes': self.hidden_nodes,
+                  'max_iters': self.max_iters,
+                  'bias': self.bias,
+                  'is_classifier': self.is_classifier,
+                  'learning_rate': self.lr,
+                  'early_stopping': self.early_stopping,
+                  'clip_max': self.clip_max,
+                  'schedule': self.schedule,
+                  'pop_size': self.pop_size,
+                  'mutation_prob': self.mutation_prob}
+
         return params
 
     def set_params(self, **in_params):
+        """Set the parameters of this estimator.
+
+        Parameters
+        -------
+        in_params: dictionary
+            Dictionary of parameters to be set and the value to be set to.
+        """
         if 'hidden_nodes' in in_params.keys():
             self.hidden_nodes = in_params['hidden_nodes']
         if 'max_iters' in in_params.keys():
@@ -655,7 +674,7 @@ class NeuralNetwork:
             self.pop_size = in_params['pop_size']
         if 'mutation_prob' in in_params.keys():
             self.mutation_prob = in_params['mutation_prob']
-    
+
 
 class LinearRegression(NeuralNetwork):
     """Class for defining linear regression weights optimization
