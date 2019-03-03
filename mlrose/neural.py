@@ -385,6 +385,10 @@ class NeuralNetwork:
     clip_max: float, default: 1e+10
         Used to limit weights to the range [-1*clip_max, clip_max].
 
+    restarts: int, default: 0
+        Number of random restarts.
+        Only required if :code:`algorithm = 'random_hill_climb'`.
+
     schedule: schedule object, default = mlrose.GeomDecay()
         Schedule used to determine the value of the temperature parameter.
         Only required if :code:`algorithm = 'simulated_annealing'`.
@@ -424,8 +428,9 @@ class NeuralNetwork:
     def __init__(self, hidden_nodes, activation='relu',
                  algorithm='random_hill_climb', max_iters=100, bias=True,
                  is_classifier=True, learning_rate=0.1, early_stopping=False,
-                 clip_max=1e+10, schedule=GeomDecay(), pop_size=200,
-                 mutation_prob=0.1, max_attempts=10, random_state=None):
+                 clip_max=1e+10, restarts=0, schedule=GeomDecay(),
+                 pop_size=200, mutation_prob=0.1, max_attempts=10,
+                 random_state=None):
 
         if (not isinstance(max_iters, int) and max_iters != np.inf
                 and not max_iters.is_integer()) or (max_iters < 0):
@@ -468,6 +473,7 @@ class NeuralNetwork:
         self.lr = learning_rate
         self.early_stopping = early_stopping
         self.clip_max = clip_max
+        self.restarts = restarts
         self.schedule = schedule
         self.pop_size = pop_size
         self.mutation_prob = mutation_prob
@@ -554,13 +560,23 @@ class NeuralNetwork:
                                 max_val=self.clip_max, step=self.lr)
 
         if self.algorithm == 'random_hill_climb':
-            if init_weights is None:
-                init_weights = np.random.uniform(-1, 1, num_nodes)
+            fitted_weights = None
+            loss = np.inf
 
-            fitted_weights, loss = random_hill_climb(
-                problem,
-                max_attempts=self.max_attempts, max_iters=self.max_iters,
-                restarts=0, init_state=init_weights)
+            # Can't use restart feature of random_hill_climb function, since
+            # want to keep initial weights in the range -1 to 1.
+            for _ in range(self.restarts + 1):
+                if init_weights is None:
+                    init_weights = np.random.uniform(-1, 1, num_nodes)
+
+                current_weights, current_loss = random_hill_climb(
+                    problem,
+                    max_attempts=self.max_attempts, max_iters=self.max_iters,
+                    restarts=0, init_state=init_weights)
+
+                if current_loss < loss:
+                    fitted_weights = current_weights
+                    loss = current_loss
 
         elif self.algorithm == 'simulated_annealing':
             if init_weights is None:
@@ -657,6 +673,7 @@ class NeuralNetwork:
                   'learning_rate': self.lr,
                   'early_stopping': self.early_stopping,
                   'clip_max': self.clip_max,
+                  'restarts': self.restarts,
                   'schedule': self.schedule,
                   'pop_size': self.pop_size,
                   'mutation_prob': self.mutation_prob}
@@ -685,6 +702,8 @@ class NeuralNetwork:
             self.early_stopping = in_params['early_stopping']
         if 'clip_max' in in_params.keys():
             self.clip_max = in_params['clip_max']
+        if 'restarts' in in_params.keys():
+            self.restarts = in_params['restarts']
         if 'schedule' in in_params.keys():
             self.schedule = in_params['schedule']
         if 'pop_size' in in_params.keys():
@@ -723,6 +742,10 @@ class LinearRegression(NeuralNetwork):
     clip_max: float, default: 1e+10
         Used to limit weights to the range [-1*clip_max, clip_max].
 
+    restarts: int, default: 0
+        Number of random restarts.
+        Only required if :code:`algorithm = 'random_hill_climb'`.
+
     schedule: schedule object, default = mlrose.GeomDecay()
         Schedule used to determine the value of the temperature parameter.
         Only required if :code:`algorithm = 'simulated_annealing'`.
@@ -755,14 +778,14 @@ class LinearRegression(NeuralNetwork):
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
-                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
-                 max_attempts=10, random_state=None):
+                 restarts=0, schedule=GeomDecay(), pop_size=200,
+                 mutation_prob=0.1, max_attempts=10, random_state=None):
 
         NeuralNetwork.__init__(
             self, hidden_nodes=[], activation='identity',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=False, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max,
+            early_stopping=early_stopping, clip_max=clip_max, restarts=0,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
             max_attempts=max_attempts, random_state=random_state)
 
@@ -797,6 +820,10 @@ class LogisticRegression(NeuralNetwork):
     clip_max: float, default: 1e+10
         Used to limit weights to the range [-1*clip_max, clip_max].
 
+    restarts: int, default: 0
+        Number of random restarts.
+        Only required if :code:`algorithm = 'random_hill_climb'`.
+
     schedule: schedule object, default = mlrose.GeomDecay()
         Schedule used to determine the value of the temperature parameter.
         Only required if :code:`algorithm = 'simulated_annealing'`.
@@ -829,13 +856,13 @@ class LogisticRegression(NeuralNetwork):
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
-                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
-                 max_attempts=10, random_state=None):
+                 restarts=0, schedule=GeomDecay(), pop_size=200,
+                 mutation_prob=0.1, max_attempts=10, random_state=None):
 
         NeuralNetwork.__init__(
             self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=True, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max,
+            early_stopping=early_stopping, clip_max=clip_max, restarts=0,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
             max_attempts=max_attempts, random_state=random_state)
