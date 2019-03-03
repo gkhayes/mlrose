@@ -4,7 +4,7 @@
 # License: BSD 3 clause
 
 import numpy as np
-from sklearn.metrics import mean_squared_error, log_loss
+from sklearn.metrics import mean_squared_error, log_loss, zero_one_loss
 from .activation import identity, relu, sigmoid, softmax, tanh
 from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
 from .opt_probs import ContinuousOpt
@@ -407,6 +407,9 @@ class NeuralNetwork:
         :code:`predict` is performed for multi-class classification data; or
         the predicted probability for class 1 when :code:`predict` is performed
         for binary classification data.
+    
+    fitness_curve: array
+        Numpy array giving the fitness at each iteration.
     """
 
     def __init__(self, hidden_nodes, activation='relu',
@@ -485,6 +488,7 @@ class NeuralNetwork:
         self.loss = np.inf
         self.output_activation = None
         self.predicted_probs = []
+        self.fitness_curve = []
 
     def fit(self, X, y, init_weights=None):
         """Fit neural network to data.
@@ -540,24 +544,25 @@ class NeuralNetwork:
             if init_weights is None:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
 
-            fitted_weights, loss = random_hill_climb(
+            fitted_weights, loss, fitness_curve = random_hill_climb(
                 problem,
                 max_attempts=self.max_attempts, max_iters=self.max_iters,
-                restarts=0, init_state=init_weights)
+                restarts=0, init_state=init_weights, curve=True)
 
         elif self.algorithm == 'simulated_annealing':
             if init_weights is None:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
-            fitted_weights, loss = simulated_annealing(
+            fitted_weights, loss, fitness_curve = simulated_annealing(
                 problem,
                 schedule=self.schedule, max_attempts=self.max_attempts,
-                max_iters=self.max_iters, init_state=init_weights)
+                max_iters=self.max_iters, init_state=init_weights, curve=True)
 
         elif self.algorithm == 'genetic_alg':
-            fitted_weights, loss = genetic_alg(
+            fitted_weights, loss, fitness_curve = genetic_alg(
                 problem,
                 pop_size=self.pop_size, mutation_prob=self.mutation_prob,
-                max_attempts=self.max_attempts, max_iters=self.max_iters)
+                max_attempts=self.max_attempts, max_iters=self.max_iters,
+                curve=True)
 
         else:  # Gradient descent case
             if init_weights is None:
@@ -572,6 +577,8 @@ class NeuralNetwork:
         self.fitted_weights = fitted_weights
         self.loss = loss
         self.output_activation = fitness.get_output_activation()
+        self.fitness_curve = fitness_curve
+        
 
     def predict(self, X):
         """Use model to predict data labels for given feature array.
