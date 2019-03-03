@@ -364,6 +364,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                  algorithm='random_hill_climb',
                  max_iters=100,
                  bias=True,
+                 is_classifier=True,
                  learning_rate=0.1,
                  early_stopping=False,
                  clip_max=1e+10,
@@ -385,6 +386,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.algorithm = algorithm
         self.max_iters = max_iters
         self.bias = bias
+        self.is_classifier = is_classifier
         self.learning_rate = learning_rate
         self.early_stopping = early_stopping
         self.clip_max = clip_max
@@ -401,10 +403,6 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.output_activation = None
         self.predicted_probs = []
 
-    @abstractmethod
-    def _is_classifier(self):
-        pass
-
     def _validate(self):
         if (not isinstance(self.max_iters, int) and self.max_iters != np.inf
                 and not self.max_iters.is_integer()) or (self.max_iters < 0):
@@ -412,6 +410,9 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         if not isinstance(self.bias, bool):
             raise Exception("""bias must be True or False.""")
+
+        if not isinstance(self.is_classifier, bool):
+            raise Exception("""is_classifier must be True or False.""")
 
         if self.learning_rate <= 0:
             raise Exception("""learning_rate must be greater than 0.""")
@@ -496,9 +497,8 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Initialize optimization problem
         fitness = NetworkWeights(X, y, node_list,
-                                 self.activation_dict[self.activation],
-                                 self.bias,
-                                 self._is_classifier(), learning_rate=self.learning_rate)
+                                 self.activation_dict[self.activation], self.bias,
+                                 self.is_classifier, learning_rate=self.learning_rate)
 
         problem = ContinuousOpt(num_nodes, fitness, maximize=False,
                                 min_val=-1*self.clip_max,
@@ -593,7 +593,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                 y_pred = self.output_activation(outputs)
 
         # For classifier, convert predicted probabilities to 0-1 labels
-        if self._is_classifier():
+        if self.is_classifier:
             self.predicted_probs = y_pred
 
             if self.node_list[-1] == 1:
@@ -659,7 +659,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
             self.mutation_prob = in_params['mutation_prob']
 
 
-class NeuralNetworkClassifier(BaseNeuralNetwork, ClassifierMixin):
+class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
     """Class for defining neural network classifier weights optimization problem.
 
     Parameters
@@ -681,6 +681,10 @@ class NeuralNetworkClassifier(BaseNeuralNetwork, ClassifierMixin):
 
     bias: bool, default: True
         Whether to include a bias term.
+
+    is_classifer: bool, default: True
+        Whether the network is for classification or regression. Set
+        :code:`True` for classification and :code:`False` for regression.
 
     learning_rate: float, default: 0.1
         Learning rate for gradient descent or step size for randomized
@@ -739,29 +743,32 @@ class NeuralNetworkClassifier(BaseNeuralNetwork, ClassifierMixin):
                  algorithm='random_hill_climb',
                  max_iters=100,
                  bias=True,
+                 is_classifier=True,
                  learning_rate=0.1,
                  early_stopping=False,
                  clip_max=1e+10,
+                 restarts=0,
                  schedule=GeomDecay(),
                  pop_size=200,
                  mutation_prob=0.1,
-                 max_attempts=10):
-        super(NeuralNetworkClassifier, self).__init__(
+                 max_attempts=10,
+                 random_state=None):
+        super(NeuralNetwork, self).__init__(
             hidden_nodes=hidden_nodes,
             activation=activation,
             algorithm=algorithm,
             max_iters=max_iters,
             bias=bias,
+            is_classifier=is_classifier,
             learning_rate=learning_rate,
             early_stopping=early_stopping,
             clip_max=clip_max,
+            restarts=restarts,
             schedule=schedule,
             pop_size=pop_size,
             mutation_prob=mutation_prob,
-            max_attempts=max_attempts)
-
-    def _is_classifier(self):
-        return True
+            max_attempts=max_attempts,
+            random_state=random_state)
 
 
 class LinearRegression(BaseNeuralNetwork, RegressorMixin):
@@ -835,13 +842,11 @@ class LinearRegression(BaseNeuralNetwork, RegressorMixin):
         BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='identity',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
-            learning_rate=learning_rate,
+            is_classifier=False, learning_rate=learning_rate,
             early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
             max_attempts=max_attempts, random_state=random_state)
 
-    def _is_classifier(self):
-        return False
 
 
 class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
@@ -915,10 +920,7 @@ class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
         BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
-            learning_rate=learning_rate,
+            is_classifier=True, learning_rate=learning_rate,
             early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
             schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
             max_attempts=max_attempts, random_state=random_state)
-
-    def _is_classifier(self):
-        return True
