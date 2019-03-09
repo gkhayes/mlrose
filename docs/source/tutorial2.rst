@@ -131,11 +131,8 @@ This time, suppose we wish to use the genetic algorithms with the default parame
 .. highlight:: python
 .. code-block:: python
 	
-    # Set random seed
-    np.random.seed(2)
-	
     # Solve problem using the genetic algorithm
-    best_state, best_fitness = mlrose.genetic_alg(problem_fit)
+    best_state, best_fitness = mlrose.genetic_alg(problem_fit, random_state = 2)
 
     print(best_state)
     [1 3 4 5 6 7 0 2]
@@ -156,11 +153,9 @@ As in the 8-Queens example given in the previous tutorial, this solution can pot
 .. highlight:: python
 .. code-block:: python
 	
-    # Set random seed
-    np.random.seed(2)
-	
     # Solve problem using the genetic algorithm
-    best_state, best_fitness = mlrose.genetic_alg(problem_fit, mutation_prob = 0.2, max_attempts = 100)
+    best_state, best_fitness = mlrose.genetic_alg(problem_fit, mutation_prob = 0.2, 
+                                                  max_attempts = 100, random_state = 2)
 
     print(best_state)
     [7 6 5 4 3 2 1 0]

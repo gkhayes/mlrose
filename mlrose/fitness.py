@@ -50,7 +50,7 @@ class OneMax:
             Value of fitness function.
         """
 
-        fitness = sum(state)
+        fitness = np.sum(state)
         return fitness
 
     def get_prob_type(self):
@@ -563,7 +563,7 @@ class Knapsack:
 
         self.weights = weights
         self.values = values
-        self._w = np.ceil(sum(self.weights)*max_weight_pct)
+        self._w = np.ceil(np.sum(self.weights)*max_weight_pct)
         self.prob_type = 'discrete'
 
         if len(self.weights) != len(self.values):

@@ -165,14 +165,11 @@ The algorithm returns the best state it can find, given the parameter values it 
    
    # Define initial state
    init_state = np.array([0, 1, 2, 3, 4, 5, 6, 7])
-   
-   # Set random seed
-   np.random.seed(1)
 
    # Solve problem using simulated annealing        
    best_state, best_fitness = mlrose.simulated_annealing(problem, schedule = schedule, 
                                                          max_attempts = 10, max_iters = 1000,
-                                                         init_state = init_state)
+                                                         init_state = init_state, random_state = 1)
 														 
    print(best_state)
    [6 4 7 3 6 2 5 1]
@@ -195,13 +192,10 @@ We can try to improve on our solution by tuning the parameters of our algorithm.
 .. highlight:: python
 .. code-block:: python
 
-   # Set random seed
-   np.random.seed(1)
-
    # Solve problem using simulated annealing        
    best_state, best_fitness = mlrose.simulated_annealing(problem, schedule = schedule,
                                                          max_attempts = 100, max_iters = 1000,
-                                                         init_state = init_state)
+                                                         init_state = init_state, random_state = 1)
 														 
    print(best_state)
    [4 1 3 5 7 2 0 6]
