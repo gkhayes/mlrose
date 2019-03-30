@@ -3,17 +3,17 @@
 # Author: Genevieve Hayes
 # License: BSD 3 clause
 
+from abc import ABCMeta
+from abc import abstractmethod
+
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.metrics import mean_squared_error, log_loss
+from sklearn.externals import six
 from .activation import identity, relu, sigmoid, softmax, tanh
 from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
 from .opt_probs import ContinuousOpt
 from .decay import GeomDecay
-
-from abc import ABCMeta
-from abc import abstractmethod
-from sklearn.externals import six
 
 
 def flatten_weights(weights):
@@ -340,8 +340,8 @@ class NetworkWeights:
             delta_list.append(delta)
 
             # Calculate updates
-            updates = -1.0*self.learning_rate*np.dot(np.transpose(self.inputs_list[i]),
-                                          delta)
+            updates = (-1.0 * self.learning_rate *
+                       np.dot(np.transpose(self.inputs_list[i]), delta))
 
             updates_list.append(updates)
 
@@ -359,7 +359,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
     """
 
     @abstractmethod
-    def __init__(self, hidden_nodes=[10],
+    def __init__(self, hidden_nodes=None,
                  activation='relu',
                  algorithm='random_hill_climb',
                  max_iters=100,
@@ -375,7 +375,10 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                  max_attempts=10,
                  random_state=None):
 
-        self.hidden_nodes = hidden_nodes
+        if hidden_nodes is None:
+            self.hidden_nodes = []
+        else:
+            self.hidden_nodes = hidden_nodes
 
         self.activation_dict = {'identity': identity,
                                 'relu': relu,
@@ -423,8 +426,8 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         if self.clip_max <= 0:
             raise Exception("""clip_max must be greater than 0.""")
 
-        if (not isinstance(self.max_attempts, int)
-                and not self.max_attempts.is_integer()) or (self.max_attempts < 0):
+        if (not isinstance(self.max_attempts, int) and not
+                self.max_attempts.is_integer()) or (self.max_attempts < 0):
             raise Exception("""max_attempts must be a positive integer.""")
 
         if self.pop_size < 0:
@@ -438,14 +441,16 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         if (self.mutation_prob < 0) or (self.mutation_prob > 1):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
-        if self.activation is None or self.activation not in self.activation_dict.keys():
+        if self.activation is None or \
+           self.activation not in self.activation_dict.keys():
             raise Exception("""Activation function must be one of: 'identity',
                     'relu', 'sigmoid' or 'tanh'.""")
 
         if self.algorithm not in ['random_hill_climb', 'simulated_annealing',
                                   'genetic_alg', 'gradient_descent']:
             raise Exception("""Algorithm must be one of: 'random_hill_climb',
-                    'simulated_annealing', 'genetic_alg', 'gradient_descent'.""")
+                    'simulated_annealing', 'genetic_alg',
+                    'gradient_descent'.""")
 
     def fit(self, X, y=None, init_weights=None):
         """Fit neural network to data.
@@ -497,8 +502,9 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         # Initialize optimization problem
         fitness = NetworkWeights(X, y, node_list,
-                                 self.activation_dict[self.activation], self.bias,
-                                 self.is_classifier, learning_rate=self.learning_rate)
+                                 self.activation_dict[self.activation],
+                                 self.bias, self.is_classifier,
+                                 learning_rate=self.learning_rate)
 
         problem = ContinuousOpt(num_nodes, fitness, maximize=False,
                                 min_val=-1*self.clip_max,
@@ -516,7 +522,9 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
                 current_weights, current_loss = random_hill_climb(
                     problem,
-                    max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters,
+                    max_attempts=self.max_attempts if self.early_stopping else
+                    self.max_iters,
+                    max_iters=self.max_iters,
                     restarts=0, init_state=init_weights)
 
                 if current_loss < loss:
@@ -528,21 +536,26 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                 init_weights = np.random.uniform(-1, 1, num_nodes)
             fitted_weights, loss = simulated_annealing(
                 problem,
-                schedule=self.schedule, max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                schedule=self.schedule,
+                max_attempts=self.max_attempts if self.early_stopping else
+                self.max_iters,
                 max_iters=self.max_iters, init_state=init_weights)
 
         elif self.algorithm == 'genetic_alg':
             fitted_weights, loss = genetic_alg(
                 problem,
                 pop_size=self.pop_size, mutation_prob=self.mutation_prob,
-                max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters)
+                max_attempts=self.max_attempts if self.early_stopping else
+                self.max_iters,
+                max_iters=self.max_iters)
 
         else:  # Gradient descent case
             if init_weights is None:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
             fitted_weights, loss = gradient_descent(
                 problem,
-                max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters,
+                max_attempts=self.max_attempts if self.early_stopping else
+                self.max_iters, max_iters=self.max_iters,
                 init_state=init_weights)
 
         # Save fitted weights and node list
@@ -553,7 +566,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         return self
 
-    def predict(self, X, y=None):
+    def predict(self, X):
         """Use model to predict data labels for given feature array.
 
         Parameters
@@ -605,7 +618,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
         return y_pred
 
-    def get_params(self):
+    def get_params(self, deep=False):
         """Get parameters for this estimator.
 
         Returns
@@ -617,7 +630,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                   'max_iters': self.max_iters,
                   'bias': self.bias,
                   'is_classifier': self.is_classifier,
-                  'learning_rate': self.lr,
+                  'learning_rate': self.learning_rate,
                   'early_stopping': self.early_stopping,
                   'clip_max': self.clip_max,
                   'restarts': self.restarts,
@@ -644,7 +657,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         if 'is_classifier' in in_params.keys():
             self.is_classifier = in_params['is_classifier']
         if 'learning_rate' in in_params.keys():
-            self.lr = in_params['learning_rate']
+            self.learning_rate = in_params['learning_rate']
         if 'early_stopping' in in_params.keys():
             self.early_stopping = in_params['early_stopping']
         if 'clip_max' in in_params.keys():
@@ -660,7 +673,8 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
 
 
 class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
-    """Class for defining neural network classifier weights optimization problem.
+    """Class for defining neural network classifier weights optimization
+    problem.
 
     Parameters
     ----------
@@ -738,7 +752,7 @@ class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
         for binary classification data.
     """
 
-    def __init__(self, hidden_nodes=[10],
+    def __init__(self, hidden_nodes=None,
                  activation='relu',
                  algorithm='random_hill_climb',
                  max_iters=100,
@@ -843,10 +857,10 @@ class LinearRegression(BaseNeuralNetwork, RegressorMixin):
             self, hidden_nodes=[], activation='identity',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=False, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
-            schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
-            max_attempts=max_attempts, random_state=random_state)
-
+            early_stopping=early_stopping, clip_max=clip_max,
+            restarts=restarts, schedule=schedule, pop_size=pop_size,
+            mutation_prob=mutation_prob, max_attempts=max_attempts,
+            random_state=random_state)
 
 
 class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
@@ -915,12 +929,13 @@ class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
-                 restarts=0, schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
-                 max_attempts=10, random_state=None):
+                 restarts=0, schedule=GeomDecay(), pop_size=200,
+                 mutation_prob=0.1, max_attempts=10, random_state=None):
         BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=True, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
-            schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
-            max_attempts=max_attempts, random_state=random_state)
+            early_stopping=early_stopping, clip_max=clip_max,
+            restarts=restarts, schedule=schedule, pop_size=pop_size,
+            mutation_prob=mutation_prob, max_attempts=max_attempts,
+            random_state=random_state)
