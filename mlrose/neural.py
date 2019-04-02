@@ -76,7 +76,7 @@ def unflatten_weights(flat_weights, node_list):
 
 
 def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
-                     init_state=None, random_state=None):
+                     init_state=None, curve=False, random_state=None):
     """Use gradient_descent to find the optimal neural network weights.
 
     Parameters
@@ -97,6 +97,12 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+    
+    curve: bool, default: False
+        Boolean to keep fitness values for a curve.
+        If :code:`False`, then no curve is stored.
+        If :code:`True`, then a history of fitness values is provided as a
+        third return value.
 
     Returns
     -------
@@ -105,6 +111,10 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
 
     best_fitness: float
         Value of fitness function at best state.
+    
+    fitness_curve: array
+        Numpy array containing the fitness at every iteration.
+        Only returned if input argument :code:`curve` is :code:`True`.
     """
     if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
        or (max_attempts < 0):
@@ -126,6 +136,9 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
         problem.reset()
     else:
         problem.set_state(init_state)
+        
+    if curve:
+        fitness_curve=[]
 
     attempts = 0
     iters = 0
@@ -150,9 +163,15 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
         if next_fitness > problem.get_maximize()*best_fitness:
             best_fitness = problem.get_maximize()*next_fitness
             best_state = next_state
+            
+        if curve:
+            fitness_curve.append(problem.get_fitness())
 
         problem.set_state(next_state)
 
+    if curve:
+        return best_state, best_fitness, np.asarray(fitness_curve)
+    
     return best_state, best_fitness
 
 
@@ -373,7 +392,8 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                  pop_size=200,
                  mutation_prob=0.1,
                  max_attempts=10,
-                 random_state=None):
+                 random_state=None,
+                 curve=False):
 
         if hidden_nodes is None:
             self.hidden_nodes = []
@@ -385,7 +405,6 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                                 'sigmoid': sigmoid,
                                 'tanh': tanh}
         self.activation = activation
-
         self.algorithm = algorithm
         self.max_iters = max_iters
         self.bias = bias
@@ -399,12 +418,14 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.mutation_prob = mutation_prob
         self.max_attempts = max_attempts
         self.random_state = random_state
+        self.curve = curve
 
         self.node_list = []
         self.fitted_weights = []
         self.loss = np.inf
         self.output_activation = None
         self.predicted_probs = []
+        self.fitness_curve = []
 
     def _validate(self):
         if (not isinstance(self.max_iters, int) and self.max_iters != np.inf
@@ -519,13 +540,18 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
             for _ in range(self.restarts + 1):
                 if init_weights is None:
                     init_weights = np.random.uniform(-1, 1, num_nodes)
-
-                current_weights, current_loss = random_hill_climb(
-                    problem,
-                    max_attempts=self.max_attempts if self.early_stopping else
-                    self.max_iters,
-                    max_iters=self.max_iters,
-                    restarts=0, init_state=init_weights)
+                    
+                if self.curve:
+                    current_weights, current_loss, fitness_curve = random_hill_climb(
+                        problem,
+                        max_attempts=self.max_attempts if self.early_stopping else self.max_iters, max_iters=self.max_iters,
+                        restarts=0, init_state=init_weights, curve=self.curve)
+                else:
+                    current_weights, current_loss = random_hill_climb(
+                        problem,
+                        max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                        max_iters=self.max_iters,
+                        restarts=0, init_state=init_weights, curve=self.curve)
 
                 if current_loss < loss:
                     fitted_weights = current_weights
@@ -534,28 +560,49 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         elif self.algorithm == 'simulated_annealing':
             if init_weights is None:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
-            fitted_weights, loss = simulated_annealing(
-                problem,
-                schedule=self.schedule,
-                max_attempts=self.max_attempts if self.early_stopping else
-                self.max_iters,
-                max_iters=self.max_iters, init_state=init_weights)
+
+            if self.curve:
+                fitted_weights, loss, fitness_curve = simulated_annealing(
+                    problem,
+                    schedule=self.schedule,
+                    max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                    max_iters=self.max_iters,
+                    init_state=init_weights,
+                    curve=self.curve)
+            else:
+                fitted_weights, loss = simulated_annealing(
+                    problem,
+                    schedule=self.schedule,
+                    max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                    max_iters=self.max_iters,
+                    init_state=init_weights,
+                    curve=self.curve)
 
         elif self.algorithm == 'genetic_alg':
-            fitted_weights, loss = genetic_alg(
-                problem,
-                pop_size=self.pop_size, mutation_prob=self.mutation_prob,
-                max_attempts=self.max_attempts if self.early_stopping else
-                self.max_iters,
-                max_iters=self.max_iters)
+            if self.curve:
+                fitted_weights, loss, fitness_curve = genetic_alg(
+                    problem,
+                    pop_size=self.pop_size,
+                    mutation_prob=self.mutation_prob,
+                    max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                    max_iters=self.max_iters,
+                    curve=self.curve)
+            else:
+                fitted_weights, loss = genetic_alg(
+                    problem,
+                    pop_size=self.pop_size, mutation_prob=self.mutation_prob,
+                    max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                    max_iters=self.max_iters,
+                    curve=self.curve)
 
         else:  # Gradient descent case
             if init_weights is None:
                 init_weights = np.random.uniform(-1, 1, num_nodes)
-            fitted_weights, loss = gradient_descent(
+            fitted_weights, loss, fitness_curve = gradient_descent(
                 problem,
-                max_attempts=self.max_attempts if self.early_stopping else
-                self.max_iters, max_iters=self.max_iters,
+                max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+                max_iters=self.max_iters,
+                curve=self.curve,
                 init_state=init_weights)
 
         # Save fitted weights and node list
@@ -563,7 +610,10 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.fitted_weights = fitted_weights
         self.loss = loss
         self.output_activation = fitness.get_output_activation()
-
+        
+        if self.curve:
+            self.fitness_curve = fitness_curve
+        
         return self
 
     def predict(self, X):
@@ -735,6 +785,10 @@ class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+        
+    curve: bool, default: False
+        If bool is True, fitness_curve containing the fitness at each training 
+        iteration is returned.
 
     Attributes
     ----------
@@ -750,6 +804,9 @@ class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
         :code:`predict` is performed for multi-class classification data; or
         the predicted probability for class 1 when :code:`predict` is performed
         for binary classification data.
+    
+    fitness_curve: array
+        Numpy array giving the fitness at each training iteration. 
     """
 
     def __init__(self, hidden_nodes=None,
@@ -766,7 +823,8 @@ class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
                  pop_size=200,
                  mutation_prob=0.1,
                  max_attempts=10,
-                 random_state=None):
+                 random_state=None,
+                 curve=False):
         super(NeuralNetwork, self).__init__(
             hidden_nodes=hidden_nodes,
             activation=activation,
@@ -782,7 +840,8 @@ class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
             pop_size=pop_size,
             mutation_prob=mutation_prob,
             max_attempts=max_attempts,
-            random_state=random_state)
+            random_state=random_state,
+            curve=curve)
 
 
 class LinearRegression(BaseNeuralNetwork, RegressorMixin):
@@ -838,6 +897,10 @@ class LinearRegression(BaseNeuralNetwork, RegressorMixin):
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+        
+    curve: bool, default: False
+        If bool is true, curve containing the fitness at each training 
+        iteration is returned.        
 
     Attributes
     ----------
@@ -847,12 +910,16 @@ class LinearRegression(BaseNeuralNetwork, RegressorMixin):
     loss: float
         Value of loss function for fitted weights when :code:`fit` is
         performed.
+        
+    fitness_curve: array
+        Numpy array giving the fitness at each training iteration. 
     """
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
                  restarts=0, schedule=GeomDecay(), pop_size=200,
-                 mutation_prob=0.1, max_attempts=10, random_state=None):
+                 mutation_prob=0.1, max_attempts=10, random_state=None,
+                 curve=False):
         BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='identity',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
@@ -860,7 +927,7 @@ class LinearRegression(BaseNeuralNetwork, RegressorMixin):
             early_stopping=early_stopping, clip_max=clip_max,
             restarts=restarts, schedule=schedule, pop_size=pop_size,
             mutation_prob=mutation_prob, max_attempts=max_attempts,
-            random_state=random_state)
+            random_state=random_state, curve=curve)
 
 
 class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
@@ -916,6 +983,10 @@ class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+        
+    curve: bool, default: False
+        If bool is true, curve containing the fitness at each training 
+        iteration is returned.
 
     Attributes
     ----------
@@ -925,17 +996,20 @@ class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
     loss: float
         Value of loss function for fitted weights when :code:`fit` is
         performed.
+    
+    fitness_curve: array
+        Numpy array giving the fitness at each training iteration.
     """
 
     def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
                  learning_rate=0.1, early_stopping=False, clip_max=1e+10,
-                 restarts=0, schedule=GeomDecay(), pop_size=200,
-                 mutation_prob=0.1, max_attempts=10, random_state=None):
+                 restarts=0, schedule=GeomDecay(), pop_size=200, mutation_prob=0.1,
+                 max_attempts=10, random_state=None, curve=False):
+
         BaseNeuralNetwork.__init__(
             self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=True, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max,
-            restarts=restarts, schedule=schedule, pop_size=pop_size,
-            mutation_prob=mutation_prob, max_attempts=max_attempts,
-            random_state=random_state)
+            early_stopping=early_stopping, clip_max=clip_max, restarts=restarts,
+            schedule=schedule, pop_size=pop_size, mutation_prob=mutation_prob,
+            max_attempts=max_attempts, random_state=random_state, curve=curve)
