@@ -438,10 +438,18 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, mutation_prob=0.1
             next_gen.append(child)
 
         # fill remaining population with elites
-        last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
-        best_parents = sorted(last_gen, key=lambda x: -x[1])[:pop_size-breeding_pop_size]
-        next_gen.extend([p[0] for p in best_parents])
-        next_gen = np.array(next_gen)
+        elite_len = pop_size-breeding_pop_size
+        if elite_len > 0:
+            last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
+            dregs_len = int(1 + (elite_len * 0.1)) if elite_len > 1 else 0
+            sorted_parents = sorted(last_gen, key=lambda x: -x[1])
+            best_parents = sorted_parents[:(elite_len - dregs_len)]
+            next_gen.extend([p[0] for p in best_parents])
+            if dregs_len > 0:
+                worst_parents = sorted_parents[-dregs_len:]
+                next_gen.extend([p[0] for p in worst_parents])
+
+        next_gen = np.array(next_gen[:pop_size])
         problem.set_population(next_gen)
 
         next_state = problem.best_child()
