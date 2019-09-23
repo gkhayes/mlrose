@@ -9,3 +9,4 @@ docs/_build/*
 docs/_static/*
 docs/_templates/*
 .vscode/settings.json
+/tsp_test/

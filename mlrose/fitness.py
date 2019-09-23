@@ -744,8 +744,10 @@ class TravellingSales:
             raise Exception("""All elements of state must be less than"""
                             + """ len(state).""")
 
-        fitness = 0
+        return self.calculate_fitness(state)
 
+    def calculate_fitness(self, state):
+        fitness = 0
         # Calculate length of each leg of journey
         for i in range(len(state) - 1):
             node1 = state[i]
@@ -761,11 +763,9 @@ class TravellingSales:
                     fitness += self.dist_list[self.path_list.index(path)]
                 else:
                     fitness += np.inf
-
         # Calculate length of final leg
         node1 = state[-1]
         node2 = state[0]
-
         if self.is_coords:
             fitness += np.linalg.norm(np.array(self.coords[node1])
                                       - np.array(self.coords[node2]))
@@ -776,7 +776,6 @@ class TravellingSales:
                 fitness += self.dist_list[self.path_list.index(path)]
             else:
                 fitness += np.inf
-
         return fitness
 
     def get_prob_type(self):

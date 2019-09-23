@@ -331,8 +331,8 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     return best_state, best_fitness
 
 
-def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
-                max_iters=np.inf, curve=False, random_state=None):
+def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, mutation_prob=0.1,
+                max_attempts=10, max_iters=np.inf, curve=False, random_state=None):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
@@ -344,6 +344,9 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         :code:`TSPOpt()`.
     pop_size: int, default: 200
         Size of population to be used in genetic algorithm.
+    pop_breed_percent: float, default 0.75
+        Percentage of population to breed in each iteration.
+        The remainder of the population will be filled from the elite of the prior generation.
     mutation_prob: float, default: 0.1
         Probability of a mutation at each element of the state vector
         during reproduction, expressed as a value between 0 and 1.
@@ -384,6 +387,13 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
         else:
             raise Exception("""pop_size must be a positive integer.""")
 
+    breeding_pop_size = int(pop_size * pop_breed_percent)
+    if breeding_pop_size < 1:
+        raise Exception("""pop_breed_percent must be large enough to ensure at least one mating.""")
+
+    if pop_breed_percent > 1:
+        raise Exception("""pop_breed_percent must be less than 1.""")
+
     if (mutation_prob < 0) or (mutation_prob > 1):
         raise Exception("""mutation_prob must be between 0 and 1.""")
 
@@ -416,8 +426,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
 
         # Create next generation of population
         next_gen = []
-
-        for _ in range(pop_size):
+        for _ in range(breeding_pop_size):
             # Select parents
             selected = np.random.choice(pop_size, size=2,
                                         p=problem.get_mate_probs())
@@ -428,6 +437,10 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
             child = problem.reproduce(parent_1, parent_2, mutation_prob)
             next_gen.append(child)
 
+        # fill remaining population with elites
+        last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
+        best_parents = sorted(last_gen, key=lambda x: -x[1])[:pop_size-breeding_pop_size]
+        next_gen.extend([p[0] for p in best_parents])
         next_gen = np.array(next_gen)
         problem.set_population(next_gen)
 
