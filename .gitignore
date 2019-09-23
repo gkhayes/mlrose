@@ -9,4 +9,7 @@ docs/_build/*
 docs/_static/*
 docs/_templates/*
 .vscode/settings.json
-/tsp_test/
+tsp_test/*
+mlrose_hiive.egg-info/*
+venvp/
+/.idea/

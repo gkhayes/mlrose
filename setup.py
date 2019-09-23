@@ -1,6 +1,7 @@
 """ MLROSe setup file."""
 
 # Author: Genevieve Hayes
+# Modified: Andrew Rollings
 # License: BSD 3 clause
 
 from setuptools import setup
@@ -14,14 +15,14 @@ def readme():
         return _file.read()
 
 
-setup(name='mlrose',
-      version='1.2.0',
+setup(name='mlrose-hiive',
+      version='1.2.0-ga',
       description="MLROSe: Machine Learning, Randomized Optimization and"
       + " Search",
       long_description=readme(),
       long_description_content_type='text/markdown',
-      url='https://github.com/gkhayes/mlrose',
-      author='Genevieve Hayes',
+      url='https://github.com/hiive/mlrose',
+      author='Genevieve Hayes (modifed by Andrew Rollings)',
       license='BSD',
       classifiers=[
           "Intended Audience :: Education",
