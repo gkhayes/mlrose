@@ -331,7 +331,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     return best_state, best_fitness
 
 
-def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, mutation_prob=0.1,
+def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.95, mutation_prob=0.1,
                 max_attempts=10, max_iters=np.inf, curve=False, random_state=None):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
@@ -346,7 +346,12 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, mutation_prob=0.1
         Size of population to be used in genetic algorithm.
     pop_breed_percent: float, default 0.75
         Percentage of population to breed in each iteration.
-        The remainder of the population will be filled from the elite of the prior generation.
+        The remainder of the population will be filled from the elite and
+        dregs of the prior generation in a ratio specified by elite_dreg_ratio.
+    elite_dreg_ratio: float, default:0.95
+        The ratio of elites:dregs added directly to the next generation.
+        For the default value, 95% of the added population will be elites,
+        5% will be dregs.
     mutation_prob: float, default: 0.1
         Probability of a mutation at each element of the state vector
         during reproduction, expressed as a value between 0 and 1.
@@ -393,6 +398,10 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, mutation_prob=0.1
 
     if pop_breed_percent > 1:
         raise Exception("""pop_breed_percent must be less than 1.""")
+
+    if (elite_dreg_ratio < 0) or (elite_dreg_ratio > 1):
+        raise Exception("""elite_dreg_ratio must be between 0 and 1.""")
+
 
     if (mutation_prob < 0) or (mutation_prob > 1):
         raise Exception("""mutation_prob must be between 0 and 1.""")
@@ -441,7 +450,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, mutation_prob=0.1
         elite_len = pop_size-breeding_pop_size
         if elite_len > 0:
             last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
-            dregs_len = int(1 + (elite_len * 0.1)) if elite_len > 1 else 0
+            dregs_len = int(elite_len * (1.0 - elite_dreg_ratio)) if elite_len > 1 else 0
             sorted_parents = sorted(last_gen, key=lambda x: -x[1])
             best_parents = sorted_parents[:(elite_len - dregs_len)]
             next_gen.extend([p[0] for p in best_parents])
