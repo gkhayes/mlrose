@@ -984,12 +984,27 @@ class TSPOpt(DiscreteOpt):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
         # Reproduce parents
-        child = self._make_child(parent_1, parent_2)
+        child = self._make_child_original(parent_1, parent_2)
 
         # Mutate child
+        child = self._check_to_mutate_abagail(child, mutation_prob)
+
+        return child
+
+    def _check_to_mutate_abagail(self, child, mutation_prob):
+        if np.random.rand() > mutation_prob:
+            return child
+        # do swap mutation
+        m1 = np.random.randint(len(child))
+        m2 = np.random.randint(len(child))
+        tmp = child[m1]
+        child[m1] = child[m2]
+        child[m2] = tmp
+        return child
+
+    def _check_to_mutate_original(self, child, mutation_prob):
         rand = np.random.uniform(size=self.length)
         mutate = np.where(rand < mutation_prob)[0]
-
         if len(mutate) > 0:
             mutate_perm = np.random.permutation(mutate)
             temp = np.copy(child)
@@ -997,14 +1012,10 @@ class TSPOpt(DiscreteOpt):
             for i in range(len(mutate)):
                 child[mutate[i]] = temp[mutate_perm[i]]
 
-        return child
-
-    def _make_child(self, parent_1, parent_2):
+    def _make_child_abagail(self, parent_1, parent_2):
         if self.length > 1:
-            next_a = [parent_1[i + 1] for i in range(0, len(parent_1) - 1)]
-            next_a.append(parent_1[0])
-            next_b = [parent_2[i + 1] for i in range(0, len(parent_2) - 1)]
-            next_b.append(parent_2[0])
+            next_a = np.append(parent_1[1:], parent_1[-1])
+            next_b = np.append(parent_2[1:], parent_2[-1])
 
             visited = [False] * self.length
             child = np.array([0] * self.length)
@@ -1039,7 +1050,7 @@ class TSPOpt(DiscreteOpt):
             child = np.copy(parent_2, copy=True)
         return child
 
-    def _make_child_old(self, parent_1, parent_2):
+    def _make_child_original(self, parent_1, parent_2):
         if self.length > 1:
             _n = np.random.randint(self.length - 1)
             child = np.array([0] * self.length)
