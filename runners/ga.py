@@ -1,3 +1,5 @@
+from runners.base import RunnerBase
+
 try:
     import mlrose
 except:
@@ -9,9 +11,10 @@ import time
 import numpy as np
 
 
-class GARunner:
+class GARunner(RunnerBase):
 
-    def __init__(self, problem, seed, iteration_list, population_sizes, mutation_rates,
+    def __init__(self, problem, seed,
+                 iteration_list, population_sizes, mutation_rates,
                  max_attempts=500, generate_curves=True):
         self.iterations = iteration_list
         self.population_sizes = population_sizes
@@ -33,9 +36,8 @@ class GARunner:
             end = time.perf_counter()
             population, mutation_rate, start = user_data
             t = end - start
-
-            print(f'[population:{population}, mutation_rate:{mutation_rate:.2f}, '
-                  f'iteration:{iteration}, done:{done}] - fitness:{fitness:.4f}, time:{t:.2f}')
+            print(f'iteration:[{iteration}], done:[{done}], time:[{t:.2f}]')
+            print(f'[population:[{population}], mutation_rate:[{mutation_rate:.2f}], fitness:[{fitness:.8f}]')
             print(f'\t{state}')
             print()
 
@@ -56,7 +58,7 @@ class GARunner:
                 self.best_states.append(state)
         return True
 
-    def run_ga(self):
+    def run(self):
         i = int(max(self.iterations))
         self._setup()
 

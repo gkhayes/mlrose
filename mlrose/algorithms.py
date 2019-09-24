@@ -571,7 +571,6 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
-    print(f'Attempts: {attempts}')
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
