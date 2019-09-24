@@ -477,8 +477,8 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         if state_fitness_callback is not None:
             continue_iterating = state_fitness_callback(iters,
                                                         problem.get_state(),
-                                                        problem.get_fitness(),
-                                                        fitness_curve,
+                                                        problem.get_maximize()*problem.get_fitness(),
+                                                        np.asarray(fitness_curve),
                                                         callback_user_info)
             if not continue_iterating:
                 break
