@@ -96,9 +96,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             # invoke callback
             if state_fitness_callback is not None:
                 continue_iterating = state_fitness_callback(iters,
+                                                            False,
                                                             problem.get_state(),
                                                             problem.get_maximize() * problem.get_fitness(),
-                                                            np.asarray(fitness_curve),
+                                                            np.asarray(fitness_curve) if fitness_curve is not None else None,
                                                             callback_user_info)
                 # break out if requested
                 if not continue_iterating:
@@ -159,9 +160,9 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
-    state_fitness_callback: function taking two parameters, default: None
+    state_fitness_callback: function taking five parameters, default: None
         If specified, this callback will be invoked once per iteration.
-        Parameters are (iteration, current best state, current best fit, user callback data).
+        Parameters are (iteration, max attempts reached?, current best state, current best fit, user callback data).
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
@@ -224,10 +225,13 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             next_fitness = problem.eval_fitness(next_state)
             # invoke callback
             if state_fitness_callback is not None:
+                max_attempts_reached = (attempts == max_attempts - 1)
                 continue_iterating = state_fitness_callback(iters,
+                                                            max_attempts_reached,
                                                             problem.get_state(),
                                                             problem.get_maximize() * problem.get_fitness(),
-                                                            np.asarray(fitness_curve),
+                                                            np.asarray(
+                                                                fitness_curve) if fitness_curve is not None else None,
                                                             callback_user_info)
                 # break out if requested
                 if not continue_iterating:
@@ -291,9 +295,9 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
-    state_fitness_callback: function taking two parameters, default: None
+    state_fitness_callback: function taking five parameters, default: None
         If specified, this callback will be invoked once per iteration.
-        Parameters are (iteration, current best state, current best fit, user callback data).
+        Parameters are (iteration, max attempts reached?, current best state, current best fit, user callback data).
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
@@ -345,10 +349,12 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         iters += 1
         # invoke callback
         if state_fitness_callback is not None:
+            max_attempts_reached = (attempts == max_attempts - 1)
             continue_iterating = state_fitness_callback(iters,
+                                                        max_attempts_reached,
                                                         problem.get_state(),
-                                                        problem.get_maximize() * problem.get_fitness(),
-                                                        np.asarray(fitness_curve),
+                                                        problem.get_maximize()*problem.get_fitness(),
+                                                        np.asarray(fitness_curve) if curve else None,
                                                         callback_user_info)
             # break out if requested
             if not continue_iterating:
@@ -387,7 +393,8 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     return best_state, best_fitness
 
 
-def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.95, mutation_prob=0.1,
+def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.95,
+                minimum_elites=0, minimum_dregs=0, mutation_prob=0.1,
                 max_attempts=10, max_iters=np.inf, curve=False, random_state=None,
                 state_fitness_callback=None, callback_user_info=None):
     """Use a standard genetic algorithm to find the optimum for a given
@@ -409,6 +416,10 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         The ratio of elites:dregs added directly to the next generation.
         For the default value, 95% of the added population will be elites,
         5% will be dregs.
+    minimum_elites: int, default: 0
+        Minimum number of elites to be added to next generation
+    minimum_dregs: int, default: 0
+        Minimum number of dregs to be added to next generation
     mutation_prob: float, default: 0.1
         Probability of a mutation at each element of the state vector
         during reproduction, expressed as a value between 0 and 1.
@@ -424,9 +435,9 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
-    state_fitness_callback: function taking two parameters, default: None
+    state_fitness_callback: function taking five parameters, default: None
         If specified, this callback will be invoked once per iteration.
-        Parameters are (iteration, current best state, current best fit, user callback data).
+        Parameters are (iteration, max attempts reached?, current best state, current best fit, user callback data).
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
@@ -455,7 +466,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         else:
             raise Exception("""pop_size must be a positive integer.""")
 
-    breeding_pop_size = int(pop_size * pop_breed_percent)
+    breeding_pop_size = int(pop_size * pop_breed_percent) - (minimum_elites + minimum_dregs)
     if breeding_pop_size < 1:
         raise Exception("""pop_breed_percent must be large enough to ensure at least one mating.""")
 
@@ -491,8 +502,11 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
     # initialize survivor count, elite count and dreg count
     survivors_size = pop_size - breeding_pop_size
-    dregs_size = int(survivors_size * (1.0 - elite_dreg_ratio)) if survivors_size > 1 else 0
-    elites_size = survivors_size - dregs_size
+    dregs_size = max(int(survivors_size * (1.0 - elite_dreg_ratio)) if survivors_size > 1 else 0, minimum_dregs)
+    elites_size = max(survivors_size - dregs_size, minimum_elites)
+    if dregs_size + elites_size > survivors_size:
+        over_population = dregs_size + elites_size - survivors_size
+        breeding_pop_size -= over_population
 
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
@@ -531,10 +545,12 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
         # invoke callback
         if state_fitness_callback is not None:
+            max_attempts_reached = (attempts == max_attempts - 1)
             continue_iterating = state_fitness_callback(iters,
+                                                        max_attempts_reached,
                                                         problem.get_state(),
                                                         problem.get_maximize()*problem.get_fitness(),
-                                                        np.asarray(fitness_curve),
+                                                        np.asarray(fitness_curve) if curve else None,
                                                         callback_user_info)
             # break out if requested
             if not continue_iterating:
@@ -555,6 +571,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 
+    print(f'Attempts: {attempts}')
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
@@ -588,9 +605,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
-    state_fitness_callback: function taking two parameters, default: None
+    state_fitness_callback: function taking five parameters, default: None
         If specified, this callback will be invoked once per iteration.
-        Parameters are (iteration, current best state, current best fit, user callback data).
+        Parameters are (iteration, max attempts reached?, current best state, current best fit, user callback data).
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
@@ -661,10 +678,12 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 
         # invoke callback
         if state_fitness_callback is not None:
+            max_attempts_reached = (attempts == max_attempts - 1)
             continue_iterating = state_fitness_callback(iters,
+                                                        max_attempts_reached,
                                                         problem.get_state(),
-                                                        problem.get_maximize() * problem.get_fitness(),
-                                                        np.asarray(fitness_curve),
+                                                        problem.get_maximize()*problem.get_fitness(),
+                                                        np.asarray(fitness_curve) if curve else None,
                                                         callback_user_info)
             # break out if requested
             if not continue_iterating:
