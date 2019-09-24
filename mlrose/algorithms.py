@@ -9,7 +9,8 @@ from .decay import GeomDecay
 
 
 def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
-               curve=False, random_state=None):
+               curve=False, random_state=None,
+               state_fitness_callback=None, callback_user_info=None):
     """Use standard hill climbing to find the optimum for a given
     optimization problem.
 
@@ -34,6 +35,12 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+    state_fitness_callback: function taking two parameters, default: None
+        If specified, this callback will be invoked once per iteration.
+        Parameters are (iteration, current best state, current best fit, user callback data).
+        Return true to continue iterating, or false to stop.
+    callback_user_info: any, default: None
+        User data passed as last parameter of callback.
 
     Returns
     -------
@@ -70,7 +77,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
     if curve:
         fitness_curve = []
-
+    continue_iterating = True
     for _ in range(restarts + 1):
         # Initialize optimization problem
         if init_state is None:
@@ -79,7 +86,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             problem.set_state(init_state)
 
         iters = 0
-
         while iters < max_iters:
             iters += 1
 
@@ -87,6 +93,16 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             problem.find_neighbors()
             next_state = problem.best_neighbor()
             next_fitness = problem.eval_fitness(next_state)
+            # invoke callback
+            if state_fitness_callback is not None:
+                continue_iterating = state_fitness_callback(iters,
+                                                            problem.get_state(),
+                                                            problem.get_maximize() * problem.get_fitness(),
+                                                            np.asarray(fitness_curve),
+                                                            callback_user_info)
+                # break out if requested
+                if not continue_iterating:
+                    break
 
             # If best neighbor is an improvement, move to that state
             if next_fitness > problem.get_fitness():
@@ -94,6 +110,9 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
             else:
                 break
+        # break out if requested
+        if not continue_iterating:
+            break
 
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:
@@ -112,7 +131,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
 
 def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
-                      init_state=None, curve=False, random_state=None):
+                      init_state=None, curve=False, random_state=None,
+                      state_fitness_callback=None, callback_user_info=None):
     """Use randomized hill climbing to find the optimum for a given
     optimization problem.
 
@@ -139,6 +159,12 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+    state_fitness_callback: function taking two parameters, default: None
+        If specified, this callback will be invoked once per iteration.
+        Parameters are (iteration, current best state, current best fit, user callback data).
+        Return true to continue iterating, or false to stop.
+    callback_user_info: any, default: None
+        User data passed as last parameter of callback.
 
     Returns
     -------
@@ -179,7 +205,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
     if curve:
         fitness_curve = []
-
+    continue_iterating = True
     for _ in range(restarts + 1):
         # Initialize optimization problem and attempts counter
         if init_state is None:
@@ -196,7 +222,16 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             # Find random neighbor and evaluate fitness
             next_state = problem.random_neighbor()
             next_fitness = problem.eval_fitness(next_state)
-
+            # invoke callback
+            if state_fitness_callback is not None:
+                continue_iterating = state_fitness_callback(iters,
+                                                            problem.get_state(),
+                                                            problem.get_maximize() * problem.get_fitness(),
+                                                            np.asarray(fitness_curve),
+                                                            callback_user_info)
+                # break out if requested
+                if not continue_iterating:
+                    break
             # If best neighbor is an improvement,
             # move to that state and reset attempts counter
             if next_fitness > problem.get_fitness():
@@ -208,6 +243,10 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
             if curve:
                 fitness_curve.append(problem.get_fitness())
+
+        # break out if requested
+        if not continue_iterating:
+            break
 
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:
@@ -224,7 +263,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
 def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                         max_iters=np.inf, init_state=None, curve=False,
-                        random_state=None):
+                        random_state=None,
+                        state_fitness_callback=None, callback_user_info=None):
     """Use simulated annealing to find the optimum for a given
     optimization problem.
 
@@ -251,6 +291,12 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+    state_fitness_callback: function taking two parameters, default: None
+        If specified, this callback will be invoked once per iteration.
+        Parameters are (iteration, current best state, current best fit, user callback data).
+        Return true to continue iterating, or false to stop.
+    callback_user_info: any, default: None
+        User data passed as last parameter of callback.
 
     Returns
     -------
@@ -297,6 +343,16 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     while (attempts < max_attempts) and (iters < max_iters):
         temp = schedule.evaluate(iters)
         iters += 1
+        # invoke callback
+        if state_fitness_callback is not None:
+            continue_iterating = state_fitness_callback(iters,
+                                                        problem.get_state(),
+                                                        problem.get_maximize() * problem.get_fitness(),
+                                                        np.asarray(fitness_curve),
+                                                        callback_user_info)
+            # break out if requested
+            if not continue_iterating:
+                break
 
         if temp == 0:
             break
@@ -480,6 +536,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
                                                         problem.get_maximize()*problem.get_fitness(),
                                                         np.asarray(fitness_curve),
                                                         callback_user_info)
+            # break out if requested
             if not continue_iterating:
                 break
 
@@ -505,7 +562,8 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
 
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
-          max_iters=np.inf, curve=False, random_state=None):
+          max_iters=np.inf, curve=False, random_state=None,
+          state_fitness_callback=None, callback_user_info=None):
     """Use MIMIC to find the optimum for a given optimization problem.
 
     Parameters
@@ -530,6 +588,12 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+    state_fitness_callback: function taking two parameters, default: None
+        If specified, this callback will be invoked once per iteration.
+        Parameters are (iteration, current best state, current best fit, user callback data).
+        Return true to continue iterating, or false to stop.
+    callback_user_info: any, default: None
+        User data passed as last parameter of callback.
 
     Returns
     -------
@@ -594,6 +658,17 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 
         # Update probability estimates
         problem.eval_node_probs()
+
+        # invoke callback
+        if state_fitness_callback is not None:
+            continue_iterating = state_fitness_callback(iters,
+                                                        problem.get_state(),
+                                                        problem.get_maximize() * problem.get_fitness(),
+                                                        np.asarray(fitness_curve),
+                                                        callback_user_info)
+            # break out if requested
+            if not continue_iterating:
+                break
 
         # Generate new sample
         new_sample = problem.sample_pop(pop_size)
