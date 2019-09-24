@@ -332,7 +332,8 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
 
 def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.95, mutation_prob=0.1,
-                max_attempts=10, max_iters=np.inf, curve=False, random_state=None):
+                max_attempts=10, max_iters=np.inf, curve=False, random_state=None,
+                state_fitness_callback=None, callback_user_info=None):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
@@ -367,6 +368,12 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     random_state: int, default: None
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
+    state_fitness_callback: function taking two parameters, default: None
+        If specified, this callback will be invoked once per iteration.
+        Parameters are (iteration, current best state, current best fit, user callback data).
+        Return true to continue iterating, or false to stop.
+    callback_user_info: any, default: None
+        User data passed as last parameter of callback.
 
     Returns
     -------
@@ -402,7 +409,6 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     if (elite_dreg_ratio < 0) or (elite_dreg_ratio > 1):
         raise Exception("""elite_dreg_ratio must be between 0 and 1.""")
 
-
     if (mutation_prob < 0) or (mutation_prob > 1):
         raise Exception("""mutation_prob must be between 0 and 1.""")
 
@@ -427,6 +433,11 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     attempts = 0
     iters = 0
 
+    # initialize survivor count, elite count and dreg count
+    survivors_size = pop_size - breeding_pop_size
+    dregs_size = int(survivors_size * (1.0 - elite_dreg_ratio)) if survivors_size > 1 else 0
+    elites_size = survivors_size - dregs_size
+
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
 
@@ -446,16 +457,14 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
             child = problem.reproduce(parent_1, parent_2, mutation_prob)
             next_gen.append(child)
 
-        # fill remaining population with elites
-        elite_len = pop_size-breeding_pop_size
-        if elite_len > 0:
+        # fill remaining population with elites/dregs
+        if survivors_size > 0:
             last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
-            dregs_len = int(elite_len * (1.0 - elite_dreg_ratio)) if elite_len > 1 else 0
-            sorted_parents = sorted(last_gen, key=lambda x: -x[1])
-            best_parents = sorted_parents[:(elite_len - dregs_len)]
+            sorted_parents = sorted(last_gen, key=lambda f: -f[1])
+            best_parents = sorted_parents[:elites_size]
             next_gen.extend([p[0] for p in best_parents])
-            if dregs_len > 0:
-                worst_parents = sorted_parents[-dregs_len:]
+            if dregs_size > 0:
+                worst_parents = sorted_parents[-dregs_size:]
                 next_gen.extend([p[0] for p in worst_parents])
 
         next_gen = np.array(next_gen[:pop_size])
@@ -463,6 +472,16 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
         next_state = problem.best_child()
         next_fitness = problem.eval_fitness(next_state)
+
+        # invoke callback
+        if state_fitness_callback is not None:
+            continue_iterating = state_fitness_callback(iters,
+                                                        problem.get_state(),
+                                                        problem.get_fitness(),
+                                                        fitness_curve,
+                                                        callback_user_info)
+            if not continue_iterating:
+                break
 
         # If best child is an improvement,
         # move to that state and reset attempts counter
