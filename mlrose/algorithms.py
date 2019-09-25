@@ -95,12 +95,12 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             next_fitness = problem.eval_fitness(next_state)
             # invoke callback
             if state_fitness_callback is not None:
-                continue_iterating = state_fitness_callback(iters,
-                                                            False,
-                                                            problem.get_state(),
-                                                            problem.get_maximize() * problem.get_fitness(),
-                                                            np.asarray(fitness_curve) if fitness_curve is not None else None,
-                                                            callback_user_info)
+                continue_iterating = state_fitness_callback(iteration=iters,
+                                                            done=False,
+                                                            state=problem.get_state(),
+                                                            fitness=problem.get_adjusted_fitness(),
+                                                            curve=np.asarray(fitness_curve) if curve else None,
+                                                            user_data=callback_user_info)
                 # break out if requested
                 if not continue_iterating:
                     break
@@ -121,7 +121,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             best_state = problem.get_state()
 
         if curve:
-            fitness_curve.append(problem.get_fitness())
+            fitness_curve.append(problem.get_adjusted_fitness())
 
     best_fitness = problem.get_maximize()*best_fitness
 
@@ -226,13 +226,12 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             # invoke callback
             if state_fitness_callback is not None:
                 max_attempts_reached = (attempts == max_attempts - 1)
-                continue_iterating = state_fitness_callback(iters,
-                                                            max_attempts_reached,
-                                                            problem.get_state(),
-                                                            problem.get_maximize() * problem.get_fitness(),
-                                                            np.asarray(
-                                                                fitness_curve) if fitness_curve is not None else None,
-                                                            callback_user_info)
+                continue_iterating = state_fitness_callback(iteration=iters,
+                                                            done=max_attempts_reached,
+                                                            state=problem.get_state(),
+                                                            fitness=problem.get_adjusted_fitness(),
+                                                            curve=np.asarray(fitness_curve) if curve else None,
+                                                            user_data=callback_user_info)
                 # break out if requested
                 if not continue_iterating:
                     break
@@ -246,7 +245,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                 attempts += 1
 
             if curve:
-                fitness_curve.append(problem.get_fitness())
+                fitness_curve.append(problem.get_adjusted_fitness())
 
         # break out if requested
         if not continue_iterating:
@@ -350,12 +349,12 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts - 1)
-            continue_iterating = state_fitness_callback(iters,
-                                                        max_attempts_reached,
-                                                        problem.get_state(),
-                                                        problem.get_maximize()*problem.get_fitness(),
-                                                        np.asarray(fitness_curve) if curve else None,
-                                                        callback_user_info)
+            continue_iterating = state_fitness_callback(iteration=iters,
+                                                        done=max_attempts_reached,
+                                                        state=problem.get_state(),
+                                                        fitness=problem.get_adjusted_fitness(),
+                                                        curve=np.asarray(fitness_curve) if curve else None,
+                                                        user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
                 break
@@ -382,7 +381,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                 attempts += 1
 
         if curve:
-            fitness_curve.append(problem.get_fitness())
+            fitness_curve.append(problem.get_adjusted_fitness())
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
@@ -393,10 +392,45 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     return best_state, best_fitness
 
 
+def get_hamming_distance_default_(population, p1):
+    hamming_distances = np.array([np.count_nonzero(p1 != p2) / len(p1) for p2 in population])
+    return hamming_distances
+
+
+def get_hamming_distance_float_(population, p1):
+    hamming_distances = np.array([np.abs(np.diff(p1, p2)) / len(p1) for p2 in population])
+    return hamming_distances
+
+
+def _genetic_alg_select_parents(pop_size, problem,
+                                get_hamming_distance_func,
+                                hamming_factor=0.0):
+    mating_probabilities = problem.get_mate_probs()
+    if hamming_factor > 0.01 and get_hamming_distance_func is not None:
+        selected = np.random.choice(pop_size, p=mating_probabilities)
+        population = problem.get_population()
+        p1 = population[selected]
+        hamming_distances = get_hamming_distance_func(population, p1)
+        hamming_distances = (hamming_distances * hamming_factor) * (mating_probabilities * (1.0 - hamming_factor))
+        hamming_distances /= hamming_distances.sum()
+        selected = np.random.choice(pop_size, p=hamming_distances)
+        p2 = population[selected]
+
+        return p1, p2
+
+    selected = np.random.choice(pop_size,
+                                size=2,
+                                p=mating_probabilities)
+    p1 = problem.get_population()[selected[0]]
+    p2 = problem.get_population()[selected[1]]
+    return p1, p2
+
+
 def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.95,
                 minimum_elites=0, minimum_dregs=0, mutation_prob=0.1,
                 max_attempts=10, max_iters=np.inf, curve=False, random_state=None,
-                state_fitness_callback=None, callback_user_info=None):
+                state_fitness_callback=None, callback_user_info=None,
+                hamming_factor=0.0, hamming_decay_factor=0):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
 
@@ -405,7 +439,6 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     problem: optimization object
         Object containing fitness function optimization problem to be solved.
         For example, :code:`DiscreteOpt()`, :code:`ContinuousOpt()` or
-        :code:`TSPOpt()`.
     pop_size: int, default: 200
         Size of population to be used in genetic algorithm.
     pop_breed_percent: float, default 0.75
@@ -497,6 +530,18 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     # Initialize problem, population and attempts counter
     problem.reset()
     problem.random_pop(pop_size)
+
+    # check for hamming
+    # get_hamming_distance_default_
+
+    get_hamming_distance_func = None
+    if hamming_factor > 0:
+        g1 = problem.get_population()[0][0]
+        if isinstance(g1, float) or g1.dtype == 'float64':
+            get_hamming_distance_func = get_hamming_distance_float_
+        else:
+            get_hamming_distance_func = get_hamming_distance_default_
+
     attempts = 0
     iters = 0
 
@@ -518,10 +563,10 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         next_gen = []
         for _ in range(breeding_pop_size):
             # Select parents
-            selected = np.random.choice(pop_size, size=2,
-                                        p=problem.get_mate_probs())
-            parent_1 = problem.get_population()[selected[0]]
-            parent_2 = problem.get_population()[selected[1]]
+            parent_1, parent_2 = _genetic_alg_select_parents(pop_size=pop_size,
+                                                             problem=problem,
+                                                             hamming_factor=hamming_factor,
+                                                             get_hamming_distance_func=get_hamming_distance_func)
 
             # Create offspring
             child = problem.reproduce(parent_1, parent_2, mutation_prob)
@@ -546,27 +591,31 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts - 1)
-            continue_iterating = state_fitness_callback(iters,
-                                                        max_attempts_reached,
-                                                        problem.get_state(),
-                                                        problem.get_maximize()*problem.get_fitness(),
-                                                        np.asarray(fitness_curve) if curve else None,
-                                                        callback_user_info)
+            continue_iterating = state_fitness_callback(iteration=iters,
+                                                        done=max_attempts_reached,
+                                                        state=problem.get_state(),
+                                                        fitness=problem.get_adjusted_fitness(),
+                                                        curve=np.asarray(fitness_curve) if curve else None,
+                                                        user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
                 break
+
+        # decay hamming factor
+        hamming_factor *= hamming_decay_factor
+        hamming_factor = max(min(hamming_factor, 1.0), 0.0)
+        # print(hamming_factor)
 
         # If best child is an improvement,
         # move to that state and reset attempts counter
         if next_fitness > problem.get_fitness():
             problem.set_state(next_state)
             attempts = 0
-
         else:
             attempts += 1
 
         if curve:
-            fitness_curve.append(problem.get_fitness())
+            fitness_curve.append(problem.get_adjusted_fitness())
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
@@ -678,12 +727,12 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts - 1)
-            continue_iterating = state_fitness_callback(iters,
-                                                        max_attempts_reached,
-                                                        problem.get_state(),
-                                                        problem.get_maximize()*problem.get_fitness(),
-                                                        np.asarray(fitness_curve) if curve else None,
-                                                        callback_user_info)
+            continue_iterating = state_fitness_callback(iteration=iters,
+                                                        done=max_attempts_reached,
+                                                        state=problem.get_state(),
+                                                        fitness=problem.get_adjusted_fitness(),
+                                                        curve=np.asarray(fitness_curve) if curve else None,
+                                                        user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
                 break
@@ -706,7 +755,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
             attempts += 1
 
         if curve:
-            fitness_curve.append(problem.get_fitness())
+            fitness_curve.append(problem.get_adjusted_fitness())
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state().astype(int)

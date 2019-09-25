@@ -125,6 +125,16 @@ class OptProb:
         """
         return self.fitness
 
+    def get_adjusted_fitness(self):
+        """ Return maximization factor * fitness of the current state vector.
+
+        Returns
+        -------
+        self.maximize*self.fitness: float
+            Fitness value of current state vector adjusted by maximization factor.
+        """
+        return self.maximize * self.fitness
+
     def get_length(self):
         """ Return the state vector length.
 
