@@ -10,8 +10,8 @@ from runners._RunnerBase import RunnerBase
 
 class GARunner(RunnerBase):
 
-    def __init__(self, problem, seed, iteration_list, population_sizes, mutation_rates, max_attempts=500,
-                 generate_curves=True):
+    def __init__(self, problem, seed, iteration_list, population_sizes, mutation_rates,
+                 max_attempts=500, generate_curves=True):
         super().__init__(problem, seed, iteration_list, max_attempts, generate_curves)
         self.population_sizes = population_sizes
         self.mutation_rates = mutation_rates

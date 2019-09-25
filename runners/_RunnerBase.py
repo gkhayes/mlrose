@@ -13,10 +13,12 @@ class RunnerBase(ABC):
         self.iteration_list = iteration_list
         self.max_attempts = max_attempts
         self.generate_curves = generate_curves
-        self.run_stats_df = None
-        self.curves_df = None
         self._initial_fitness = None
         self.parameter_description_dict = {}
+        self.run_stats_df = None
+        self.curves_df = None
+        self._raw_run_stats = []
+        self._fitness_curves = []
 
     def _setup(self):
         self._raw_run_stats = []
@@ -73,7 +75,7 @@ class RunnerBase(ABC):
         end = time.perf_counter()
 
         t = end - self.iteration_start_time
-        print(f'iteration:[{iteration}], done:[{done}], time:[{t:.2f}]')
+        print(f'iteration:[{iteration}], done:[{done}], fitness[{fitness:.4f}], time:[{t:.2f}]')
         if user_data is not None and len(user_data) > 0:
             data_desc = ', '.join([f'{n}: [{v}] ' for (n, v) in user_data])
             print(data_desc)
