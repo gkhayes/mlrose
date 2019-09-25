@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 
 
-class RunnerBase(ABC):
+class _RunnerBase(ABC):
 
-    def __init__(self, problem, seed, iteration_list, max_attempts=500, generate_curves=True):
+    def __init__(self, problem, seed, iteration_list, max_attempts=500, generate_curves=True, **kwargs):
         self.problem = problem
         self.seed = seed
         self.iteration_list = iteration_list
@@ -19,6 +19,7 @@ class RunnerBase(ABC):
         self.curves_df = None
         self._raw_run_stats = []
         self._fitness_curves = []
+        self._extra_args = kwargs
 
     def _setup(self):
         self._raw_run_stats = []
@@ -38,6 +39,9 @@ class RunnerBase(ABC):
         print(f'Running {name}')
         for vns in value_sets:
             self.current_args = dict(vns)
+            total_args = self.current_args
+            if self._extra_args is not None and len(self._extra_args) > 0:
+                total_args.update(self._extra_args)
             np.random.seed(self.seed)
             self.iteration_start_time = time.perf_counter()
             algorithm(problem=self.problem,
@@ -47,7 +51,7 @@ class RunnerBase(ABC):
                       max_iters=i,
                       state_fitness_callback=self._save_state,
                       callback_user_info=None,
-                      **self.current_args)
+                      **total_args)
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 

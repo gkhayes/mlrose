@@ -6,13 +6,16 @@ except:
     import mlrose
 import time
 
-from runners._RunnerBase import RunnerBase
+from runners._RunnerBase import _RunnerBase
 
 
-class SARunner(RunnerBase):
+class SARunner(_RunnerBase):
 
-    def __init__(self, problem, seed, iteration_list, temperature_list, max_attempts=500, generate_curves=True):
-        super().__init__(problem, seed, iteration_list, max_attempts, generate_curves)
+    def __init__(self, problem, seed, iteration_list, temperature_list,
+                 max_attempts=500, generate_curves=True, **kwargs):
+        super().__init__(problem=problem, seed=seed, iteration_list=iteration_list,
+                         max_attempts=max_attempts, generate_curves=generate_curves,
+                         **kwargs)
         self.temperature_list = temperature_list
 
     def run(self):
