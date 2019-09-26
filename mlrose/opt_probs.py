@@ -7,7 +7,10 @@ import numpy as np
 from sklearn.metrics import mutual_info_score
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
-from .fitness import TravellingSales
+
+from mlrose.crossover import TSPCrossOver, UniformCrossOver
+from mlrose.mutator import SwapMutator, ChangeOneMutator
+from .fitness import TravellingSales, Knapsack
 
 
 class OptProb:
@@ -255,7 +258,8 @@ class DiscreteOpt(OptProb):
         (max_val - 1), inclusive.
     """
 
-    def __init__(self, length, fitness_fn, maximize=True, max_val=2):
+    def __init__(self, length, fitness_fn, maximize=True, max_val=2,
+                 crossover=None, mutator=None):
 
         OptProb.__init__(self, length, fitness_fn, maximize)
 
@@ -281,6 +285,9 @@ class DiscreteOpt(OptProb):
         self.parent_nodes = []
         self.sample_order = []
         self.prob_type = 'discrete'
+
+        self._crossover = UniformCrossOver(self) if crossover is None else crossover
+        self._mutator = SwapMutator(self) if mutator is None else mutator
 
     def eval_node_probs(self):
         """Update probability density estimates.
@@ -499,29 +506,10 @@ class DiscreteOpt(OptProb):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
         # Reproduce parents
-        if self.length > 1:
-            _n = np.random.randint(self.length - 1)
-            child = np.array([0]*self.length)
-            child[0:_n+1] = parent_1[0:_n+1]
-            child[_n+1:] = parent_2[_n+1:]
-        elif np.random.randint(2) == 0:
-            child = np.copy(parent_1)
-        else:
-            child = np.copy(parent_2)
+        child = self._crossover.mate(parent_1, parent_2)
 
         # Mutate child
-        rand = np.random.uniform(size=self.length)
-        mutate = np.where(rand < mutation_prob)[0]
-
-        if self.max_val == 2:
-            for i in mutate:
-                child[i] = np.abs(child[i] - 1)
-
-        else:
-            for i in mutate:
-                vals = list(np.arange(self.max_val))
-                vals.remove(child[i])
-                child[i] = vals[np.random.randint(0, self.max_val-1)]
+        child = self._mutator.mutate(child, mutation_prob)
 
         return child
 
@@ -812,6 +800,37 @@ class ContinuousOpt(OptProb):
         return updated_state
 
 
+class KnapsackOpt(DiscreteOpt):
+    def __init__(self, length=None, fitness_fn=None, maximize=True, max_val=2,
+                 weights=None, values=None, max_weight_pct=0.35,
+                 crossover=None, mutator=None,
+                 multiply_by_max_item_count=False):
+
+        if (fitness_fn is None) and (weights is None and values is None):
+            raise Exception("""fitness_fn or both weights and"""
+                            + """ values must be specified.""")
+
+        if length is None:
+            if weights is not None:
+                self.length = len(weights)
+            elif values is not None:
+                self.length = len(values)
+            elif fitness_fn is not None:
+                self.length = len(fitness_fn.weights)
+
+        length = length
+
+        if fitness_fn is None:
+            fitness_fn = Knapsack(weights=weights, values=values,
+                                  max_weight_pct=max_weight_pct,
+                                  multiply_by_max_item_count=multiply_by_max_item_count)
+
+        self.max_val = max_val
+        crossover = UniformCrossOver(self) if crossover is None else crossover
+        mutator = ChangeOneMutator(self) if mutator is None else mutator
+        super().__init__(length, fitness_fn, maximize, max_val, crossover, mutator)
+
+
 class TSPOpt(DiscreteOpt):
     """Class for defining travelling salesperson optimisation problems.
 
@@ -845,17 +864,22 @@ class TSPOpt(DiscreteOpt):
         argument is ignored if fitness_fn or coords is not :code:`None`.
     """
 
-    def __init__(self, length, fitness_fn=None, maximize=False, coords=None,
+    def __init__(self, length=None, fitness_fn=None, maximize=False, coords=None,
                  distances=None):
-
         if (fitness_fn is None) and (coords is None) and (distances is None):
             raise Exception("""At least one of fitness_fn, coords and"""
                             + """ distances must be specified.""")
         elif fitness_fn is None:
             fitness_fn = TravellingSales(coords=coords, distances=distances)
 
-        DiscreteOpt.__init__(self, length, fitness_fn, maximize,
-                             max_val=length)
+        if length is None:
+            if coords is not None:
+                length = len(coords)
+            elif distances is not None:
+                length = len(set([x for (x,_,_) in distances] + [x for (_,x,_) in distances]))
+
+        DiscreteOpt.__init__(self, length, fitness_fn, maximize, max_val=length,
+                             crossover=TSPCrossOver(self), mutator=SwapMutator(self))
 
         if self.fitness_fn.get_prob_type() != 'tsp':
             raise Exception("""fitness_fn must have problem type 'tsp'.""")
@@ -966,113 +990,6 @@ class TSPOpt(DiscreteOpt):
         neighbor[node2] = self.state[node1]
 
         return neighbor
-
-    def reproduce(self, parent_1, parent_2, mutation_prob=0.1):
-        """Create child state vector from two parent state vectors.
-
-        Parameters
-        ----------
-        parent_1: array
-            State vector for parent 1.
-
-        parent_2: array
-            State vector for parent 2.
-
-        mutation_prob: float
-            Probability of a mutation at each state element during
-            reproduction.
-
-        Returns
-        -------
-        child: array
-            Child state vector produced from parents 1 and 2.
-        """
-        if len(parent_1) != self.length or len(parent_2) != self.length:
-            raise Exception("""Lengths of parents must match problem length""")
-
-        if (mutation_prob < 0) or (mutation_prob > 1):
-            raise Exception("""mutation_prob must be between 0 and 1.""")
-
-        # Reproduce parents
-        child = self._make_child_original(parent_1, parent_2)
-
-        # Mutate child
-        child = self._check_to_mutate_abagail(child, mutation_prob)
-
-        return child
-
-    def _check_to_mutate_abagail(self, child, mutation_prob):
-        if np.random.rand() > mutation_prob:
-            return child
-        # do swap mutation
-        m1 = np.random.randint(len(child))
-        m2 = np.random.randint(len(child))
-        tmp = child[m1]
-        child[m1] = child[m2]
-        child[m2] = tmp
-        return child
-
-    def _check_to_mutate_original(self, child, mutation_prob):
-        rand = np.random.uniform(size=self.length)
-        mutate = np.where(rand < mutation_prob)[0]
-        if len(mutate) > 0:
-            mutate_perm = np.random.permutation(mutate)
-            temp = np.copy(child)
-
-            for i in range(len(mutate)):
-                child[mutate[i]] = temp[mutate_perm[i]]
-
-    def _make_child_abagail(self, parent_1, parent_2):
-        if self.length > 1:
-            next_a = np.append(parent_1[1:], parent_1[-1])
-            next_b = np.append(parent_2[1:], parent_2[-1])
-
-            visited = [False] * self.length
-            child = np.array([0] * self.length)
-
-            v = np.random.randint(len(parent_1))
-            child[0] = v
-            visited[v] = True
-            for i in range(1, len(child)):
-                cur = child[i]
-                na = next_a[cur]
-                nb = next_b[cur]
-                va = visited[na]
-                vb = visited[nb]
-                if va and not vb:
-                    nx = nb
-                elif not va and vb:
-                    nx = na
-                elif not va and not vb:
-                    fa = self.maximize * self.fitness_fn.calculate_fitness([cur, na])
-                    fb = self.maximize * self.fitness_fn.calculate_fitness([cur, nb])
-                    nx = nb if fb > fa else na
-                else:
-                    while True:
-                        nx = np.random.randint(len(parent_1))
-                        if not visited[nx]:
-                            break
-                child[i] = nx
-                visited[nx] = True
-        elif np.random.randint(2) == 0:
-            child = np.copy(parent_1, copy=True)
-        else:
-            child = np.copy(parent_2, copy=True)
-        return child
-
-    def _make_child_original(self, parent_1, parent_2):
-        if self.length > 1:
-            _n = np.random.randint(self.length - 1)
-            child = np.array([0] * self.length)
-            child[0:_n + 1] = parent_1[0:_n + 1]
-
-            unvisited = [node for node in parent_2 if node not in parent_1[0:_n + 1]]
-            child[_n + 1:] = unvisited
-        elif np.random.randint(2) == 0:
-            child = np.copy(parent_1)
-        else:
-            child = np.copy(parent_2)
-        return child
 
     def sample_pop(self, sample_size):
         """Generate new sample from probability density.

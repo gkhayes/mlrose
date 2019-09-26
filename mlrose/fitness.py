@@ -559,11 +559,12 @@ class Knapsack:
     optimization problems *only*.
     """
 
-    def __init__(self, weights, values, max_weight_pct=0.35):
+    def __init__(self, weights, values, max_item_count=1, max_weight_pct=0.35, multiply_by_max_item_count=False):
 
         self.weights = weights
         self.values = values
-        self._w = np.ceil(np.sum(self.weights)*max_weight_pct)
+        count_multiplier = max_item_count if multiply_by_max_item_count else 1.0
+        self._w = np.ceil(np.sum(self.weights) * max_weight_pct * count_multiplier)
         self.prob_type = 'discrete'
 
         if len(self.weights) != len(self.values):
@@ -575,6 +576,9 @@ class Knapsack:
 
         if min(self.values) <= 0:
             raise Exception("""All values must be greater than 0.""")
+
+        if max_item_count <= 0:
+            raise Exception("""max_item_count must be greater than 0.""")
 
         if max_weight_pct <= 0:
             raise Exception("""max_weight_pct must be greater than 0.""")

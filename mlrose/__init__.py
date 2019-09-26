@@ -10,4 +10,4 @@ from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       Knapsack, TravellingSales, Queens, MaxKColor, 
                       CustomFitness)
 from .neural import NeuralNetwork, LinearRegression, LogisticRegression
-from .opt_probs import DiscreteOpt, ContinuousOpt, TSPOpt
+from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt
