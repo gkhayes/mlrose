@@ -61,9 +61,12 @@ class _RunnerBase(ABC):
         print(f'Running {runner_name}')
         for vns in value_sets:
             self.current_args = dict(vns)
-            total_args = self.current_args
+            total_args = self.current_args.copy()
             if self._extra_args is not None and len(self._extra_args) > 0:
                 total_args.update(self._extra_args)
+            user_info = [('runner_name', runner_name)]
+            user_info.extend([(n, total_args[n]) for n in total_args])
+
             np.random.seed(self.seed)
             self.iteration_start_time = time.perf_counter()
             algorithm(problem=self.problem,
@@ -72,7 +75,7 @@ class _RunnerBase(ABC):
                       random_state=self.seed,
                       max_iters=i,
                       state_fitness_callback=self._save_state,
-                      callback_user_info=[('runner_name', runner_name)],
+                      callback_user_info=user_info,
                       **total_args)
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
@@ -116,7 +119,7 @@ class _RunnerBase(ABC):
 
         t = end - self.iteration_start_time
         if user_data is not None and len(user_data) > 0:
-            data_desc = ', '.join([f'{n}:[{v}] ' for (n, v) in user_data])
+            data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
             print(data_desc)
         print(f'experiment_name:[{self._experiment_name}],  iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness[{fitness:.4f}]')
