@@ -877,7 +877,7 @@ class TSPOpt(DiscreteOpt):
                 length = len(coords)
             elif distances is not None:
                 length = len(set([x for (x,_,_) in distances] + [x for (_,x,_) in distances]))
-
+        self.length = length
         DiscreteOpt.__init__(self, length, fitness_fn, maximize, max_val=length,
                              crossover=TSPCrossOver(self), mutator=SwapMutator(self))
 
