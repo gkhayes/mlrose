@@ -1,13 +1,23 @@
 from abc import ABC, abstractmethod
 import time
+import os
 import itertools as it
 import numpy as np
 import pandas as pd
+import pickle as pk
 
 
 class _RunnerBase(ABC):
 
-    def __init__(self, problem, seed, iteration_list, max_attempts=500, generate_curves=True, **kwargs):
+    @staticmethod
+    def build_data_filename(output_directory, runner_name, experiment_name, df_name, ext=''):
+        if len(ext) > 0 and not ext[0] == '.':
+            ext = f'.{ext}'
+        return os.path.join(output_directory,
+                            f'{runner_name.lower()}__{experiment_name}__{df_name}{ext}')
+
+    def __init__(self, problem, experiment_name, seed, iteration_list, max_attempts=500,
+                 generate_curves=True, output_directory=None, **kwargs):
         self.problem = problem
         self.seed = seed
         self.iteration_list = iteration_list
@@ -20,13 +30,25 @@ class _RunnerBase(ABC):
         self._raw_run_stats = []
         self._fitness_curves = []
         self._extra_args = kwargs
+        self._output_directory = output_directory
+        self._experiment_name = experiment_name
 
     def _setup(self):
         self._raw_run_stats = []
         self._fitness_curves = []
+        if self._output_directory is not None:
+            if not os.path.exists(self._output_directory):
+                os.makedirs(self._output_directory)
+        """
+        directory = "./data/old/curves/"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        path1 = './data/old'
+        path2 = './data/old/curves'
+        """
         pass
 
-    def _run_experiment(self, name, algorithm, **kwargs):
+    def _run_experiment(self, runner_name, algorithm, **kwargs):
         self._setup()
 
         # extract loop params
@@ -36,7 +58,7 @@ class _RunnerBase(ABC):
         run_start = time.perf_counter()
         i = int(max(self.iteration_list))
 
-        print(f'Running {name}')
+        print(f'Running {runner_name}')
         for vns in value_sets:
             self.current_args = dict(vns)
             total_args = self.current_args
@@ -50,7 +72,7 @@ class _RunnerBase(ABC):
                       random_state=self.seed,
                       max_iters=i,
                       state_fitness_callback=self._save_state,
-                      callback_user_info=None,
+                      callback_user_info=[('runner_name', runner_name)],
                       **total_args)
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
@@ -58,7 +80,21 @@ class _RunnerBase(ABC):
         self.run_stats_df = pd.DataFrame(self._raw_run_stats)
         self.curves_df = pd.DataFrame(self._fitness_curves)
 
+        if self._output_directory is not None:
+            self._dump_df_to_disk(self.run_stats_df,
+                                  runner_name=runner_name,
+                                  df_name='run_stats_df')
+            self._dump_df_to_disk(self.curves_df,
+                                  runner_name=runner_name,
+                                  df_name='curves_df')
+
         return self.run_stats_df, self.curves_df
+
+    def _dump_df_to_disk(self, df, runner_name, df_name):
+        filename_root = os.path.join(self._output_directory,
+                                     f'{runner_name.lower()}__{self._experiment_name}__{df_name}')
+        pk.dump(df, open(f'{filename_root}.p', "wb"))
+        df.to_csv(f'{filename_root}.csv')
 
     @staticmethod
     def _create_curve_stat(iteration, fitness, param_stats):
@@ -79,10 +115,11 @@ class _RunnerBase(ABC):
         end = time.perf_counter()
 
         t = end - self.iteration_start_time
-        print(f'iteration:[{iteration}], done:[{done}], fitness[{fitness:.4f}], time:[{t:.2f}]')
         if user_data is not None and len(user_data) > 0:
-            data_desc = ', '.join([f'{n}: [{v}] ' for (n, v) in user_data])
+            data_desc = ', '.join([f'{n}:[{v}] ' for (n, v) in user_data])
             print(data_desc)
+        print(f'experiment_name:[{self._experiment_name}],  iteration:[{iteration}], done:[{done}], '
+              f'time:[{t:.2f}], fitness[{fitness:.4f}]')
         print(f'\t{state}')
         print()
 
@@ -90,13 +127,13 @@ class _RunnerBase(ABC):
         iterations = [min(remaining_iterations)] if not done else remaining_iterations
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
-        param_stats = {gd(k): self.current_args[k] for k in self.current_args}
+        param_stats = {str(gd(k)): self.current_args[k] for k in self.current_args}
         for i in iterations:
             run_stat = {
                 'Iterations': i,
-                'Best Fitness': fitness,  # 1.0 / fitness,
+                'Fitness': fitness,  # 1.0 / fitness,
                 'Time': t,
-                'Best State': state
+                'State': state
             }
             run_stat.update(param_stats)
 
