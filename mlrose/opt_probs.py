@@ -818,7 +818,7 @@ class KnapsackOpt(DiscreteOpt):
             elif fitness_fn is not None:
                 self.length = len(fitness_fn.weights)
 
-        length = length
+        self.length = length
 
         if fitness_fn is None:
             fitness_fn = Knapsack(weights=weights, values=values,
