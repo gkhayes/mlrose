@@ -36,7 +36,7 @@ setup(name='mlrose-hiive',
           "Topic :: Scientific/Engineering :: Mathematics",
           "Topic :: Software Development :: Libraries",
           "Topic :: Software Development :: Libraries :: Python Modules"],
-      packages=['mlrose', 'runners', 'generators'],
+      packages=['mlrose'],
       install_requires=['numpy', 'scipy', 'sklearn', 'pandas'],
       python_requires='>=3',
       zip_safe=False)

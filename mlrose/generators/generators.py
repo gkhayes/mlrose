@@ -22,7 +22,7 @@ class KnapsackGenerator:
                                      maximize=True, max_val=max_item_count,
                                      weights=weights, values=values,
                                      max_weight_pct=max_weight_pct,
-                                     multiply_by_max_item_count=False)
+                                     multiply_by_max_item_count=True)
         return problem
 
 

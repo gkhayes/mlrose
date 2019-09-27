@@ -1,11 +1,30 @@
+
 try:
     import mlrose
 except:
     import sys
     sys.path.append("..")
     import mlrose
+from mlrose.runners._RunnerBase import _RunnerBase
 
-from runners._RunnerBase import _RunnerBase
+"""
+Example usage:
+
+    experiment_name = 'example_experiment'
+    problem = TSPGenerator.generate(seed=SEED, number_of_cities=22)
+
+    ga = GARunner(problem=problem,
+                  experiment_name=experiment_name,
+                  output_directory=OUTPUT_DIRECTORY,
+                  seed=SEED,
+                  iteration_list=2 ** np.arange(12),
+                  max_attempts=1000,
+                  population_sizes=[150, 200, 300],
+                  mutation_rates=[0.4, 0.5, 0.6])
+                  
+    # the two data frames will contain the results
+    df_run_stats, df_run_curves = ga.run()                  
+"""
 
 
 class GARunner(_RunnerBase):

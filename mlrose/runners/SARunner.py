@@ -4,9 +4,26 @@ except:
     import sys
     sys.path.append("..")
     import mlrose
-import time
 
-from runners._RunnerBase import _RunnerBase
+from mlrose.runners._RunnerBase import _RunnerBase
+
+"""
+Example usage:
+
+    experiment_name = 'example_experiment'
+    problem = TSPGenerator.generate(seed=SEED, number_of_cities=22)
+
+    sa = SARunner(problem=problem,
+                  experiment_name=experiment_name,
+                  output_directory=OUTPUT_DIRECTORY,
+                  seed=SEED,
+                  iteration_list=2 ** np.arange(12),
+                  max_attempts=5000,
+                  temperature_list=[0.20, 0.40, 0.60, 0.80, 1.0])
+                  
+    # the two data frames will contain the results
+    df_run_stats, df_run_curves = sa.run()                  
+"""
 
 
 class SARunner(_RunnerBase):

@@ -1,6 +1,6 @@
 """ MLROSe initialization file."""
 
-# Author: Genevieve Hayes
+# Author: Genevieve Hayes (modified by Andrew Rollings)
 # License: BSD 3 clause
 
 from .algorithms import (hill_climb, random_hill_climb, simulated_annealing,
@@ -11,3 +11,6 @@ from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       CustomFitness)
 from .neural import NeuralNetwork, LinearRegression, LogisticRegression
 from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt
+
+from .runners import GARunner, MIMICRunner, RHCRunner, SARunner
+from .generators import KnapsackGenerator, TSPGenerator

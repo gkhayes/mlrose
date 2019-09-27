@@ -62,8 +62,10 @@ class _RunnerBase(ABC):
         for vns in value_sets:
             self.current_args = dict(vns)
             total_args = self.current_args.copy()
+
             if self._extra_args is not None and len(self._extra_args) > 0:
                 total_args.update(self._extra_args)
+
             user_info = [('runner_name', runner_name)]
             user_info.extend([(n, total_args[n]) for n in total_args])
 
@@ -77,6 +79,7 @@ class _RunnerBase(ABC):
                       state_fitness_callback=self._save_state,
                       callback_user_info=user_info,
                       **total_args)
+
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 
@@ -126,7 +129,7 @@ class _RunnerBase(ABC):
         print(f'\t{state}')
         print()
 
-        remaining_iterations = list(filter(lambda x: x >= iteration, self.iteration_list))
+        remaining_iterations = [i for i in self.iteration_list if i >= iteration]
         iterations = [min(remaining_iterations)] if not done else remaining_iterations
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
@@ -138,7 +141,8 @@ class _RunnerBase(ABC):
                 'Time': t,
                 'State': state
             }
-            run_stat.update(param_stats)
+            # run_stat.update(param_stats)
+            run_stat = { **run_stat, **param_stats }
 
             self._raw_run_stats.append(run_stat)
 

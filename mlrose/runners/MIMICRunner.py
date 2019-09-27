@@ -4,9 +4,26 @@ except:
     import sys
     sys.path.append("..")
     import mlrose
-import time
 
-from runners._RunnerBase import _RunnerBase
+from mlrose.runners._RunnerBase import _RunnerBase
+
+"""
+Example usage:
+
+    experiment_name = 'example_experiment'
+    problem = TSPGenerator.generate(seed=SEED, number_of_cities=22)
+
+    mmc = MIMICRunner(problem=problem,
+                      experiment_name=experiment_name,
+                      output_directory=OUTPUT_DIRECTORY,
+                      seed=SEED,
+                      iteration_list=2 ** np.arange(10),
+                      max_attempts=500,
+                      keep_percent_list=[0.25, 0.5, 0.75])
+                      
+    # the two data frames will contain the results
+    df_run_stats, df_run_curves = mmc.run()
+"""
 
 
 class MIMICRunner(_RunnerBase):
