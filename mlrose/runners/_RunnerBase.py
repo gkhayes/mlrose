@@ -6,15 +6,10 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 
+from mlrose.runners.utils import build_data_filename
+
 
 class _RunnerBase(ABC):
-
-    @staticmethod
-    def build_data_filename(output_directory, runner_name, experiment_name, df_name, ext=''):
-        if len(ext) > 0 and not ext[0] == '.':
-            ext = f'.{ext}'
-        return os.path.join(output_directory,
-                            f'{runner_name.lower()}__{experiment_name}__{df_name}{ext}')
 
     def __init__(self, problem, experiment_name, seed, iteration_list, max_attempts=500,
                  generate_curves=True, output_directory=None, **kwargs):
@@ -100,8 +95,11 @@ class _RunnerBase(ABC):
         return self.run_stats_df, self.curves_df
 
     def _dump_df_to_disk(self, df, runner_name, df_name):
-        filename_root = os.path.join(self._output_directory,
-                                     f'{runner_name.lower()}__{self._experiment_name}__{df_name}')
+        filename_root = build_data_filename(output_directory=self._output_directory,
+                                            runner_name=runner_name,
+                                            experiment_name=self._experiment_name,
+                                            df_name=df_name)
+
         pk.dump(df, open(f'{filename_root}.p', "wb"))
         df.to_csv(f'{filename_root}.csv')
 
