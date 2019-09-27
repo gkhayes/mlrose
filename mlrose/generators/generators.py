@@ -1,3 +1,5 @@
+from mlrose.opt_probs import FlipFlopOpt, QueensOpt
+
 try:
     import mlrose
 except:
@@ -65,6 +67,22 @@ class TSPGenerator:
         for i, item in enumerate(seq):
             tally[item].append(i)
         return list((indices[1:] for _, indices in tally.items() if len(indices) > 1))
+
+
+class FlipFlopGenerator:
+    @staticmethod
+    def generate(seed, size=20):
+        np.random.seed(seed)
+        problem = FlipFlopOpt(length=size)
+        return problem
+
+
+class QueensGenerator:
+    @staticmethod
+    def generate(seed, size=20):
+        np.random.seed(seed)
+        problem = QueensOpt(length=size)
+        return problem
 
 
 if __name__=='__main__':

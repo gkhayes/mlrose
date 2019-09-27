@@ -10,7 +10,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
 
 from mlrose.crossover import TSPCrossOver, UniformCrossOver
 from mlrose.mutator import SwapMutator, ChangeOneMutator
-from .fitness import TravellingSales, Knapsack
+from .fitness import TravellingSales, Knapsack, FlipFlop, Queens
 
 
 class OptProb:
@@ -829,6 +829,55 @@ class KnapsackOpt(DiscreteOpt):
         crossover = UniformCrossOver(self) if crossover is None else crossover
         mutator = ChangeOneMutator(self) if mutator is None else mutator
         super().__init__(length, fitness_fn, maximize, max_val, crossover, mutator)
+
+
+class FlipFlopOpt(DiscreteOpt):
+    def __init__(self, length=None, fitness_fn=None, maximize=True,
+                 crossover=None, mutator=None):
+
+        if (fitness_fn is None) and (length is None):
+            raise Exception("fitness_fn or length must be specified.")
+
+        if length is None:
+            self.length = len(fitness_fn.weights)
+
+        self.length = length
+
+        if fitness_fn is None:
+            fitness_fn = FlipFlop()
+
+        self.max_val = 2
+        crossover = UniformCrossOver(self) if crossover is None else crossover
+        mutator = ChangeOneMutator(self) if mutator is None else mutator
+        super().__init__(length, fitness_fn, maximize, 2, crossover, mutator)
+
+        state = np.random.randint(2, size=self.length)
+        self.set_state(state)
+
+
+class QueensOpt(DiscreteOpt):
+    def __init__(self, length=None, fitness_fn=None, maximize=True,
+                 crossover=None, mutator=None):
+
+        if (fitness_fn is None) and (length is None):
+            raise Exception("fitness_fn or length must be specified.")
+
+        if length is None:
+            self.length = len(fitness_fn.weights)
+
+        self.length = length
+
+        if fitness_fn is None:
+            fitness_fn = Queens()
+
+        self.max_val = length
+        crossover = UniformCrossOver(self) if crossover is None else crossover
+        mutator = ChangeOneMutator(self) if mutator is None else mutator
+        super().__init__(length, fitness_fn, maximize, 2, crossover, mutator)
+
+        state = np.random.randint(self.length, size=self.length)
+        np.random.shuffle(state)
+        self.set_state(state)
 
 
 class TSPOpt(DiscreteOpt):
