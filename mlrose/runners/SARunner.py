@@ -17,9 +17,9 @@ Example usage:
                   experiment_name=experiment_name,
                   output_directory=OUTPUT_DIRECTORY,
                   seed=SEED,
-                  iteration_list=2 ** np.arange(12),
+                  iteration_list=2 ** np.arange(14),
                   max_attempts=5000,
-                  temperature_list=[0.20, 0.40, 0.60, 0.80, 1.0])
+                  temperature_list=[1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000])
                   
     # the two data frames will contain the results
     df_run_stats, df_run_curves = sa.run()                  

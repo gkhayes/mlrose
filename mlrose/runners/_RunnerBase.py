@@ -71,6 +71,7 @@ class _RunnerBase(ABC):
 
             np.random.seed(self.seed)
             self.iteration_start_time = time.perf_counter()
+            print(f'*** Iteration START - params: {total_args}')
             algorithm(problem=self.problem,
                       max_attempts=self.max_attempts,
                       curve=self.generate_curves,
@@ -79,6 +80,8 @@ class _RunnerBase(ABC):
                       state_fitness_callback=self._save_state,
                       callback_user_info=user_info,
                       **total_args)
+            print(f'*** Iteration END - params: {total_args}')
+            print()
 
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
