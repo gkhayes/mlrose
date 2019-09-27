@@ -220,9 +220,18 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         while (attempts < max_attempts) and (iters < max_iters):
             iters += 1
 
-            # Find random neighbor and evaluate fitness
-            next_state = problem.random_neighbor()
-            next_fitness = problem.eval_fitness(next_state)
+            for attempts in range(1, max_attempts + 1):
+                # Find random neighbor and evaluate fitness
+                next_state = problem.random_neighbor()
+                next_fitness = problem.eval_fitness(next_state)
+
+                # If best neighbor is an improvement,
+                # move to that state and reset attempts counter
+                if next_fitness > problem.get_fitness():
+                    problem.set_state(next_state)
+                    attempts = 0
+                    break
+
             # invoke callback
             if state_fitness_callback is not None:
                 max_attempts_reached = (attempts == max_attempts - 1)
@@ -234,15 +243,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                                                             user_data=callback_user_info)
                 # break out if requested
                 if not continue_iterating:
-                    break
-            # If best neighbor is an improvement,
-            # move to that state and reset attempts counter
-            if next_fitness > problem.get_fitness():
-                problem.set_state(next_state)
-                attempts = 0
-
-            else:
-                attempts += 1
+                    attempts = max_attempts
 
             if curve:
                 fitness_curve.append(problem.get_adjusted_fitness())
@@ -346,6 +347,26 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     while (attempts < max_attempts) and (iters < max_iters):
         temp = schedule.evaluate(iters)
         iters += 1
+
+        if temp == 0:
+            break
+        else:
+            for attempts in range(1, max_attempts + 1):
+                # Find random neighbor and evaluate fitness
+                next_state = problem.random_neighbor()
+                next_fitness = problem.eval_fitness(next_state)
+
+                # Calculate delta E and change prob
+                delta_e = next_fitness - problem.get_fitness()
+                prob = np.exp(delta_e/temp)
+
+                # If best neighbor is an improvement or random value is less
+                # than prob, move to that state and reset attempts counter
+                if (delta_e > 0) or (np.random.uniform() < prob):
+                    problem.set_state(next_state)
+                    attempts = 0
+                    break
+
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts - 1)
@@ -357,28 +378,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                                                         user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
-                break
-
-        if temp == 0:
-            break
-
-        else:
-            # Find random neighbor and evaluate fitness
-            next_state = problem.random_neighbor()
-            next_fitness = problem.eval_fitness(next_state)
-
-            # Calculate delta E and change prob
-            delta_e = next_fitness - problem.get_fitness()
-            prob = np.exp(delta_e/temp)
-
-            # If best neighbor is an improvement or random value is less
-            # than prob, move to that state and reset attempts counter
-            if (delta_e > 0) or (np.random.uniform() < prob):
-                problem.set_state(next_state)
-                attempts = 0
-
-            else:
-                attempts += 1
+                attempts = max_attempts
 
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
@@ -556,37 +556,50 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
 
-        # Calculate breeding probabilities
-        problem.eval_mate_probs()
+        for attempts in range(1, max_attempts + 1):
 
-        # Create next generation of population
-        next_gen = []
-        for _ in range(breeding_pop_size):
-            # Select parents
-            parent_1, parent_2 = _genetic_alg_select_parents(pop_size=pop_size,
-                                                             problem=problem,
-                                                             hamming_factor=hamming_factor,
-                                                             get_hamming_distance_func=get_hamming_distance_func)
+            # Calculate breeding probabilities
+            problem.eval_mate_probs()
 
-            # Create offspring
-            child = problem.reproduce(parent_1, parent_2, mutation_prob)
-            next_gen.append(child)
+            # Create next generation of population
+            next_gen = []
+            for _ in range(breeding_pop_size):
+                # Select parents
+                parent_1, parent_2 = _genetic_alg_select_parents(pop_size=pop_size,
+                                                                 problem=problem,
+                                                                 hamming_factor=hamming_factor,
+                                                                 get_hamming_distance_func=get_hamming_distance_func)
 
-        # fill remaining population with elites/dregs
-        if survivors_size > 0:
-            last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
-            sorted_parents = sorted(last_gen, key=lambda f: -f[1])
-            best_parents = sorted_parents[:elites_size]
-            next_gen.extend([p[0] for p in best_parents])
-            if dregs_size > 0:
-                worst_parents = sorted_parents[-dregs_size:]
-                next_gen.extend([p[0] for p in worst_parents])
+                # Create offspring
+                child = problem.reproduce(parent_1, parent_2, mutation_prob)
+                next_gen.append(child)
 
-        next_gen = np.array(next_gen[:pop_size])
-        problem.set_population(next_gen)
+            # fill remaining population with elites/dregs
+            if survivors_size > 0:
+                last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
+                sorted_parents = sorted(last_gen, key=lambda f: -f[1])
+                best_parents = sorted_parents[:elites_size]
+                next_gen.extend([p[0] for p in best_parents])
+                if dregs_size > 0:
+                    worst_parents = sorted_parents[-dregs_size:]
+                    next_gen.extend([p[0] for p in worst_parents])
 
-        next_state = problem.best_child()
-        next_fitness = problem.eval_fitness(next_state)
+            next_gen = np.array(next_gen[:pop_size])
+            problem.set_population(next_gen)
+
+            next_state = problem.best_child()
+            next_fitness = problem.eval_fitness(next_state)
+
+            # decay hamming factor
+            hamming_factor *= hamming_decay_factor
+            hamming_factor = max(min(hamming_factor, 1.0), 0.0)
+            # print(hamming_factor)
+
+            # If best child is an improvement,
+            # move to that state and reset attempts counter
+            if next_fitness > problem.get_fitness():
+                problem.set_state(next_state)
+                break
 
         # invoke callback
         if state_fitness_callback is not None:
@@ -599,20 +612,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
                                                         user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
-                break
-
-        # decay hamming factor
-        hamming_factor *= hamming_decay_factor
-        hamming_factor = max(min(hamming_factor, 1.0), 0.0)
-        # print(hamming_factor)
-
-        # If best child is an improvement,
-        # move to that state and reset attempts counter
-        if next_fitness > problem.get_fitness():
-            problem.set_state(next_state)
-            attempts = 0
-        else:
-            attempts += 1
+                attempts = max_attempts
 
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
@@ -694,8 +694,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if (keep_pct < 0) or (keep_pct > 1):
         raise Exception("""keep_pct must be between 0 and 1.""")
 
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
-       or (max_attempts < 0):
+    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) or (max_attempts < 0):
         raise Exception("""max_attempts must be a positive integer.""")
 
     if (not isinstance(max_iters, int) and max_iters != np.inf
@@ -724,6 +723,21 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         # Update probability estimates
         problem.eval_node_probs()
 
+        for attempts in range(1, max_attempts + 1):
+        # Generate new sample
+            new_sample = problem.sample_pop(pop_size)
+            problem.set_population(new_sample)
+
+            next_state = problem.best_child()
+
+            next_fitness = problem.eval_fitness(next_state)
+
+            # If best child is an improvement,
+            # move to that state and reset attempts counter
+            if next_fitness > problem.get_fitness():
+                problem.set_state(next_state)
+                break
+
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts - 1)
@@ -735,24 +749,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
                                                         user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
-                break
-
-        # Generate new sample
-        new_sample = problem.sample_pop(pop_size)
-        problem.set_population(new_sample)
-
-        next_state = problem.best_child()
-
-        next_fitness = problem.eval_fitness(next_state)
-
-        # If best child is an improvement,
-        # move to that state and reset attempts counter
-        if next_fitness > problem.get_fitness():
-            problem.set_state(next_state)
-            attempts = 0
-
-        else:
-            attempts += 1
+                attempts = max_attempts
 
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
