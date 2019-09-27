@@ -13,5 +13,5 @@ from .neural import NeuralNetwork, LinearRegression, LogisticRegression
 from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt
 
 from .runners import GARunner, MIMICRunner, RHCRunner, SARunner
-from .runners import build_data_filename
+from .runners import (build_data_filename)
 from .generators import KnapsackGenerator, TSPGenerator, FlipFlopGenerator, QueensGenerator
