@@ -556,6 +556,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
 
+        last_gen = problem.get_population().copy()
         for attempts in range(1, max_attempts + 1):
 
             # Calculate breeding probabilities
@@ -576,8 +577,8 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
             # fill remaining population with elites/dregs
             if survivors_size > 0:
-                last_gen = list(zip(problem.get_population(), problem.get_pop_fitness()))
-                sorted_parents = sorted(last_gen, key=lambda f: -f[1])
+                last_gen_with_fitness = list(zip(problem.get_population(), problem.get_pop_fitness()))
+                sorted_parents = sorted(last_gen_with_fitness, key=lambda f: -f[1])
                 best_parents = sorted_parents[:elites_size]
                 next_gen.extend([p[0] for p in best_parents])
                 if dregs_size > 0:
@@ -590,16 +591,19 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
             next_state = problem.best_child()
             next_fitness = problem.eval_fitness(next_state)
 
-            # decay hamming factor
-            hamming_factor *= hamming_decay_factor
-            hamming_factor = max(min(hamming_factor, 1.0), 0.0)
-            # print(hamming_factor)
-
             # If best child is an improvement,
             # move to that state and reset attempts counter
             if next_fitness > problem.get_fitness():
                 problem.set_state(next_state)
                 break
+            else:
+                # restore last gen
+                problem.set_population(last_gen)
+
+        # decay hamming factor
+        hamming_factor *= hamming_decay_factor
+        hamming_factor = max(min(hamming_factor, 1.0), 0.0)
+        # print(hamming_factor)
 
         # invoke callback
         if state_fitness_callback is not None:
@@ -724,7 +728,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         problem.eval_node_probs()
 
         for attempts in range(1, max_attempts + 1):
-        # Generate new sample
+            # Generate new sample
             new_sample = problem.sample_pop(pop_size)
             problem.set_population(new_sample)
 
