@@ -207,7 +207,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     if curve:
         fitness_curve = []
     continue_iterating = True
-    for _ in range(restarts + 1):
+    for current_restart in range(restarts + 1):
         # Initialize optimization problem and attempts counter
         if init_state is None:
             problem.reset()
@@ -240,7 +240,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
                                                             curve=np.asarray(fitness_curve) if curve else None,
-                                                            user_data=callback_user_info)
+                                                            user_data=callback_user_info + [('current_restart', current_restart)])
                 # break out if requested
                 if not continue_iterating:
                     attempts = max_attempts
