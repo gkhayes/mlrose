@@ -206,7 +206,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
     if curve:
         fitness_curve = []
-    continue_iterating = True
+        best_fitness_curve = []
+
     for current_restart in range(restarts + 1):
         # Initialize optimization problem and attempts counter
         if init_state is None:
@@ -234,7 +235,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
             # invoke callback
             if state_fitness_callback is not None:
-                max_attempts_reached = (attempts == max_attempts - 1)
+                max_attempts_reached = (attempts == max_attempts)
                 continue_iterating = state_fitness_callback(iteration=iters,
                                                             done=max_attempts_reached,
                                                             state=problem.get_state(),
@@ -248,19 +249,18 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             if curve:
                 fitness_curve.append(problem.get_adjusted_fitness())
 
-        # break out if requested
-        if not continue_iterating:
-            break
-
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
+            if curve:
+                best_fitness_curve = [*fitness_curve]
+                fitness_curve = []
 
     best_fitness = problem.get_maximize()*best_fitness
 
     if curve:
-        return best_state, best_fitness, np.asarray(fitness_curve)
+        return best_state, best_fitness, np.asarray(best_fitness_curve)
 
     return best_state, best_fitness
 
@@ -369,7 +369,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
         # invoke callback
         if state_fitness_callback is not None:
-            max_attempts_reached = (attempts == max_attempts - 1)
+            max_attempts_reached = (attempts == max_attempts)
             continue_iterating = state_fitness_callback(iteration=iters,
                                                         done=max_attempts_reached,
                                                         state=problem.get_state(),
@@ -607,7 +607,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
         # invoke callback
         if state_fitness_callback is not None:
-            max_attempts_reached = (attempts == max_attempts - 1)
+            max_attempts_reached = (attempts == max_attempts)
             continue_iterating = state_fitness_callback(iteration=iters,
                                                         done=max_attempts_reached,
                                                         state=problem.get_state(),
@@ -744,7 +744,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 
         # invoke callback
         if state_fitness_callback is not None:
-            max_attempts_reached = (attempts == max_attempts - 1)
+            max_attempts_reached = (attempts == max_attempts)
             continue_iterating = state_fitness_callback(iteration=iters,
                                                         done=max_attempts_reached,
                                                         state=problem.get_state(),
