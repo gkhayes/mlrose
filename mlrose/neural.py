@@ -13,7 +13,7 @@ from sklearn.externals import six
 from .activation import identity, relu, sigmoid, softmax, tanh
 from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
 from .opt_probs import ContinuousOpt
-from .decay import GeomDecay
+from mlrose.algorithms.decay import GeomDecay
 
 
 def flatten_weights(weights):

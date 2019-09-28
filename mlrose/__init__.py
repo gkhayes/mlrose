@@ -5,12 +5,14 @@
 
 from .algorithms import (hill_climb, random_hill_climb, simulated_annealing,
                          genetic_alg, mimic)
-from .decay import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
+from .algorithms.decay import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
+from .algorithms.crossovers import OnePointCrossOver, UniformCrossOver, TSPCrossOver
+from .algorithms.mutators import ChangeOneMutator, DiscreteMutator, SwapMutator
 from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       Knapsack, TravellingSales, Queens, MaxKColor, 
                       CustomFitness)
 from .neural import NeuralNetwork, LinearRegression, LogisticRegression
-from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt
+from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt, QueensOpt, FlipFlopOpt
 
 from .runners import GARunner, MIMICRunner, RHCRunner, SARunner
 from .runners import (build_data_filename)

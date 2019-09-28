@@ -8,9 +8,10 @@ import numpy as np
 from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                     Knapsack, TravellingSales, Queens, MaxKColor,
                     CustomFitness)
-from mlrose.fitness import head, tail, max_run
+# from mlrose.fitness import head, tail, max_run
 # The above functions are not automatically imported at initialization, so
 # must be imported explicitly from fitness.py.
+from mlrose.fitness._DiscretePeaksBase import _DiscretePeaksBase
 
 
 class TestFitness(unittest.TestCase):
@@ -32,34 +33,34 @@ class TestFitness(unittest.TestCase):
     def test_head():
         """Test head function"""
         state = np.array([1, 1, 1, 1, 0, 1, 0, 2, 1, 1, 1, 1, 1, 4, 6, 1, 1])
-        assert head(1, state) == 4
+        assert _DiscretePeaksBase.head(1, state) == 4
 
     @staticmethod
     def test_tail():
         """Test tail function"""
         state = np.array([1, 1, 1, 1, 0, 1, 0, 2, 1, 1, 1, 1, 1, 4, 6, 1, 1])
-        assert tail(1, state) == 2
+        assert _DiscretePeaksBase.tail(1, state) == 2
 
     @staticmethod
     def test_max_run_middle():
         """Test max_run function for case where run is in the middle of the
         state"""
         state = np.array([1, 1, 1, 1, 0, 1, 0, 2, 1, 1, 1, 1, 1, 4, 6, 1, 1])
-        assert max_run(1, state) == 5
+        assert ContinuousPeaks.max_run(1, state) == 5
 
     @staticmethod
     def test_max_run_start():
         """Test max_run function for case where run is at the start of the
         state"""
         state = np.array([1, 1, 1, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 4, 6, 1, 1])
-        assert max_run(1, state) == 6
+        assert ContinuousPeaks.max_run(1, state) == 6
 
     @staticmethod
     def test_max_run_end():
         """Test max_run function for case where run is at the end of the
         state"""
         state = np.array([1, 1, 1, 1, 0, 1, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        assert max_run(1, state) == 9
+        assert ContinuousPeaks.max_run(1, state) == 9
 
     @staticmethod
     def test_fourpeaks_r0():
@@ -125,7 +126,8 @@ class TestFitness(unittest.TestCase):
         max_weight_pct = 0.6
 
         state = np.array([1, 0, 2, 1, 0])
-        assert Knapsack(weights, values, max_weight_pct).evaluate(state) == 11
+        calculated_weights = Knapsack(weights, values, max_weight_pct).evaluate(state)
+        assert calculated_weights == 11
 
     @staticmethod
     def test_knapsack_weight_gt_max():

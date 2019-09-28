@@ -13,11 +13,11 @@ from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
 # activation.py and opt_probs.py
 from mlrose.neural import NetworkWeights
 from mlrose.activation import identity
-from mlrose.opt_probs import OptProb
+from mlrose.opt_probs._OptProb import _OptProb as OptProb
 
 
 class TestOptProb(unittest.TestCase):
-    """Tests for OptProb class."""
+    """Tests for _OptProb class."""
 
     @staticmethod
     def test_set_state_max():

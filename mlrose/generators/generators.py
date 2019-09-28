@@ -85,6 +85,21 @@ class QueensGenerator:
         return problem
 
 
+class NNWeightGenerator:
+    @staticmethod
+    def generate(seed, hidden_layer_sizes, activation, algorithm, max_attempts):
+        np.random.seed(seed)
+        nn_model1 = mlrose.NeuralNetwork(hidden_nodes=hidden_layer_sizes,
+                                         activation=activation,
+                                         algorithm=algorithm,
+                                         bias=True,
+                                         is_classifier=True,
+                                         early_stopping=True,
+                                         max_attempts=max_attempts)
+        problem = QueensOpt(length=size)
+        return problem
+
+
 if __name__=='__main__':
     results = TSPGenerator.generate(123, 22)
     print(results)
