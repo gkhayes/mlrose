@@ -108,7 +108,7 @@ class _RunnerBase(ABC):
         curve_stat = {
             'Iteration': iteration,
             'Fitness': fitness
-         }
+        }
         curve_stat.update(curve_data)
         return curve_stat
 
@@ -135,6 +135,8 @@ class _RunnerBase(ABC):
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
         param_stats = {str(gd(k)): self.current_args[k] for k in self.current_args}
+        all_stats = {**{p: v for (p, v) in user_data if p.lower() not in [k.lower() for k in param_stats.keys()]},
+                     **param_stats}
         for i in iterations:
             run_stat = {
                 'Iterations': i,
@@ -143,7 +145,7 @@ class _RunnerBase(ABC):
                 'State': state
             }
             # run_stat.update(param_stats)
-            run_stat = { **run_stat, **param_stats }
+            run_stat = {**run_stat, **all_stats}
 
             self._raw_run_stats.append(run_stat)
 
@@ -151,9 +153,7 @@ class _RunnerBase(ABC):
             fc = list([(0, self._initial_fitness)]) + list(zip(range(1, iteration + 1),
                                                                [f for f in curve]))  # [1.0 / f for f in curve]))
 
-            curve_data = {**{p:v for (p, v) in user_data if p.lower() not in [k.lower() for k in param_stats.keys()]},
-                          **param_stats}
-            curve_stats = [self._create_curve_stat(i, v, curve_data) for (i, v) in fc]
+            curve_stats = [self._create_curve_stat(i, v, all_stats) for (i, v) in fc]
             self._fitness_curves.extend(curve_stats)
         return True
 
