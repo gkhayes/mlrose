@@ -29,7 +29,7 @@ class QueensOpt(DiscreteOpt):
         self.max_val = length
         crossover = UniformCrossOver(self) if crossover is None else crossover
         mutator = ChangeOneMutator(self) if mutator is None else mutator
-        super().__init__(length, fitness_fn, maximize, 2, crossover, mutator)
+        super().__init__(length, fitness_fn, maximize, length, crossover, mutator)
 
         state = np.random.randint(self.length, size=self.length)
         np.random.shuffle(state)
