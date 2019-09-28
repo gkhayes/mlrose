@@ -47,8 +47,8 @@ class _RunnerBase(ABC):
         self._setup()
 
         # extract loop params
-        values = [([(k, v) for v in vs]) for (k, (n, vs)) in kwargs.items()]
-        self.parameter_description_dict = {k: n for (k, (n, _)) in kwargs.items()}
+        values = [([(k, v) for v in vs]) for (k, (n, vs)) in kwargs.items() if vs is not None]
+        self.parameter_description_dict = {k: n for (k, (n, vs)) in kwargs.items() if vs is not None}
         value_sets = list(it.product(*values))
         run_start = time.perf_counter()
         i = int(max(self.iteration_list))

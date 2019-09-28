@@ -41,11 +41,11 @@ def _genetic_alg_select_parents(pop_size, problem,
     return p1, p2
 
 
-def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.95,
+def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.99,
                 minimum_elites=0, minimum_dregs=0, mutation_prob=0.1,
                 max_attempts=10, max_iters=np.inf, curve=False, random_state=None,
                 state_fitness_callback=None, callback_user_info=None,
-                hamming_factor=0.0, hamming_decay_factor=0):
+                hamming_factor=0.0, hamming_decay_factor=None):
     """Use a standard genetic algorithm to find the optimum for a given
     optimization problem.
     Parameters
@@ -223,8 +223,9 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
                 break
 
         # decay hamming factor
-        hamming_factor *= hamming_decay_factor
-        hamming_factor = max(min(hamming_factor, 1.0), 0.0)
+        if hamming_decay_factor is not None and hamming_factor > 0.0:
+            hamming_factor *= hamming_decay_factor
+            hamming_factor = max(min(hamming_factor, 1.0), 0.0)
         # print(hamming_factor)
 
         if curve:

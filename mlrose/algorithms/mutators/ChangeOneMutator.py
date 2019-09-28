@@ -16,7 +16,7 @@ class ChangeOneMutator(_MutatorBase):
 
     def mutate(self, child, mutation_probability):
         if np.random.rand() > mutation_probability:
-            # do swap mutation
+            # do change one mutation
             m = np.random.randint(len(child))
 
             child[m] = np.random.randint(self._max_val + 1)
