@@ -84,7 +84,7 @@ class QueensGenerator:
         problem = QueensOpt(length=size)
         return problem
 
-
+"""
 class NNWeightGenerator:
     @staticmethod
     def generate(seed, hidden_layer_sizes, activation, algorithm, max_attempts):
@@ -98,7 +98,7 @@ class NNWeightGenerator:
                                          max_attempts=max_attempts)
         problem = QueensOpt(length=size)
         return problem
-
+"""
 
 if __name__=='__main__':
     results = TSPGenerator.generate(123, 22)
