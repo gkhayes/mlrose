@@ -12,7 +12,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
                state_fitness_callback=None, callback_user_info=None):
     """Use standard hill climbing to find the optimum for a given
     optimization problem.
-
     Parameters
     ----------
     problem: optimization object
@@ -40,7 +39,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
-
     Returns
     -------
     best_state: array
@@ -50,7 +48,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     fitness_curve: array
         Numpy array containing the fitness at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.
-
     References
     ----------
     Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
@@ -128,4 +125,3 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
         return best_state, best_fitness, np.asarray(fitness_curve)
 
     return best_state, best_fitness
-

@@ -12,7 +12,6 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                       state_fitness_callback=None, callback_user_info=None):
     """Use randomized hill climbing to find the optimum for a given
     optimization problem.
-
     Parameters
     ----------
     problem: optimization object
@@ -42,7 +41,6 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
-
     Returns
     -------
     best_state: array
@@ -52,7 +50,6 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     fitness_curve: array
         Numpy array containing the fitness at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.
-
     References
     ----------
     Brownlee, J (2011). *Clever Algorithms: Nature-Inspired Programming
@@ -84,6 +81,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         fitness_curve = []
         best_fitness_curve = []
 
+    continue_iterating = True
     for current_restart in range(restarts + 1):
         # Initialize optimization problem and attempts counter
         if init_state is None:
@@ -97,17 +95,18 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         while (attempts < max_attempts) and (iters < max_iters):
             iters += 1
 
-            for attempts in range(1, max_attempts + 1):
-                # Find random neighbor and evaluate fitness
-                next_state = problem.random_neighbor()
-                next_fitness = problem.eval_fitness(next_state)
+            # Find random neighbor and evaluate fitness
+            next_state = problem.random_neighbor()
+            next_fitness = problem.eval_fitness(next_state)
 
-                # If best neighbor is an improvement,
-                # move to that state and reset attempts counter
-                if next_fitness > problem.get_fitness():
-                    problem.set_state(next_state)
-                    attempts = 0
-                    break
+            # If best neighbor is an improvement,
+            # move to that state and reset attempts counter
+            if next_fitness > problem.get_fitness():
+                problem.set_state(next_state)
+                attempts = 0
+
+            else:
+                attempts += 1
 
             # invoke callback
             if state_fitness_callback is not None:
@@ -117,13 +116,18 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
                                                             curve=np.asarray(fitness_curve) if curve else None,
-                                                            user_data=callback_user_info + [('current_restart', current_restart)])
+                                                            user_data=callback_user_info + [('current_restart',
+                                                                                             current_restart)])
                 # break out if requested
                 if not continue_iterating:
-                    attempts = max_attempts
+                    break
 
             if curve:
                 fitness_curve.append(problem.get_adjusted_fitness())
+
+        # break out if requested
+        if not continue_iterating:
+            break
 
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:

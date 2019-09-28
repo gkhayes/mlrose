@@ -11,7 +11,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf, curve=False, random_state=None,
           state_fitness_callback=None, callback_user_info=None):
     """Use MIMIC to find the optimum for a given optimization problem.
-
     Parameters
     ----------
     problem: optimization object
@@ -40,7 +39,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
-
     Returns
     -------
     best_state: array
@@ -50,13 +48,11 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     fitness_curve: array
         Numpy array containing the fitness at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.
-
     References
     ----------
     De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
     Estimating Probability Densities. In *Advances in Neural Information
     Processing Systems* (NIPS) 9, pp. 424–430.
-
     Note
     ----
     MIMIC cannot be used for solving continuous-state optimization problems.
@@ -75,7 +71,8 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if (keep_pct < 0) or (keep_pct > 1):
         raise Exception("""keep_pct must be between 0 and 1.""")
 
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) or (max_attempts < 0):
+    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
+       or (max_attempts < 0):
         raise Exception("""max_attempts must be a positive integer.""")
 
     if (not isinstance(max_iters, int) and max_iters != np.inf
@@ -104,20 +101,22 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         # Update probability estimates
         problem.eval_node_probs()
 
-        for attempts in range(1, max_attempts + 1):
-            # Generate new sample
-            new_sample = problem.sample_pop(pop_size)
-            problem.set_population(new_sample)
+        # Generate new sample
+        new_sample = problem.sample_pop(pop_size)
+        problem.set_population(new_sample)
 
-            next_state = problem.best_child()
+        next_state = problem.best_child()
 
-            next_fitness = problem.eval_fitness(next_state)
+        next_fitness = problem.eval_fitness(next_state)
 
-            # If best child is an improvement,
-            # move to that state and reset attempts counter
-            if next_fitness > problem.get_fitness():
-                problem.set_state(next_state)
-                break
+        # If best child is an improvement,
+        # move to that state and reset attempts counter
+        if next_fitness > problem.get_fitness():
+            problem.set_state(next_state)
+            attempts = 0
+
+        else:
+            attempts += 1
 
         # invoke callback
         if state_fitness_callback is not None:
@@ -130,7 +129,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
                                                         user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
-                attempts = max_attempts
+                break
 
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())

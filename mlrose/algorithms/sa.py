@@ -15,7 +15,6 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                         state_fitness_callback=None, callback_user_info=None):
     """Use simulated annealing to find the optimum for a given
     optimization problem.
-
     Parameters
     ----------
     problem: optimization object
@@ -45,7 +44,6 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
-
     Returns
     -------
     best_state: array
@@ -55,7 +53,6 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     fitness_curve: array
         Numpy array containing the fitness at every iteration.
         Only returned if input argument :code:`curve` is :code:`True`.
-
     References
     ----------
     Russell, S. and P. Norvig (2010). *Artificial Intelligence: A Modern
@@ -94,23 +91,25 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
         if temp == 0:
             break
+
         else:
-            for attempts in range(1, max_attempts + 1):
-                # Find random neighbor and evaluate fitness
-                next_state = problem.random_neighbor()
-                next_fitness = problem.eval_fitness(next_state)
+            # Find random neighbor and evaluate fitness
+            next_state = problem.random_neighbor()
+            next_fitness = problem.eval_fitness(next_state)
 
-                # Calculate delta E and change prob
-                delta_e = next_fitness - problem.get_fitness()
-                prob = np.exp(delta_e/temp)
+            # Calculate delta E and change prob
+            delta_e = next_fitness - problem.get_fitness()
+            prob = np.exp(delta_e/temp)
 
-                # If best neighbor is an improvement or random value is less
-                # than prob, move to that state and reset attempts counter
-                if (delta_e > 0) or (np.random.uniform() < prob):
-                    problem.set_state(next_state)
-                    attempts = 0
-                    break
+            # If best neighbor is an improvement or random value is less
+            # than prob, move to that state and reset attempts counter
+            if (delta_e > 0) or (np.random.uniform() < prob):
+                problem.set_state(next_state)
+                attempts = 0
 
+            else:
+                attempts += 1
+                
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts)
@@ -122,8 +121,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                                                         user_data=callback_user_info)
             # break out if requested
             if not continue_iterating:
-                attempts = max_attempts
-
+                break
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
 
@@ -134,4 +132,3 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
         return best_state, best_fitness, np.asarray(fitness_curve)
 
     return best_state, best_fitness
-
