@@ -112,7 +112,7 @@ class _RunnerBase(ABC):
         curve_stat.update(curve_data)
         return curve_stat
 
-    def _save_state(self, iteration, done, state, fitness, curve, user_data):
+    def _save_state(self, iteration, attempt, done, state, fitness, curve, user_data):
         if iteration == 1:
             self._initial_fitness = fitness  # 1.0 / fitness
 
@@ -125,7 +125,9 @@ class _RunnerBase(ABC):
         if user_data is not None and len(user_data) > 0:
             data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
             print(data_desc)
-        print(f'experiment_name:[{self._experiment_name}],  iteration:[{iteration}], done:[{done}], '
+        print(f'experiment_name:[{self._experiment_name}], ' +
+              ('' if attempt is None else f'attempt:[{attempt}], ') +
+              f'iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness[{fitness:.4f}]')
         print(f'\t{state}')
         print()

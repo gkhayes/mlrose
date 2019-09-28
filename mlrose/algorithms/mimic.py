@@ -122,6 +122,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts)
             continue_iterating = state_fitness_callback(iteration=iters,
+                                                        attempt=attempts,
                                                         done=max_attempts_reached,
                                                         state=problem.get_state(),
                                                         fitness=problem.get_adjusted_fitness(),

@@ -109,11 +109,12 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
             else:
                 attempts += 1
-                
+
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts)
             continue_iterating = state_fitness_callback(iteration=iters,
+                                                        attempt=attempts,
                                                         done=max_attempts_reached,
                                                         state=problem.get_state(),
                                                         fitness=problem.get_adjusted_fitness(),

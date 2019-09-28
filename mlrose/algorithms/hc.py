@@ -92,6 +92,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             # invoke callback
             if state_fitness_callback is not None:
                 continue_iterating = state_fitness_callback(iteration=iters,
+                                                            attempt=None,
                                                             done=False,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),

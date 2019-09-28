@@ -212,6 +212,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts)
             continue_iterating = state_fitness_callback(iteration=iters,
+                                                        attempt=attempts,
                                                         done=max_attempts_reached,
                                                         state=problem.get_state(),
                                                         fitness=problem.get_adjusted_fitness(),
