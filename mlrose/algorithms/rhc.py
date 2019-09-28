@@ -112,7 +112,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             if state_fitness_callback is not None:
                 max_attempts_reached = (attempts == max_attempts)
                 continue_iterating = state_fitness_callback(iteration=iters,
-                                                            attempt=attempts,
+                                                            attempt=attempts + 1,
                                                             done=max_attempts_reached,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
