@@ -104,9 +104,10 @@ class _RunnerBase(ABC):
         df.to_csv(f'{filename_root}.csv')
 
     @staticmethod
-    def _create_curve_stat(iteration, fitness, curve_data):
+    def _create_curve_stat(iteration, time_s, fitness, curve_data):
         curve_stat = {
             'Iteration': iteration,
+            'Time': time_s,
             'Fitness': fitness
         }
         curve_stat.update(curve_data)
@@ -155,7 +156,7 @@ class _RunnerBase(ABC):
             fc = list([(0, self._initial_fitness)]) + list(zip(range(1, iteration + 1),
                                                                [f for f in curve]))  # [1.0 / f for f in curve]))
 
-            curve_stats = [self._create_curve_stat(i, v, all_stats) for (i, v) in fc]
+            curve_stats = [self._create_curve_stat(i, t, v, all_stats) for (i, v) in fc]
             self._fitness_curves.extend(curve_stats)
         return not done
 
