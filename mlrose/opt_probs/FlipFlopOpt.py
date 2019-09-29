@@ -33,3 +33,6 @@ class FlipFlopOpt(DiscreteOpt):
 
         state = np.random.randint(2, size=self.length)
         self.set_state(state)
+
+    def can_stop(self):
+        return int(self.get_fitness()) == int(self.length - 1)

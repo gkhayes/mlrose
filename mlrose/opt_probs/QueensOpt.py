@@ -36,4 +36,4 @@ class QueensOpt(DiscreteOpt):
         self.set_state(state)
 
     def can_stop(self):
-        return self.get_fitness() == 0
+        return int(self.get_fitness()) == 0
