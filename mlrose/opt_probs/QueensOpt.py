@@ -12,7 +12,7 @@ from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
 
 
 class QueensOpt(DiscreteOpt):
-    def __init__(self, length=None, fitness_fn=None, maximize=True,
+    def __init__(self, length=None, fitness_fn=None, maximize=False,
                  crossover=None, mutator=None):
 
         if (fitness_fn is None) and (length is None):

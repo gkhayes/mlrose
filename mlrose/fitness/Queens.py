@@ -54,22 +54,39 @@ class Queens:
             Value of fitness function.
         """
 
-        fitness = 0
 
-        for i in range(len(state) - 1):
-            for j in range(i + 1, len(state)):
-                # Check for horizontal attacks
-                if state[j] == state[i]:
-                    fitness += 1
+        """
+        lc = [[{
+            'column':(j),
+            'check contents of':i,
+            'distance':(j-i),
+            f'contents of {i}': state[i],
+            f'contents of {j}': state[j],
+            'c1':(state[i] + (j-i)) == state[j],
+            'c2':(state[i] - (j-i)) == state[j]} for i in range(j)] for j in range(1, len(state))]
+        
+        rc = [[{
+            'column':(j),
+            'check contents of':i,
+            'distance':(i-j),
+            f'contents of {i}': state[i],
+            f'contents of {j}': state[j],
+            'c1':(state[i] + (i-j)) == state[j],
+            'c2':(state[i] - (i-j)) == state[j]} for i in range(j+1,len(state))] for j in range(len(state)-1)]
+        """
+        f_h = sum([list(state).count(state[i])-1 for i in range(len(state))])
 
-                # Check for diagonal-up attacks
-                elif state[j] == state[i] + (j - i):
-                    fitness += 1
+        f_ld = sum([sum([(int((state[i] + (j-i)) == state[j]) +
+                          int((state[i] - (j-i)) == state[j]))
+                         for i in range(j)])
+                    for j in range(1, len(state))])
 
-                # Check for diagonal-down attacks
-                elif state[j] == state[i] - (j - i):
-                    fitness += 1
+        f_rd = sum([sum([int((state[i] + (i-j)) == state[j]) +
+                         int((state[i] - (i-j)) == state[j])
+                         for i in range(j+1, len(state))])
+                    for j in range(len(state)-1)])
 
+        fitness = f_h + f_ld + f_rd
         return fitness
 
     def get_prob_type(self):
