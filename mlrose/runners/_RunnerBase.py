@@ -128,7 +128,7 @@ class _RunnerBase(ABC):
         print(f'experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
               f'iteration:[{iteration}], done:[{done}], '
-              f'time:[{t:.2f}], fitness[{fitness:.4f}]')
+              f'time:[{t:.2f}], fitness:[{fitness:.4f}]')
         print(f'\t{state}')
         print()
 
