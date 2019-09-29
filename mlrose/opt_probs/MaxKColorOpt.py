@@ -37,15 +37,15 @@ class MaxKColorOpt(DiscreteOpt):
         fitness_fn.set_graph(g)
 
         # the max val is going to be the one plus the maximum number of neighbors of any one node.
-        self.max_val = 1 + max([len([*g.neighbors(n)]) for n in range(length)])
+        max_colors = 1 + max([len([*g.neighbors(n)]) for n in range(length)])
+        self.max_val = max_colors
 
-        self.max_val = length
         crossover = UniformCrossOver(self) if crossover is None else crossover
         mutator = ChangeOneMutator(self) if mutator is None else mutator
-        super().__init__(length, fitness_fn, maximize, length, crossover, mutator)
+        super().__init__(length, fitness_fn, maximize, max_colors, crossover, mutator)
 
         # state = [len([*g.neighbors(n)]) for n in range(length)]
-        state = np.random.randint(self.max_val, size=self.length)
+        state = np.random.randint(max_colors, size=self.length)
         np.random.shuffle(state)
         # state = [0] * length
         self.set_state(state)

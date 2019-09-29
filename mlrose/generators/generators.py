@@ -89,7 +89,7 @@ class QueensGenerator:
 
 class MaxKColorGenerator:
     @staticmethod
-    def generate(seed, number_of_nodes=20):
+    def generate(seed, number_of_nodes=20, max_connections_per_node=4):
 
         """
         >>> edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
@@ -99,8 +99,7 @@ class MaxKColorGenerator:
         """
         np.random.seed(seed)
         # all nodes have to be connected, somehow.
-        max_connections_per_node = number_of_nodes - 1
-        node_connection_counts = np.random.randint(low=1, high=max_connections_per_node, size=number_of_nodes)
+        node_connection_counts = 1 + np.random.randint(max_connections_per_node, size=number_of_nodes)
 
         node_connections = {}
         nodes = range(number_of_nodes)
@@ -119,7 +118,7 @@ class MaxKColorGenerator:
             cannot_reach = [(n, o) if n < o else (o, n) for o in nodes if o not in nx.bfs_tree(g, n).nodes()]
             for s, f in cannot_reach:
                 g.add_edge(s, f)
-                check_reach = len([_ for o in nodes if o not in nx.bfs_tree(g, n).nodes()])
+                check_reach = len([_ for _ in nodes if o not in nx.bfs_tree(g, n).nodes()])
                 if check_reach == 0:
                     break
 
