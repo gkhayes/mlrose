@@ -1,4 +1,4 @@
-from mlrose.opt_probs import FlipFlopOpt, QueensOpt, MaxKOpt
+from mlrose.opt_probs import FlipFlopOpt, QueensOpt, MaxKColorOpt
 
 try:
     import mlrose
@@ -87,7 +87,7 @@ class QueensGenerator:
         return problem
 
 
-class MaxKGenerator:
+class MaxKColorGenerator:
     @staticmethod
     def generate(seed, number_of_nodes=20):
 
@@ -124,7 +124,7 @@ class MaxKGenerator:
                     break
 
         edges = [(s, f) for (s, f) in g.edges()]
-        problem = MaxKOpt(edges=edges, length=number_of_nodes)
+        problem = MaxKColorOpt(edges=edges, length=number_of_nodes)
         return problem
 
 

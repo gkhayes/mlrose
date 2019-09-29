@@ -13,7 +13,7 @@ from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
 import networkx as nx
 
 
-class MaxKOpt(DiscreteOpt):
+class MaxKColorOpt(DiscreteOpt):
     def __init__(self, edges=None, length=None, fitness_fn=None, maximize=False,
                  crossover=None, mutator=None):
 

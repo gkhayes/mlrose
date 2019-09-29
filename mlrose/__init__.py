@@ -11,8 +11,8 @@ from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       Knapsack, TravellingSales, Queens, MaxKColor, 
                       CustomFitness)
 from .neural import NeuralNetwork, LinearRegression, LogisticRegression
-from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt, QueensOpt, FlipFlopOpt, MaxKOpt
+from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt, QueensOpt, FlipFlopOpt, MaxKColorOpt
 
 from .runners import GARunner, MIMICRunner, RHCRunner, SARunner
 from .runners import (build_data_filename)
-from .generators import KnapsackGenerator, TSPGenerator, FlipFlopGenerator, QueensGenerator
+from .generators import KnapsackGenerator, TSPGenerator, FlipFlopGenerator, QueensGenerator, MaxKColorGenerator
