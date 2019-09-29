@@ -165,6 +165,7 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         over_population = dregs_size + elites_size - survivors_size
         breeding_pop_size -= over_population
 
+    continue_iterating = True
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
 
@@ -218,9 +219,6 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
                                                         fitness=problem.get_adjusted_fitness(),
                                                         curve=np.asarray(fitness_curve) if curve else None,
                                                         user_data=callback_user_info)
-            # break out if requested
-            if not continue_iterating:
-                break
 
         # decay hamming factor
         if hamming_decay_factor is not None and hamming_factor > 0.0:
@@ -231,6 +229,9 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
 
+        # break out if requested
+        if not continue_iterating or problem.can_stop():
+            break
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()
 

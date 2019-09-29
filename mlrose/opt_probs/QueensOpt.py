@@ -34,3 +34,6 @@ class QueensOpt(DiscreteOpt):
         state = np.random.randint(self.length, size=self.length)
         np.random.shuffle(state)
         self.set_state(state)
+
+    def can_stop(self):
+        return self.get_fitness() == 0

@@ -228,3 +228,6 @@ class _OptProb:
 
         self.state = new_state
         self.fitness = self.eval_fitness(self.state)
+
+    def can_stop(self):
+        return False

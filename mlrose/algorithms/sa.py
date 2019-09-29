@@ -84,6 +84,7 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
 
     attempts = 0
     iters = 0
+    continue_iterating = True
 
     while (attempts < max_attempts) and (iters < max_iters):
         temp = schedule.evaluate(iters)
@@ -120,11 +121,12 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                                                         fitness=problem.get_adjusted_fitness(),
                                                         curve=np.asarray(fitness_curve) if curve else None,
                                                         user_data=callback_user_info)
-            # break out if requested
-            if not continue_iterating:
-                break
+
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
+        # break out if requested
+        if not continue_iterating or problem.can_stop():
+            break
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state()

@@ -92,6 +92,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     attempts = 0
     iters = 0
 
+    continue_iterating = True
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
 
@@ -128,9 +129,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
                                                         fitness=problem.get_adjusted_fitness(),
                                                         curve=np.asarray(fitness_curve) if curve else None,
                                                         user_data=callback_user_info)
-            # break out if requested
-            if not continue_iterating:
-                break
+        # break out if requested
+        if not continue_iterating or problem.can_stop():
+            break
 
         if curve:
             fitness_curve.append(problem.get_adjusted_fitness())
