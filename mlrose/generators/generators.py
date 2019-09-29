@@ -89,7 +89,7 @@ class QueensGenerator:
 
 class MaxKColorGenerator:
     @staticmethod
-    def generate(seed, number_of_nodes=20, max_connections_per_node=4):
+    def generate(seed, number_of_nodes=20, max_connections_per_node=4, max_colors=None):
 
         """
         >>> edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
@@ -123,7 +123,7 @@ class MaxKColorGenerator:
                     break
 
         edges = [(s, f) for (s, f) in g.edges()]
-        problem = MaxKColorOpt(edges=edges, length=number_of_nodes)
+        problem = MaxKColorOpt(edges=edges, length=number_of_nodes, max_colors=max_colors)
         return problem
 
 
