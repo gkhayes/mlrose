@@ -104,9 +104,11 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             if next_fitness > problem.get_fitness():
                 problem.set_state(next_state)
                 attempts = 0
-
             else:
                 attempts += 1
+
+            if curve:
+                fitness_curve.append(problem.get_adjusted_fitness())
 
             # invoke callback
             if state_fitness_callback is not None:
@@ -122,9 +124,6 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                 # break out if requested
                 if not continue_iterating:
                     break
-
-            if curve:
-                fitness_curve.append(problem.get_adjusted_fitness())
 
         # Update best state and best fitness
         if problem.get_fitness() > best_fitness:

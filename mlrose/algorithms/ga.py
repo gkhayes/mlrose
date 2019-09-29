@@ -209,6 +209,9 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
         else:
             attempts += 1
 
+        if curve:
+            fitness_curve.append(problem.get_adjusted_fitness())
+
         # invoke callback
         if state_fitness_callback is not None:
             max_attempts_reached = (attempts == max_attempts) or problem.can_stop()
@@ -225,9 +228,6 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
             hamming_factor *= hamming_decay_factor
             hamming_factor = max(min(hamming_factor, 1.0), 0.0)
         # print(hamming_factor)
-
-        if curve:
-            fitness_curve.append(problem.get_adjusted_fitness())
 
         # break out if requested
         if not continue_iterating:

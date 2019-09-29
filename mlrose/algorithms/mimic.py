@@ -115,9 +115,11 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         if next_fitness > problem.get_fitness():
             problem.set_state(next_state)
             attempts = 0
-
         else:
             attempts += 1
+
+        if curve:
+            fitness_curve.append(problem.get_adjusted_fitness())
 
         # invoke callback
         if state_fitness_callback is not None:
@@ -132,9 +134,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         # break out if requested
         if not continue_iterating:
             break
-
-        if curve:
-            fitness_curve.append(problem.get_adjusted_fitness())
 
     best_fitness = problem.get_maximize()*problem.get_fitness()
     best_state = problem.get_state().astype(int)

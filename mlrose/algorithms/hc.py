@@ -73,6 +73,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
     if curve:
         fitness_curve = []
+        best_fitness_curve = []
+
     continue_iterating = True
     for _ in range(restarts + 1):
         # Initialize optimization problem
@@ -89,6 +91,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             problem.find_neighbors()
             next_state = problem.best_neighbor()
             next_fitness = problem.eval_fitness(next_state)
+
+            if curve:
+                fitness_curve.append(problem.get_adjusted_fitness())
+
             # invoke callback
             if state_fitness_callback is not None:
                 continue_iterating = state_fitness_callback(iteration=iters,
@@ -105,7 +111,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             # If best neighbor is an improvement, move to that state
             if next_fitness > problem.get_fitness():
                 problem.set_state(next_state)
-
             else:
                 break
 
@@ -113,9 +118,9 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
-
-        if curve:
-            fitness_curve.append(problem.get_adjusted_fitness())
+            if curve:
+                best_fitness_curve = [*fitness_curve]
+                fitness_curve = []
 
         # break out if requested
         if not continue_iterating:
@@ -124,6 +129,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     best_fitness = problem.get_maximize()*best_fitness
 
     if curve:
-        return best_state, best_fitness, np.asarray(fitness_curve)
+        return best_state, best_fitness, np.asarray(best_fitness_curve)
 
     return best_state, best_fitness

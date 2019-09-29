@@ -107,9 +107,11 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
             if (delta_e > 0) or (np.random.uniform() < prob):
                 problem.set_state(next_state)
                 attempts = 0
-
             else:
                 attempts += 1
+
+        if curve:
+            fitness_curve.append(problem.get_adjusted_fitness())
 
         # invoke callback
         if state_fitness_callback is not None:
@@ -122,8 +124,6 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                                                         curve=np.asarray(fitness_curve) if curve else None,
                                                         user_data=callback_user_info)
 
-        if curve:
-            fitness_curve.append(problem.get_adjusted_fitness())
         # break out if requested
         if not continue_iterating:
             break
