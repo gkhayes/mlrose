@@ -32,6 +32,7 @@ class KnapsackOpt(DiscreteOpt):
         if fitness_fn is None:
             fitness_fn = Knapsack(weights=weights, values=values,
                                   max_weight_pct=max_weight_pct,
+                                  max_item_count=max_val,
                                   multiply_by_max_item_count=multiply_by_max_item_count)
 
         self.max_val = max_val
