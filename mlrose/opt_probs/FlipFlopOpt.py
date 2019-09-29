@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from mlrose.algorithms.crossovers import UniformCrossOver
+from mlrose.algorithms.crossovers import OnePointCrossOver
 from mlrose.algorithms.mutators import ChangeOneMutator
 from mlrose.fitness import FlipFlop
 from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
@@ -27,7 +27,7 @@ class FlipFlopOpt(DiscreteOpt):
             fitness_fn = FlipFlop()
 
         self.max_val = 2
-        crossover = UniformCrossOver(self) if crossover is None else crossover
+        crossover = OnePointCrossOver(self) if crossover is None else crossover
         mutator = ChangeOneMutator(self) if mutator is None else mutator
         super().__init__(length, fitness_fn, maximize, 2, crossover, mutator)
 

@@ -84,6 +84,15 @@ class QueensGenerator:
         problem = QueensOpt(length=size)
         return problem
 
+
+class FlipFlopGenerator:
+    @staticmethod
+    def generate(seed, size=20):
+        np.random.seed(seed)
+        problem = FlipFlopOpt(length=size)
+        return problem
+
+
 """
 class NNWeightGenerator:
     @staticmethod
