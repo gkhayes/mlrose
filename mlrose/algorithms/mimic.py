@@ -121,7 +121,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 
         # invoke callback
         if state_fitness_callback is not None:
-            max_attempts_reached = (attempts == max_attempts)
+            max_attempts_reached = (attempts == max_attempts) or problem.can_stop()
             continue_iterating = state_fitness_callback(iteration=iters,
                                                         attempt=attempts + 1,
                                                         done=max_attempts_reached,
@@ -130,7 +130,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
                                                         curve=np.asarray(fitness_curve) if curve else None,
                                                         user_data=callback_user_info)
         # break out if requested
-        if not continue_iterating or problem.can_stop():
+        if not continue_iterating:
             break
 
         if curve:

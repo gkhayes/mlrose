@@ -157,7 +157,7 @@ class _RunnerBase(ABC):
 
             curve_stats = [self._create_curve_stat(i, v, all_stats) for (i, v) in fc]
             self._fitness_curves.extend(curve_stats)
-        return True
+        return done
 
     @abstractmethod
     def run(self):

@@ -110,7 +110,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
             # invoke callback
             if state_fitness_callback is not None:
-                max_attempts_reached = (attempts == max_attempts)
+                max_attempts_reached = (attempts == max_attempts) or problem.can_stop()
                 continue_iterating = state_fitness_callback(iteration=iters,
                                                             attempt=attempts + 1,
                                                             done=max_attempts_reached,
@@ -135,7 +135,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                 fitness_curve = []
 
         # break out if requested
-        if not continue_iterating or problem.can_stop():
+        if not continue_iterating:
             break
 
     best_fitness = problem.get_maximize()*best_fitness

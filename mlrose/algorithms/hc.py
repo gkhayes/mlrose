@@ -93,7 +93,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             if state_fitness_callback is not None:
                 continue_iterating = state_fitness_callback(iteration=iters,
                                                             attempt=None,
-                                                            done=False,
+                                                            done=problem.can_stop(),
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
                                                             curve=np.asarray(fitness_curve) if curve else None,
@@ -118,7 +118,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             fitness_curve.append(problem.get_adjusted_fitness())
 
         # break out if requested
-        if not continue_iterating or problem.can_stop():
+        if not continue_iterating:
             break
 
     best_fitness = problem.get_maximize()*best_fitness
