@@ -39,6 +39,6 @@ setup(name='mlrose-hiive',
       packages=['mlrose','mlrose.runners','mlrose.generators', 'mlrose.algorithms',
                 'mlrose.algorithms.decay', 'mlrose.algorithms.crossovers',
                 'mlrose.opt_probs', 'mlrose.fitness', 'mlrose.algorithms.mutators'],
-      install_requires=['numpy', 'scipy', 'sklearn', 'pandas'],
+      install_requires=['numpy', 'scipy', 'sklearn', 'pandas', 'networkx'],
       python_requires='>=3',
       zip_safe=False)

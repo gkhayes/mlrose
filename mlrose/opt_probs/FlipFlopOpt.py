@@ -19,7 +19,7 @@ class FlipFlopOpt(DiscreteOpt):
             raise Exception("fitness_fn or length must be specified.")
 
         if length is None:
-            self.length = len(fitness_fn.weights)
+            length = len(fitness_fn.weights)
 
         self.length = length
 

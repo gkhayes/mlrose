@@ -43,6 +43,7 @@ class MaxKColor:
         # Remove any duplicates from list
         edges = list({tuple(sorted(edge)) for edge in edges})
 
+        self.graph_edges = None
         self.edges = edges
         self.prob_type = 'discrete'
 
@@ -62,10 +63,14 @@ class MaxKColor:
 
         fitness = 0
 
-        for i in range(len(self.edges)):
-            # Check for adjacent nodes of the same color
-            if state[self.edges[i][0]] == state[self.edges[i][1]]:
-                fitness += 1
+        if self.graph_edges is not None:
+            fitness = sum(int(state[n1] == state[n2]) for (n1, n2) in self.graph_edges)
+        else:
+            fitness = 0
+            for i in range(len(self.edges)):
+                # Check for adjacent nodes of the same color
+                if state[self.edges[i][0]] == state[self.edges[i][1]]:
+                    fitness += 1
 
         return fitness
 
@@ -79,3 +84,6 @@ class MaxKColor:
             or 'either'.
         """
         return self.prob_type
+
+    def set_graph(self, graph):
+        self.graph_edges = [e for e in graph.edges()]

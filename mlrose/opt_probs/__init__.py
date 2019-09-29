@@ -8,4 +8,5 @@ from .DiscreteOpt import DiscreteOpt
 from .FlipFlopOpt import FlipFlopOpt
 from .KnapsackOpt import KnapsackOpt
 from .QueensOpt import QueensOpt
+from .MaxKOpt import MaxKOpt
 from .TSPOpt import TSPOpt
