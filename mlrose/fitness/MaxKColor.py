@@ -63,6 +63,10 @@ class MaxKColor:
 
         fitness = 0
 
+        # this is the count of neigbor nodes with the same state value.
+        # Therefore state value represents color.
+        # This is NOT what the docs above say.
+
         if self.graph_edges is not None:
             fitness = sum(int(state[n1] == state[n2]) for (n1, n2) in self.graph_edges)
         else:
