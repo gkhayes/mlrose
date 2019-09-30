@@ -1,6 +1,6 @@
-""" Classes for defining optimization problem objects."""
+""" Classes for defining algorithms problem objects."""
 
-# Author: Genevieve Hayes
+# Author: Genevieve Hayes (modified by Andrew Rollings)
 # License: BSD 3 clause
 
 from .ga import (genetic_alg)
@@ -12,3 +12,4 @@ from .mimic import (mimic)
 from .crossovers import UniformCrossOver, TSPCrossOver, OnePointCrossOver
 
 from .decay import ArithDecay, CustomSchedule, ExpDecay, GeomDecay
+from .mutators import ChangeOneMutator, DiscreteMutator, ShiftOneMutator, SwapMutator
