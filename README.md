@@ -44,6 +44,9 @@ mlrose was written by Genevieve Hayes and is distributed under the [3-Clause BSD
 You can cite mlrose in research publications and reports as follows:
 * Hayes, G. (2019). ***mlrose: Machine Learning, Randomized Optimization and SEarch package for Python***. https://github.com/gkhayes/mlrose. Accessed: *day month year*.
 
+You can cite this for in a similar way, but please be sure to reference the original work.
+
+
 BibTeX entry:
 ```
 @misc{Hayes19,
