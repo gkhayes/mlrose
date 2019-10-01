@@ -39,6 +39,7 @@ setup(name='mlrose-hiive',
       packages=['mlrose','mlrose.runners','mlrose.generators', 'mlrose.algorithms',
                 'mlrose.algorithms.decay', 'mlrose.algorithms.crossovers',
                 'mlrose.opt_probs', 'mlrose.fitness', 'mlrose.algorithms.mutators'],
-      install_requires=['numpy', 'scipy', 'sklearn', 'pandas', 'networkx'],
+      install_requires=['numpy', 'scipy', 'scikit-learn', 'pandas', 'networkx',
+                        'mimicry @ git+git://github.com/hiive/mimicry#egg=mimicry-hiive'],
       python_requires='>=3',
       zip_safe=False)

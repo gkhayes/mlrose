@@ -17,7 +17,7 @@ class KnapsackGenerator:
     @staticmethod
     def generate(seed, number_of_items_types=10,
                  max_item_count=5, max_weight_per_item=25,
-                 max_value_per_item=10, max_weight_pct=0.35,
+                 max_value_per_item=10, max_weight_pct=0.6,
                  multiply_by_max_item_count=True):
         np.random.seed(seed)
         weights = 1 + np.random.randint(max_weight_per_item, size=number_of_items_types)
