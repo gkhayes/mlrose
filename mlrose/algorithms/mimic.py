@@ -300,25 +300,8 @@ def mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, 
     while (attempts < max_attempts) and (iters < max_iters):
         iters += 1
 
-
-        # Get top n percent of population
-        problem.find_top_pct(keep_pct)
-
-        # Update probability estimates
-        problem.eval_node_probs()
-
-        # Generate new sample
-        new_sample = problem.sample_pop(pop_size)
-        problem.set_population(new_sample)
-
-        original_next_state = problem.best_child()
-
-        original_next_fitness = problem.eval_fitness(original_next_state)
-
-        ###
         next_state = mmc.fit()[0]
         next_fitness = problem.eval_fitness(next_state)
-        print(f'Old Style: {original_next_fitness}, New Style {next_fitness}')
 
         # If best child is an improvement,
         # move to that state and reset attempts counter
