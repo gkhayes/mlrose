@@ -7,6 +7,7 @@
 import numpy as np
 from mimicry import Mimic
 
+
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf, curve=False, random_state=None,
           state_fitness_callback=None, callback_user_info=None,
@@ -60,63 +61,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     ----
     MIMIC cannot be used for solving continuous-state optimization problems.
     """
-    if use_original:
-        mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                        state_fitness_callback, callback_user_info)
-    else:
-        mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                       state_fitness_callback, callback_user_info)
-
-
-def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                    state_fitness_callback, callback_user_info):
-    """Use MIMIC to find the optimum for a given optimization problem.
-    Parameters
-    ----------
-    problem: optimization object
-        Object containing fitness function optimization problem to be solved.
-        For example, :code:`DiscreteOpt()` or :code:`TSPOpt()`.
-    pop_size: int, default: 200
-        Size of population to be used in algorithm.
-    keep_pct: float, default: 0.2
-        Proportion of samples to keep at each iteration of the algorithm,
-        expressed as a value between 0 and 1.
-    max_attempts: int, default: 10
-        Maximum number of attempts to find a better neighbor at each step.
-    max_iters: int, default: np.inf
-        Maximum number of iterations of the algorithm.
-    curve: bool, default: False
-        Boolean to keep fitness values for a curve.
-        If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a
-        third return value.
-    random_state: int, default: None
-        If random_state is a positive integer, random_state is the seed used
-        by np.random.seed(); otherwise, the random seed is not set.
-    state_fitness_callback: function taking five parameters, default: None
-        If specified, this callback will be invoked once per iteration.
-        Parameters are (iteration, max attempts reached?, current best state, current best fit, user callback data).
-        Return true to continue iterating, or false to stop.
-    callback_user_info: any, default: None
-        User data passed as last parameter of callback.
-    Returns
-    -------
-    best_state: array
-        Numpy array containing state that optimizes the fitness function.
-    best_fitness: float
-        Value of fitness function at best state.
-    fitness_curve: array
-        Numpy array containing the fitness at every iteration.
-        Only returned if input argument :code:`curve` is :code:`True`.
-    References
-    ----------
-    De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
-    Estimating Probability Densities. In *Advances in Neural Information
-    Processing Systems* (NIPS) 9, pp. 424–430.
-    Note
-    ----
-    MIMIC cannot be used for solving continuous-state optimization problems.
-    """
     if problem.get_prob_type() == 'continuous':
         raise Exception("""problem type must be discrete or tsp.""")
 
@@ -142,6 +86,17 @@ def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve,
     # Set random seed
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
+
+    if use_original:
+        mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
+                        state_fitness_callback, callback_user_info)
+    else:
+        mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
+                       state_fitness_callback, callback_user_info)
+
+
+def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
+                    state_fitness_callback, callback_user_info):
 
     if curve:
         fitness_curve = []
@@ -208,78 +163,6 @@ def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve,
 
 def mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
                    state_fitness_callback, callback_user_info):
-    """Use MIMIC to find the optimum for a given optimization problem.
-    Parameters
-    ----------
-    problem: optimization object
-        Object containing fitness function optimization problem to be solved.
-        For example, :code:`DiscreteOpt()` or :code:`TSPOpt()`.
-    pop_size: int, default: 200
-        Size of population to be used in algorithm.
-    keep_pct: float, default: 0.2
-        Proportion of samples to keep at each iteration of the algorithm,
-        expressed as a value between 0 and 1.
-    max_attempts: int, default: 10
-        Maximum number of attempts to find a better neighbor at each step.
-    max_iters: int, default: np.inf
-        Maximum number of iterations of the algorithm.
-    curve: bool, default: False
-        Boolean to keep fitness values for a curve.
-        If :code:`False`, then no curve is stored.
-        If :code:`True`, then a history of fitness values is provided as a
-        third return value.
-    random_state: int, default: None
-        If random_state is a positive integer, random_state is the seed used
-        by np.random.seed(); otherwise, the random seed is not set.
-    state_fitness_callback: function taking five parameters, default: None
-        If specified, this callback will be invoked once per iteration.
-        Parameters are (iteration, max attempts reached?, current best state, current best fit, user callback data).
-        Return true to continue iterating, or false to stop.
-    callback_user_info: any, default: None
-        User data passed as last parameter of callback.
-    Returns
-    -------
-    best_state: array
-        Numpy array containing state that optimizes the fitness function.
-    best_fitness: float
-        Value of fitness function at best state.
-    fitness_curve: array
-        Numpy array containing the fitness at every iteration.
-        Only returned if input argument :code:`curve` is :code:`True`.
-    References
-    ----------
-    De Bonet, J., C. Isbell, and P. Viola (1997). MIMIC: Finding Optima by
-    Estimating Probability Densities. In *Advances in Neural Information
-    Processing Systems* (NIPS) 9, pp. 424–430.
-    Note
-    ----
-    MIMIC cannot be used for solving continuous-state optimization problems.
-    """
-    if problem.get_prob_type() == 'continuous':
-        raise Exception("""problem type must be discrete or tsp.""")
-
-    if pop_size < 0:
-        raise Exception("""pop_size must be a positive integer.""")
-    elif not isinstance(pop_size, int):
-        if pop_size.is_integer():
-            pop_size = int(pop_size)
-        else:
-            raise Exception("""pop_size must be a positive integer.""")
-
-    if (keep_pct < 0) or (keep_pct > 1):
-        raise Exception("""keep_pct must be between 0 and 1.""")
-
-    if (not isinstance(max_attempts, int) and not max_attempts.is_integer()) \
-       or (max_attempts < 0):
-        raise Exception("""max_attempts must be a positive integer.""")
-
-    if (not isinstance(max_iters, int) and max_iters != np.inf
-            and not max_iters.is_integer()) or (max_iters < 0):
-        raise Exception("""max_iters must be a positive integer.""")
-
-    # Set random seed
-    if isinstance(random_state, int) and random_state > 0:
-        np.random.seed(random_state)
 
     if curve:
         fitness_curve = []
