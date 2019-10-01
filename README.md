@@ -28,9 +28,9 @@ At the time of development, there did not exist a single Python package that col
 ## Installation
 mlrose was written in Python 3 and requires NumPy, SciPy and Scikit-Learn (sklearn).
 
-The latest released version is available at the [Python package index](https://pypi.org/project/mlrose/) and can be installed using `pip`:
+The latest version can be installed using `pip`:
 ```
-pip install mlrose
+pip install -e git+git://github.com/hiive/mlrose#egg=mlrose-hiive
 ```
 
 ## Documentation
