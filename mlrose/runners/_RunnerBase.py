@@ -11,6 +11,15 @@ from mlrose.runners.utils import build_data_filename
 
 class _RunnerBase(ABC):
 
+    @classmethod
+    @abstractmethod
+    def runner_name(cls):
+        pass
+
+    @abstractmethod
+    def run(self):
+        pass
+
     def __init__(self, problem, experiment_name, seed, iteration_list, max_attempts=500,
                  generate_curves=True, output_directory=None, **kwargs):
         self.problem = problem
@@ -27,7 +36,6 @@ class _RunnerBase(ABC):
         self._extra_args = kwargs
         self._output_directory = output_directory
         self._experiment_name = experiment_name
-        self.runner_name = None
 
     def _setup(self):
         self._raw_run_stats = []
@@ -54,7 +62,7 @@ class _RunnerBase(ABC):
         run_start = time.perf_counter()
         i = int(max(self.iteration_list))
 
-        print(f'Running {self.runner_name}')
+        print(f'Running {self.runner_name()}')
         for vns in value_sets:
             self.current_args = dict(vns)
             total_args = self.current_args.copy()
@@ -86,17 +94,17 @@ class _RunnerBase(ABC):
 
         if self._output_directory is not None:
             self._dump_df_to_disk(self.run_stats_df,
-                                  runner_name=self.runner_name,
+                                  runner_name=self.runner_name(),
                                   df_name='run_stats_df')
             self._dump_df_to_disk(self.curves_df,
-                                  runner_name=self.runner_name,
+                                  runner_name=self.runner_name(),
                                   df_name='curves_df')
 
         return self.run_stats_df, self.curves_df
 
     def _dump_df_to_disk(self, df, df_name):
         filename_root = build_data_filename(output_directory=self._output_directory,
-                                            runner_name=self.runner_name,
+                                            runner_name=self.runner_name(),
                                             experiment_name=self._experiment_name,
                                             df_name=df_name)
 
@@ -126,7 +134,7 @@ class _RunnerBase(ABC):
         if user_data is not None and len(user_data) > 0:
             data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
             print(data_desc)
-        print(f'runner_name:[{self.runner_name}], experiment_name:[{self._experiment_name}], ' +
+        print(f'runner_name:[{self.runner_name()}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
               f'iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness:[{fitness:.4f}]')
@@ -159,7 +167,3 @@ class _RunnerBase(ABC):
             curve_stats = [self._create_curve_stat(i, t, v, all_stats) for (i, v) in fc]
             self._fitness_curves.extend(curve_stats)
         return not done
-
-    @abstractmethod
-    def run(self):
-        pass

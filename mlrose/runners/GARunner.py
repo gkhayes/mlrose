@@ -29,6 +29,10 @@ Example usage:
 
 class GARunner(_RunnerBase):
 
+    @classmethod
+    def runner_name(cls):
+        return 'ga'
+
     def __init__(self, problem, experiment_name, seed, iteration_list, population_sizes, mutation_rates,
                  hamming_factors=None, hamming_factor_decays=None, max_attempts=500, generate_curves=True, **kwargs):
         super().__init__(problem=problem, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
@@ -38,7 +42,6 @@ class GARunner(_RunnerBase):
         self.mutation_rates = mutation_rates
         self.hamming_factors = hamming_factors
         self.hamming_factor_decays = hamming_factor_decays
-        self.runner_name = 'ga'
 
     def run(self):
         return super()._run_experiment(algorithm=mlrose.genetic_alg,

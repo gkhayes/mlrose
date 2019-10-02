@@ -28,13 +28,16 @@ Example usage:
 
 class SARunner(_RunnerBase):
 
+    @classmethod
+    def runner_name(cls):
+        return 'sa'
+
     def __init__(self, problem, experiment_name, seed, iteration_list, temperature_list,
                  max_attempts=500, generate_curves=True, **kwargs):
         super().__init__(problem=problem, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          max_attempts=max_attempts, generate_curves=generate_curves,
                          **kwargs)
         self.temperature_list = temperature_list
-        self.runner_name = 'sa'
 
     def run(self):
         temperatures = [mlrose.GeomDecay(init_temp=t) for t in self.temperature_list]

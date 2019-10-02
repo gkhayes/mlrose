@@ -28,6 +28,10 @@ Example usage:
 
 class MIMICRunner(_RunnerBase):
 
+    @classmethod
+    def runner_name(cls):
+        return 'mimic'
+
     def __init__(self, problem, experiment_name, seed, iteration_list, population_sizes,
                  keep_percent_list, max_attempts=500, generate_curves=True, **kwargs):
         super().__init__(problem=problem, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
@@ -35,7 +39,6 @@ class MIMICRunner(_RunnerBase):
                          **kwargs)
         self.keep_percent_list = keep_percent_list
         self.population_sizes = population_sizes
-        self.runner_name = 'mimic'
 
     def run(self):
         return super()._run_experiment(algorithm=mlrose.mimic,

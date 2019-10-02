@@ -28,13 +28,16 @@ Example usage:
 
 class RHCRunner(_RunnerBase):
 
+    @classmethod
+    def runner_name(cls):
+        return 'rhc'
+
     def __init__(self, problem, experiment_name, seed, iteration_list, restart_list,
                  max_attempts=500, generate_curves=True, **kwargs):
         super().__init__(problem=problem, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          max_attempts=max_attempts, generate_curves=generate_curves,
                          **kwargs)
         self.restart_list = restart_list
-        self.runner_name = 'rhc'
 
     def run(self):
         return super()._run_experiment(algorithm=mlrose.random_hill_climb,
