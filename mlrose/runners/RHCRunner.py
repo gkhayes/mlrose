@@ -34,8 +34,8 @@ class RHCRunner(_RunnerBase):
                          max_attempts=max_attempts, generate_curves=generate_curves,
                          **kwargs)
         self.restart_list = restart_list
+        self.runner_name = 'rhc'
 
     def run(self):
-        return super()._run_experiment(runner_name='RHC',
-                                       algorithm=mlrose.random_hill_climb,
+        return super()._run_experiment(algorithm=mlrose.random_hill_climb,
                                        restarts=('Restarts', self.restart_list))

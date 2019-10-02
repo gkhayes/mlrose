@@ -35,9 +35,9 @@ class MIMICRunner(_RunnerBase):
                          **kwargs)
         self.keep_percent_list = keep_percent_list
         self.population_sizes = population_sizes
+        self.runner_name = 'mimic'
 
     def run(self):
-        return super()._run_experiment(runner_name='MIMIC',
-                                       algorithm=mlrose.mimic,
+        return super()._run_experiment(algorithm=mlrose.mimic,
                                        pop_size=('Population Size', self.population_sizes),
                                        keep_pct=('Keep Percent', self.keep_percent_list))

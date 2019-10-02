@@ -34,9 +34,9 @@ class SARunner(_RunnerBase):
                          max_attempts=max_attempts, generate_curves=generate_curves,
                          **kwargs)
         self.temperature_list = temperature_list
+        self.runner_name = 'sa'
 
     def run(self):
         temperatures = [mlrose.GeomDecay(init_temp=t) for t in self.temperature_list]
-        return super()._run_experiment(runner_name='SA',
-                                       algorithm=mlrose.simulated_annealing,
+        return super()._run_experiment(algorithm=mlrose.simulated_annealing,
                                        schedule=('Temperature', temperatures))

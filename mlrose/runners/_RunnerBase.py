@@ -27,6 +27,7 @@ class _RunnerBase(ABC):
         self._extra_args = kwargs
         self._output_directory = output_directory
         self._experiment_name = experiment_name
+        self.runner_name = None
 
     def _setup(self):
         self._raw_run_stats = []
@@ -43,7 +44,7 @@ class _RunnerBase(ABC):
         """
         pass
 
-    def _run_experiment(self, runner_name, algorithm, **kwargs):
+    def _run_experiment(self, algorithm, **kwargs):
         self._setup()
 
         # extract loop params
@@ -53,7 +54,7 @@ class _RunnerBase(ABC):
         run_start = time.perf_counter()
         i = int(max(self.iteration_list))
 
-        print(f'Running {runner_name}')
+        print(f'Running {self.runner_name}')
         for vns in value_sets:
             self.current_args = dict(vns)
             total_args = self.current_args.copy()
@@ -61,8 +62,7 @@ class _RunnerBase(ABC):
             if self._extra_args is not None and len(self._extra_args) > 0:
                 total_args.update(self._extra_args)
 
-            user_info = [('runner_name', runner_name)]
-            user_info.extend([(n, total_args[n]) for n in total_args])
+            user_info = [(n, total_args[n]) for n in total_args]
 
             np.random.seed(self.seed)
             self.iteration_start_time = time.perf_counter()
@@ -86,17 +86,17 @@ class _RunnerBase(ABC):
 
         if self._output_directory is not None:
             self._dump_df_to_disk(self.run_stats_df,
-                                  runner_name=runner_name,
+                                  runner_name=self.runner_name,
                                   df_name='run_stats_df')
             self._dump_df_to_disk(self.curves_df,
-                                  runner_name=runner_name,
+                                  runner_name=self.runner_name,
                                   df_name='curves_df')
 
         return self.run_stats_df, self.curves_df
 
-    def _dump_df_to_disk(self, df, runner_name, df_name):
+    def _dump_df_to_disk(self, df, df_name):
         filename_root = build_data_filename(output_directory=self._output_directory,
-                                            runner_name=runner_name,
+                                            runner_name=self.runner_name,
                                             experiment_name=self._experiment_name,
                                             df_name=df_name)
 
@@ -126,7 +126,7 @@ class _RunnerBase(ABC):
         if user_data is not None and len(user_data) > 0:
             data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
             print(data_desc)
-        print(f'experiment_name:[{self._experiment_name}], ' +
+        print(f'runner_name:[{self.runner_name}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
               f'iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness:[{fitness:.4f}]')

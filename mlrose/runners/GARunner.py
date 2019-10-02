@@ -38,10 +38,10 @@ class GARunner(_RunnerBase):
         self.mutation_rates = mutation_rates
         self.hamming_factors = hamming_factors
         self.hamming_factor_decays = hamming_factor_decays
+        self.runner_name = 'ga'
 
     def run(self):
-        return super()._run_experiment(runner_name='GA',
-                                       algorithm=mlrose.genetic_alg,
+        return super()._run_experiment(algorithm=mlrose.genetic_alg,
                                        pop_size=('Population Size', self.population_sizes),
                                        mutation_prob=('Mutation Rate', self.mutation_rates),
                                        hamming_factor=('Hamming Factor', self.hamming_factors),
