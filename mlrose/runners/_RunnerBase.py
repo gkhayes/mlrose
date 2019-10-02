@@ -94,10 +94,8 @@ class _RunnerBase(ABC):
 
         if self._output_directory is not None:
             self._dump_df_to_disk(self.run_stats_df,
-                                  runner_name=self.runner_name(),
                                   df_name='run_stats_df')
             self._dump_df_to_disk(self.curves_df,
-                                  runner_name=self.runner_name(),
                                   df_name='curves_df')
 
         return self.run_stats_df, self.curves_df
