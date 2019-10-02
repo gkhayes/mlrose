@@ -7,12 +7,13 @@
 import numpy as np
 
 
-def get_hamming_distance_default_(population, p1):
+def _get_hamming_distance_default(population, p1):
     hamming_distances = np.array([np.count_nonzero(p1 != p2) / len(p1) for p2 in population])
     return hamming_distances
 
 
-def get_hamming_distance_float_(population, p1):
+def _get_hamming_distance_float(population, p1):
+    # use squares instead?
     hamming_distances = np.array([np.abs(np.diff(p1, p2)) / len(p1) for p2 in population])
     return hamming_distances
 
@@ -21,12 +22,13 @@ def _genetic_alg_select_parents(pop_size, problem,
                                 get_hamming_distance_func,
                                 hamming_factor=0.0):
     mating_probabilities = problem.get_mate_probs()
-    if hamming_factor > 0.01 and get_hamming_distance_func is not None:
+    if get_hamming_distance_func is not None and hamming_factor > 0.01:
         selected = np.random.choice(pop_size, p=mating_probabilities)
         population = problem.get_population()
         p1 = population[selected]
         hamming_distances = get_hamming_distance_func(population, p1)
-        hamming_distances = (hamming_distances * hamming_factor) * (mating_probabilities * (1.0 - hamming_factor))
+        hfa = hamming_factor / (1.0 - hamming_factor)
+        hamming_distances = (hamming_distances * hfa) * mating_probabilities
         hamming_distances /= hamming_distances.sum()
         selected = np.random.choice(pop_size, p=hamming_distances)
         p2 = population[selected]
@@ -150,9 +152,9 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     if hamming_factor > 0:
         g1 = problem.get_population()[0][0]
         if isinstance(g1, float) or g1.dtype == 'float64':
-            get_hamming_distance_func = get_hamming_distance_float_
+            get_hamming_distance_func = _get_hamming_distance_float
         else:
-            get_hamming_distance_func = get_hamming_distance_default_
+            get_hamming_distance_func = _get_hamming_distance_default
 
     attempts = 0
     iters = 0
