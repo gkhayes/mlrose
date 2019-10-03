@@ -39,5 +39,39 @@ class FlipFlopOpt(DiscreteOpt):
         pop_fitness = self.fitness_fn.evaluate_many(self.population)
         self.pop_fitness = pop_fitness
 
+    def random_pop(self, pop_size):
+        """Create a population of random state vectors.
+
+        Parameters
+        ----------
+        pop_size: int
+            Size of population to be created.
+        """
+        if pop_size <= 0:
+            raise Exception("""pop_size must be a positive integer.""")
+        elif not isinstance(pop_size, int):
+            if pop_size.is_integer():
+                pop_size = int(pop_size)
+            else:
+                raise Exception("""pop_size must be a positive integer.""")
+
+        """
+        population = []
+
+
+        for _ in range(pop_size):
+            state = self.random()
+            population.append(state)
+
+        self.population = np.array(population)
+        """
+        population = np.random.rand(pop_size, self.length)
+        population[population < 0.5] = 0
+        population[population >= 0.5] = 1
+        self.population = population
+        # np.round(population, out=population).astype(int)
+
+        self.evaluate_population_fitness()
+
     def can_stop(self):
         return int(self.get_fitness()) == int(self.length - 1)

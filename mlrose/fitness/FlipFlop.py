@@ -61,17 +61,17 @@ class FlipFlop:
         return fitness
 
     def evaluate_many(self, states):
-        """Evaluate the fitness of a state vector.
+        """Evaluate the fitness of a an ndarray of states.
 
         Parameters
         ----------
-        state: array
-            State array for evaluation.
+        states: ndarray
+            States array for evaluation.
 
         Returns
         -------
-        fitness: float
-            Value of fitness function.
+        fitness: ndarray
+            Population fitness values.
         """
 
         runs = np.zeros((states.shape[0], states.shape[1]-1), dtype=int)

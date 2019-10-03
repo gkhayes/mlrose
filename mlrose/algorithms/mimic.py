@@ -5,13 +5,11 @@
 # License: BSD 3 clause
 
 import numpy as np
-from mimicry import Mimic
 
 
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf, curve=False, random_state=None,
-          state_fitness_callback=None, callback_user_info=None,
-          use_original=True):
+          state_fitness_callback=None, callback_user_info=None):
     """Use MIMIC to find the optimum for a given optimization problem.
     Parameters
     ----------
@@ -41,8 +39,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
-    use_original: bool, default: True
-        Use original MLROSE implementation of MIMIC if True, else use implementation from MIMICRY.
     Returns
     -------
     best_state: array
@@ -87,17 +83,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    if use_original:
-        return mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                               state_fitness_callback, callback_user_info)
-    else:
-        return mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                              state_fitness_callback, callback_user_info)
-
-
-def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                    state_fitness_callback, callback_user_info):
-
     fitness_curve = []
 
     # Initialize problem, population and attempts counter
@@ -122,66 +107,6 @@ def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve,
 
         next_state = problem.best_child()
 
-        next_fitness = problem.eval_fitness(next_state)
-
-        # If best child is an improvement,
-        # move to that state and reset attempts counter
-        if next_fitness > problem.get_fitness():
-            problem.set_state(next_state)
-            attempts = 0
-        else:
-            attempts += 1
-
-        if curve:
-            fitness_curve.append(problem.get_adjusted_fitness())
-
-        # invoke callback
-        if state_fitness_callback is not None:
-            max_attempts_reached = (attempts == max_attempts) or problem.can_stop()
-            continue_iterating = state_fitness_callback(iteration=iters,
-                                                        attempt=attempts + 1,
-                                                        done=max_attempts_reached,
-                                                        state=problem.get_state(),
-                                                        fitness=problem.get_adjusted_fitness(),
-                                                        curve=np.asarray(fitness_curve) if curve else None,
-                                                        user_data=callback_user_info)
-        # break out if requested
-        if not continue_iterating:
-            break
-
-    best_fitness = problem.get_maximize()*problem.get_fitness()
-    best_state = problem.get_state().astype(int)
-
-    if curve:
-        return best_state, best_fitness, np.asarray(fitness_curve)
-
-    return best_state, best_fitness
-
-####
-
-
-def mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                   state_fitness_callback, callback_user_info):
-
-    fitness_curve = []
-
-    # Initialize problem, population and attempts counter
-    problem.reset()
-    problem.random_pop(pop_size)
-    attempts = 0
-    iters = 0
-
-    domain = [tuple(range(problem.max_val))] * problem.length
-    mmc = Mimic(domain=domain,
-                fitness_function=problem.eval_fitness,
-                initial_samples=problem.get_population(),
-                percentile=keep_pct)
-
-    continue_iterating = True
-    while (attempts < max_attempts) and (iters < max_iters):
-        iters += 1
-
-        next_state = mmc.fit()[0]
         next_fitness = problem.eval_fitness(next_state)
 
         # If best child is an improvement,
