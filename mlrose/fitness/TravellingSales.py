@@ -151,7 +151,8 @@ class TravellingSales:
         nodes = np.array([[state[i-1], state[i]] for i in range(1, ls)] + [[state[ls-1]] + [state[0]]])
         nodes.sort(axis=1)
         df_nodes = pd.merge(self.df_path_list, pd.DataFrame(nodes), how='inner')
-
+        if df_nodes.shape[0] != nodes.shape[0]:
+            return np.inf
         fitness = df_nodes.iloc[:, 2].sum()
         return fitness
 

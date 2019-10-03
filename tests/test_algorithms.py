@@ -14,6 +14,28 @@ class TestAlgorithms(unittest.TestCase):
     """Tests for optimization algorithms."""
 
     @staticmethod
+    def test_mimic_discrete_max():
+        """Test mimic function for a discrete maximization problem"""
+
+        problem = DiscreteOpt(5, OneMax(), maximize=True)
+        best_state, best_fitness = mimic(problem, max_attempts=50)
+
+        x = np.array([1, 1, 1, 1, 1])
+
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
+
+    @staticmethod
+    def test_mimic_discrete_min():
+        """Test mimic function for a discrete minimization problem"""
+
+        problem = DiscreteOpt(5, OneMax(), maximize=False)
+        best_state, best_fitness = mimic(problem, max_attempts=50)
+
+        x = np.array([0, 0, 0, 0, 0])
+
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
+
+    @staticmethod
     def test_hill_climb_discrete_max():
         """Test hill_climb function for a discrete maximization problem"""
 
@@ -243,28 +265,6 @@ class TestAlgorithms(unittest.TestCase):
         x = np.array([0, 0, 0, 0, 0])
 
         assert (np.allclose(best_state, x, atol=0.5) and best_fitness < 1)
-
-    @staticmethod
-    def test_mimic_discrete_max():
-        """Test mimic function for a discrete maximization problem"""
-
-        problem = DiscreteOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = mimic(problem, max_attempts=50)
-
-        x = np.array([1, 1, 1, 1, 1])
-
-        assert (np.array_equal(best_state, x) and best_fitness == 5)
-
-    @staticmethod
-    def test_mimic_discrete_min():
-        """Test mimic function for a discrete minimization problem"""
-
-        problem = DiscreteOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = mimic(problem, max_attempts=50)
-
-        x = np.array([0, 0, 0, 0, 0])
-
-        assert (np.array_equal(best_state, x) and best_fitness == 0)
 
 
 if __name__ == '__main__':

@@ -88,11 +88,11 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         np.random.seed(random_state)
 
     if use_original:
-        mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                        state_fitness_callback, callback_user_info)
+        return mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
+                               state_fitness_callback, callback_user_info)
     else:
-        mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
-                       state_fitness_callback, callback_user_info)
+        return mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
+                              state_fitness_callback, callback_user_info)
 
 
 def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,

@@ -83,7 +83,7 @@ class Queens:
         # state_shifts[(state_shifts < 0)] = np.NaN
         # state_shifts[(state_shifts >= ls)] = np.NaN
 
-        f_d = np.sum(state_shifts == state)
+        f_d = np.sum(state_shifts == state) // 2  # each diagonal piece is counted twice
         fitness = f_h + f_d
         return fitness
 

@@ -179,7 +179,8 @@ class TestFitness(unittest.TestCase):
     def test_queens():
         """Test Queens fitness function"""
         state = np.array([1, 4, 1, 3, 5, 5, 2, 7])
-        assert Queens().evaluate(state) == 6
+        fitness = Queens().evaluate(state)
+        assert fitness == 6
 
     @staticmethod
     def test_max_k_color():
