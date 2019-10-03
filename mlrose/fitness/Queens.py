@@ -4,6 +4,7 @@
 # License: BSD 3 clause
 
 import numpy as np
+import pandas as pd
 
 
 class Queens:
@@ -40,6 +41,19 @@ class Queens:
 
         self.prob_type = 'discrete'
 
+    @staticmethod
+    def shift(a, num, fill_value=np.nan):
+        result = np.empty(a.shape)
+        if num > 0:
+            result[:num] = fill_value
+            result[num:] = a[:-num]
+        elif num < 0:
+            result[num:] = fill_value
+            result[:num] = a[-num:]
+        else:
+            result[:] = a
+        return result
+
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
 
@@ -54,39 +68,15 @@ class Queens:
             Value of fitness function.
         """
 
+        # check for horizontal matches.
+        f_h = (np.unique(state, return_counts=True)[1]-1).sum()
 
-        """
-        lc = [[{
-            'column':(j),
-            'check contents of':i,
-            'distance':(j-i),
-            f'contents of {i}': state[i],
-            f'contents of {j}': state[j],
-            'c1':(state[i] + (j-i)) == state[j],
-            'c2':(state[i] - (j-i)) == state[j]} for i in range(j)] for j in range(1, len(state))]
-        
-        rc = [[{
-            'column':(j),
-            'check contents of':i,
-            'distance':(i-j),
-            f'contents of {i}': state[i],
-            f'contents of {j}': state[j],
-            'c1':(state[i] + (i-j)) == state[j],
-            'c2':(state[i] - (i-j)) == state[j]} for i in range(j+1,len(state))] for j in range(len(state)-1)]
-        """
-        f_h = sum([list(state).count(state[i])-1 for i in range(len(state))])
-
-        f_ld = sum([sum([(int((state[i] + (j-i)) == state[j]) +
-                          int((state[i] - (j-i)) == state[j]))
-                         for i in range(j)])
-                    for j in range(1, len(state))])
-
-        f_rd = sum([sum([int((state[i] + (i-j)) == state[j]) +
-                         int((state[i] - (i-j)) == state[j])
-                         for i in range(j+1, len(state))])
-                    for j in range(len(state)-1)])
-
-        fitness = f_h + f_ld + f_rd
+        # check for diagonal matches.
+        # look at the state_shifts to figure out how this works. (I'm quite pleased with it)
+        ls = state.size
+        state_shifts = np.array([self.shift(state, i)+i for i in np.arange(-ls, ls) if i != 0])
+        f_d = np.sum(state_shifts == state)
+        fitness = f_h + f_d
         return fitness
 
     def get_prob_type(self):

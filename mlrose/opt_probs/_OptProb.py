@@ -203,7 +203,9 @@ class _OptProb:
             Numpy array containing new population.
         """
         self.population = new_population
+        self.evaluate_population_fitness()
 
+    def evaluate_population_fitness(self):
         # Calculate fitness
         pop_fitness = []
 

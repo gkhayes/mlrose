@@ -4,7 +4,7 @@
 # License: BSD 3 clause
 
 import numpy as np
-
+import pandas as pd
 
 class TravellingSales:
     """Fitness function for Travelling Salesman optimization problem.
@@ -97,6 +97,11 @@ class TravellingSales:
         self.path_list = path_list
         self.dist_list = dist_list
         self.prob_type = 'tsp'
+        if self.coords:
+            self.calculate_fitness = self.__calculate_fitness_by_coords
+        else:
+            self.df_path_list = pd.DataFrame([[self.path_list[i][0], self.path_list[i][1], self.dist_list[i]] for i in range(len(self.path_list))])
+            self.calculate_fitness = self.__calculate_fitness_by_distance
 
     def evaluate(self, state):
         """Evaluate the fitness of a state vector.
@@ -130,36 +135,24 @@ class TravellingSales:
 
         return self.calculate_fitness(state)
 
-    def calculate_fitness(self, state):
-        fitness = 0
-        # Calculate length of each leg of journey
-        for i in range(len(state) - 1):
-            node1 = state[i]
-            node2 = state[i + 1]
+    def __calculate_fitness_by_coords(self, state):
+        # Calculate length of journey
+        ls = len(state)
+        nodes = np.array([self.coords[state[i]] for i in range(ls)] + [self.coords[state[0]]])
+        nodes.reshape((2, nodes.size // 2))
+        fitness = np.linalg.norm(nodes[1:] - nodes[:-1], axis=1).sum()
 
-            if self.is_coords:
-                fitness += np.linalg.norm(np.array(self.coords[node1])
-                                          - np.array(self.coords[node2]))
-            else:
-                path = (min(node1, node2), max(node1, node2))
+        return fitness
 
-                if path in self.path_list:
-                    fitness += self.dist_list[self.path_list.index(path)]
-                else:
-                    fitness += np.inf
-        # Calculate length of final leg
-        node1 = state[-1]
-        node2 = state[0]
-        if self.is_coords:
-            fitness += np.linalg.norm(np.array(self.coords[node1])
-                                      - np.array(self.coords[node2]))
-        else:
-            path = (min(node1, node2), max(node1, node2))
+    def __calculate_fitness_by_distance(self, state):
 
-            if path in self.path_list:
-                fitness += self.dist_list[self.path_list.index(path)]
-            else:
-                fitness += np.inf
+        ls = len(state)
+
+        nodes = np.array([[state[i-1], state[i]] for i in range(1, ls)] + [[state[ls-1]] + [state[0]]])
+        nodes.sort(axis=1)
+        df_nodes = pd.merge(self.df_path_list, pd.DataFrame(nodes), how='inner')
+
+        fitness = df_nodes.iloc[:, 2].sum()
         return fitness
 
     def get_prob_type(self):

@@ -80,13 +80,8 @@ class TSPOpt(DiscreteOpt):
             Vector of probabilities that sums to 1. Returns a zero vector if
             sum(probs) = 0.
         """
-        if np.sum(probs) == 0:
-            adj_probs = np.zeros(np.shape(probs))
-
-        else:
-            adj_probs = probs/np.sum(probs)
-
-        return adj_probs
+        sp = np.sum(probs)
+        return np.zeros(np.shape(probs)) if sp == 0 else probs/sp
 
     def find_neighbors(self):
         """Find all neighbors of the current state.

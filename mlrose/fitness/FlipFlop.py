@@ -48,11 +48,9 @@ class FlipFlop:
             Value of fitness function.
         """
 
-        fitness = 0
-
-        for i in range(1, len(state)):
-            if state[i] != state[i - 1]:
-                fitness += 1
+        runs = np.zeros(state.size-1, dtype=int)
+        np.not_equal(state[:-1], state[1:], out=runs)
+        fitness = np.sum(runs)
 
         return fitness
 
