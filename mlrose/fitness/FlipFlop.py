@@ -48,9 +48,35 @@ class FlipFlop:
             Value of fitness function.
         """
 
+        fitness = sum([state[i] != state[i-1] for i in range(1, len(state))])
+
+
+        # may not be faster
+        """
         runs = np.zeros(state.size-1, dtype=int)
         np.not_equal(state[:-1], state[1:], out=runs)
         fitness = np.sum(runs)
+        """
+
+        return fitness
+
+    def evaluate_many(self, states):
+        """Evaluate the fitness of a state vector.
+
+        Parameters
+        ----------
+        state: array
+            State array for evaluation.
+
+        Returns
+        -------
+        fitness: float
+            Value of fitness function.
+        """
+
+        runs = np.zeros((states.shape[0], states.shape[1]-1), dtype=int)
+        np.not_equal(states[:, :-1], states[:, 1:], out=runs)
+        fitness = np.sum(runs, axis=1)
 
         return fitness
 

@@ -164,6 +164,7 @@ class _RunnerBase(ABC):
 
             curve_stats = [self._create_curve_stat(i, v, all_stats) for (i, v) in fc]
 
+            # interpolate the time over the curve
             for i in range(len(curve_stats)):
                 curve_stats[i]['Time'] = (t * i) / len(curve_stats)
             self._fitness_curves.extend(curve_stats)

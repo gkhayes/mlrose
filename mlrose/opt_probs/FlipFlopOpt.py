@@ -34,5 +34,10 @@ class FlipFlopOpt(DiscreteOpt):
         state = np.random.randint(2, size=self.length)
         self.set_state(state)
 
+    def evaluate_population_fitness(self):
+        # Calculate fitness
+        pop_fitness = self.fitness_fn.evaluate_many(self.population)
+        self.pop_fitness = pop_fitness
+
     def can_stop(self):
         return int(self.get_fitness()) == int(self.length - 1)

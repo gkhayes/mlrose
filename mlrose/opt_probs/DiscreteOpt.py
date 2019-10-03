@@ -249,9 +249,8 @@ class DiscreteOpt(_OptProb):
 
         for _ in range(pop_size):
             state = self.random()
-            fitness = self.eval_fitness(state)
-
             population.append(state)
+            fitness = self.eval_fitness(state)
             pop_fitness.append(fitness)
 
         self.population = np.array(population)
