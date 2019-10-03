@@ -74,7 +74,15 @@ class Queens:
         # check for diagonal matches.
         # look at the state_shifts to figure out how this works. (I'm quite pleased with it)
         ls = state.size
-        state_shifts = np.array([self.shift(state, i)+i for i in np.arange(-ls, ls) if i != 0])
+        # rows 0-3:   checking up left.
+        # rows 4-7:   checking down right.
+        # rows 8-11:  checking up right
+        # rows 12-15: checking down left
+        state_shifts = np.array([self.shift(state, i)+i for i in np.arange(1-ls, ls) if i != 0] +
+                                [self.shift(state, -i)+i for i in np.arange(1-ls, ls) if i != 0])
+        # state_shifts[(state_shifts < 0)] = np.NaN
+        # state_shifts[(state_shifts >= ls)] = np.NaN
+
         f_d = np.sum(state_shifts == state)
         fitness = f_h + f_d
         return fitness
