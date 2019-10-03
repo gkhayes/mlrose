@@ -77,9 +77,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     best_fitness = -1*np.inf
     best_state = None
 
-    if curve:
-        fitness_curve = []
-        best_fitness_curve = []
+    fitness_curve = []
+    best_fitness_curve = []
 
     continue_iterating = True
     for current_restart in range(restarts + 1):

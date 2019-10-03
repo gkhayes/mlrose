@@ -98,8 +98,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
                     state_fitness_callback, callback_user_info):
 
-    if curve:
-        fitness_curve = []
+    fitness_curve = []
 
     # Initialize problem, population and attempts counter
     problem.reset()
@@ -164,8 +163,7 @@ def mimic_original_(problem, pop_size, keep_pct, max_attempts, max_iters, curve,
 def mimic_mimicry_(problem, pop_size, keep_pct, max_attempts, max_iters, curve, random_state,
                    state_fitness_callback, callback_user_info):
 
-    if curve:
-        fitness_curve = []
+    fitness_curve = []
 
     # Initialize problem, population and attempts counter
     problem.reset()

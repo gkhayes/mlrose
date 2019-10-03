@@ -8,10 +8,12 @@ import numpy as np
 # The following functions/classes are not automatically imported at
 # initialization, so must be imported explicitly from neural.py and
 # activation.py.
-from mlrose.neural import (flatten_weights, unflatten_weights,
-                           gradient_descent, NetworkWeights, ContinuousOpt,
-                           NeuralNetwork, LogisticRegression, LinearRegression)
-from mlrose.activation import identity, sigmoid, softmax
+from mlrose.neural.LinearRegression import LinearRegression
+from mlrose.neural.LogisticRegression import LogisticRegression
+from mlrose.neural.NetworkWeights import NetworkWeights
+from mlrose.neural.NeuralNetwork import NeuralNetwork
+from mlrose.opt_probs import ContinuousOpt
+from mlrose import (flatten_weights, unflatten_weights, gradient_descent, identity, sigmoid, softmax)
 
 
 class TestNeural(unittest.TestCase):

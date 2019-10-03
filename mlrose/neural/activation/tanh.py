@@ -1,0 +1,31 @@
+""" Neural network activation functions."""
+
+# Author: Genevieve Hayes (Modified by Andrew Rollings)
+# License: BSD 3 clause
+
+import numpy as np
+
+
+def tanh(x, deriv=False):
+    """Hyperbolic tan activation function
+
+    Parameters
+    ----------
+    x: array
+        Array containing input data.
+
+    deriv: bool, default: False
+        Whether to return the function or its derivative.
+        Set True for derivative.
+
+    Returns
+    -------
+    fx: array
+        Value of activation function at x
+    """
+    fx = np.tanh(x)
+
+    if deriv:
+        fx = 1 - fx**2
+
+    return fx

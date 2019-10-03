@@ -10,7 +10,8 @@ from .algorithms.mutators import ChangeOneMutator, DiscreteMutator, SwapMutator,
 from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       Knapsack, TravellingSales, Queens, MaxKColor, 
                       CustomFitness)
-from .neural import NeuralNetwork, LinearRegression, LogisticRegression
+from .neural import NeuralNetwork, LinearRegression, LogisticRegression, NetworkWeights, BaseNeuralNetwork
+from .neural import (gradient_descent, identity, relu, sigmoid,softmax, tanh, flatten_weights, unflatten_weights)
 from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt, QueensOpt, FlipFlopOpt, MaxKColorOpt
 
 from .runners import GARunner, MIMICRunner, RHCRunner, SARunner
