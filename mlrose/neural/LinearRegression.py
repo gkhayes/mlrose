@@ -3,14 +3,8 @@
 # Author: Genevieve Hayes (modified by Andrew Rollings)
 # License: BSD 3 clause
 
-from abc import ABCMeta
-from abc import abstractmethod
+from sklearn.base import RegressorMixin
 
-import numpy as np
-from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
-from sklearn.externals import six
-
-from .activation import identity, relu, sigmoid, softmax, tanh
 
 from mlrose.algorithms.decay import GeomDecay
 from .BaseNeuralNetwork import BaseNeuralNetwork

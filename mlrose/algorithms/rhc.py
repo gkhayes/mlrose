@@ -74,11 +74,10 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    best_fitness = problem.get_maximize() * -np.inf
+    best_fitness = -np.inf
     best_state = None
 
     best_fitness_curve = []
-    best_restart = 0
 
     continue_iterating = True
     for current_restart in range(restarts + 1):
@@ -134,19 +133,17 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                     break
 
         # Update best state and best fitness
-        current_fitness = problem.get_adjusted_fitness()
+        current_fitness = problem.get_fitness()
         if current_fitness > best_fitness:
             best_fitness = current_fitness
             best_state = problem.get_state()
             if curve:
                 best_fitness_curve = [*fitness_curve]
-                best_restart = current_restart
-                # print(f'BEST FITNESS CURVE AT restart: {current_restart}')
-                fitness_curve = []
 
         # break out if requested
         if not continue_iterating:
             break
+    best_fitness *= problem.get_maximize()
     if curve:
         return best_state, best_fitness, np.asarray(best_fitness_curve)
 

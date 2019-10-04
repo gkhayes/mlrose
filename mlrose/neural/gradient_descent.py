@@ -77,6 +77,12 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
     else:
         problem.set_state(init_state)
 
+    if state_fitness_callback is not None:
+        # initial call with base data
+        state_fitness_callback(iteration=0,
+                               state=problem.get_state(),
+                               fitness=problem.get_adjusted_fitness(),
+                               user_data=callback_user_info)
     fitness_curve = []
     attempts = 0
     iters = 0

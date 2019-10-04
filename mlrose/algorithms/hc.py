@@ -68,7 +68,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    best_fitness = -1*np.inf
+    best_fitness = -np.inf
     best_state = None
 
     fitness_curve = []

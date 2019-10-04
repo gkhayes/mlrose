@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 
 from mlrose import GeomDecay, random_hill_climb, simulated_annealing, genetic_alg
 from mlrose.opt_probs import ContinuousOpt
-from . import NetworkWeights
+from .NetworkWeights import NetworkWeights
 from .activation import (identity, relu, sigmoid, tanh)
 from .utils import (unflatten_weights)
 from .gradient_descent import (gradient_descent)
@@ -268,7 +268,7 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
 
     def __run_with_rhc(self, init_weights, num_nodes, problem):
         fitness_curve = []
-        fitted_weights = None
+        fitted_weights = []
         loss = np.inf
         # Can't use restart feature of random_hill_climb function, since
         # want to keep initial weights in the range -1 to 1.
@@ -402,3 +402,4 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
             self.pop_size = in_params['pop_size']
         if 'mutation_prob' in in_params.keys():
             self.mutation_prob = in_params['mutation_prob']
+        return self
