@@ -79,6 +79,16 @@ class ExpDecay:
 
         return temp
 
+    def get_info__(self, prefix=''):
+        if len(prefix) > 0:
+            prefix = f'{prefix}__'
+        return {
+            f'{prefix}type': 'exponential',
+            f'{prefix}init_temp': self.init_temp,
+            f'{prefix}exp_const': self.exp_const,
+            f'{prefix}min_temp': self.min_temp
+        }
+
     def __str__(self):
         return str(self.init_temp)
 

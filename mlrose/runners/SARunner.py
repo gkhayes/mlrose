@@ -32,14 +32,17 @@ class SARunner(_RunnerBase):
     def runner_name(cls):
         return 'sa'
 
-    def __init__(self, problem, experiment_name, seed, iteration_list, temperature_list,
+    def __init__(self, problem, experiment_name, seed, iteration_list, temperature_list, decay_list=None,
                  max_attempts=500, generate_curves=True, **kwargs):
         super().__init__(problem=problem, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          max_attempts=max_attempts, generate_curves=generate_curves,
                          **kwargs)
         self.temperature_list = temperature_list
+        if decay_list is None:
+            decay_list = [mlrose.GeomDecay]
+        self.decay_list = decay_list
 
     def run(self):
-        temperatures = [mlrose.GeomDecay(init_temp=t) for t in self.temperature_list]
-        return super()._run_experiment(algorithm=mlrose.simulated_annealing,
+        temperatures = [decay(init_temp=t) for t in self.temperature_list for decay in self.decay_list]
+        return super().run_experiment_(algorithm=mlrose.simulated_annealing,
                                        schedule=('Temperature', temperatures))

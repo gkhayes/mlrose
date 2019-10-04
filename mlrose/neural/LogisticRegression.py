@@ -7,10 +7,10 @@
 from sklearn.base import ClassifierMixin
 
 from mlrose.algorithms.decay import GeomDecay
-from .BaseNeuralNetwork import BaseNeuralNetwork
+from .CoreNeuralNetwork import CoreNN
 
 
-class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
+class LogisticRegression(CoreNN, ClassifierMixin):
     """Class for defining logistic regression weights optimization
     problem. Inherits :code:`fit` and :code:`predict` methods from
     :code:`NeuralNetwork()` class.
@@ -87,7 +87,7 @@ class LogisticRegression(BaseNeuralNetwork, ClassifierMixin):
                  mutation_prob=0.1, max_attempts=10, random_state=None,
                  curve=False):
 
-        BaseNeuralNetwork.__init__(
+        CoreNN.__init__(
             self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=True, learning_rate=learning_rate,

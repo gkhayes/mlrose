@@ -7,10 +7,10 @@ from sklearn.base import RegressorMixin
 
 
 from mlrose.algorithms.decay import GeomDecay
-from .BaseNeuralNetwork import BaseNeuralNetwork
+from .CoreNeuralNetwork import CoreNN
 
 
-class LinearRegression(BaseNeuralNetwork, RegressorMixin):
+class LinearRegression(CoreNN, RegressorMixin):
     """Class for defining linear regression weights optimization
     problem. Inherits :code:`fit` and :code:`predict` methods from
     :code:`NeuralNetwork()` class.
@@ -86,7 +86,7 @@ class LinearRegression(BaseNeuralNetwork, RegressorMixin):
                  restarts=0, schedule=GeomDecay(), pop_size=200,
                  mutation_prob=0.1, max_attempts=10, random_state=None,
                  curve=False):
-        BaseNeuralNetwork.__init__(
+        CoreNN.__init__(
             self, hidden_nodes=[], activation='identity',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
             is_classifier=False, learning_rate=learning_rate,

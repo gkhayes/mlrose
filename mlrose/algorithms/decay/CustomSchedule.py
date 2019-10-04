@@ -51,6 +51,16 @@ class CustomSchedule:
         temp = self.schedule(t, **self.kwargs)
         return temp
 
+    def get_info__(self, prefix=''):
+        if len(prefix) > 0:
+            prefix = f'{prefix}__'
+        info = {
+            f'{prefix}type': 'custom',
+            f'{prefix}schedule': self.schedule
+        }
+        info.update({f'{prefix}_args_{k}': v for k, v in self.kwargs.items()})
+        return info
+
     def __str__(self):
         return str(self.schedule)
 

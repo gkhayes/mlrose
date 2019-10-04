@@ -52,7 +52,7 @@ class _RunnerBase(ABC):
         """
         pass
 
-    def _run_experiment(self, algorithm, **kwargs):
+    def run_experiment_(self, algorithm, save_data=True, **kwargs):
         self._setup()
 
         # extract loop params
@@ -75,14 +75,7 @@ class _RunnerBase(ABC):
             np.random.seed(self.seed)
             self.iteration_start_time = time.perf_counter()
             print(f'*** Iteration START - params: {total_args}')
-            algorithm(problem=self.problem,
-                      max_attempts=self.max_attempts,
-                      curve=self.generate_curves,
-                      random_state=self.seed,
-                      max_iters=i,
-                      state_fitness_callback=self._save_state,
-                      callback_user_info=user_info,
-                      **total_args)
+            self._invoke_algorithm(algorithm, i, total_args, user_info)
             print(f'*** Iteration END - params: {total_args}')
             print()
 
@@ -92,7 +85,7 @@ class _RunnerBase(ABC):
         self.run_stats_df = pd.DataFrame(self._raw_run_stats)
         self.curves_df = pd.DataFrame(self._fitness_curves)
 
-        if self._output_directory is not None:
+        if save_data and self._output_directory is not None:
             self._dump_df_to_disk(self.run_stats_df,
                                   df_name='run_stats_df')
             if self.generate_curves:
@@ -100,6 +93,16 @@ class _RunnerBase(ABC):
                                       df_name='curves_df')
 
         return self.run_stats_df, self.curves_df
+
+    def _invoke_algorithm(self, algorithm, i, total_args, user_info):
+        algorithm(problem=self.problem,
+                  max_attempts=self.max_attempts,
+                  curve=self.generate_curves,
+                  random_state=self.seed,
+                  max_iters=i,
+                  state_fitness_callback=self._save_state,
+                  callback_user_info=user_info,
+                  **total_args)
 
     def _dump_df_to_disk(self, df, df_name):
         filename_root = build_data_filename(output_directory=self._output_directory,
@@ -138,11 +141,21 @@ class _RunnerBase(ABC):
         print(f'\t{state}')
         print()
 
+        eval = lambda n: n if not hasattr(n, 'evaluate') else n.evaluate(t)
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
         param_stats = {str(gd(k)): self.current_args[k] for k in self.current_args}
-        all_stats = {**{p: v for (p, v) in user_data if p.lower() not in [k.lower() for k in param_stats.keys()]},
-                     **param_stats}
+        # check for additional info
+        gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(k)
+        ai = (gi(k, self.current_args[k]) for k in self.current_args)
+        additional_info = {k: v for d in ai for k, v in d.items()}
+
+
+        # additional_info.update(kv) for kv in [gi(k, self.current_args[k]) for k in self.current_args]
+
+        all_stats = {**{p: eval(v) for (p, v) in user_data if p.lower() not in [k.lower() for k in param_stats.keys()]},
+                     **param_stats, **additional_info}
+        all_stats.update(additional_info)
 
         if iteration > 0:
             remaining_iterations = [i for i in self.iteration_list if i >= iteration]

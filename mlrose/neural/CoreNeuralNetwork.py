@@ -5,42 +5,27 @@
 
 
 import numpy as np
-from sklearn.base import BaseEstimator
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from mlrose import GeomDecay, random_hill_climb, simulated_annealing, genetic_alg
-from mlrose.opt_probs import ContinuousOpt
-from mlrose.neural.fitness.NetworkWeights import NetworkWeights
-from .activation import (identity, relu, sigmoid, tanh)
-from .utils import (unflatten_weights)
-from mlrose.neural.utils.gradient_descent import (gradient_descent)
+from mlrose.neural._NNBase import _NNBase
+from mlrose.neural.activation import (identity, relu, sigmoid, tanh)
 
 
-class BaseNeuralNetwork(BaseEstimator, ABC):
-    """Base class for neural networks.
+class CoreNN(_NNBase):
+    """Core class for neural networks.
 
     Warning: This class should not be used directly.
     Use derived classes instead.
     """
 
     @abstractmethod
-    def __init__(self, hidden_nodes=None,
-                 activation='relu',
-                 algorithm='random_hill_climb',
-                 max_iters=100,
-                 bias=True,
-                 is_classifier=True,
-                 learning_rate=0.1,
-                 early_stopping=False,
-                 clip_max=1e+10,
-                 restarts=0,
-                 schedule=GeomDecay(),
-                 pop_size=200,
-                 mutation_prob=0.1,
-                 max_attempts=10,
-                 random_state=None,
+    def __init__(self, hidden_nodes=None, activation='relu', algorithm='random_hill_climb', max_iters=100, bias=True,
+                 is_classifier=True, learning_rate=0.1, early_stopping=False, clip_max=1e+10, restarts=0,
+                 schedule=GeomDecay(), pop_size=200, mutation_prob=0.1, max_attempts=10, random_state=None,
                  curve=False):
 
+        super().__init__()
         if hidden_nodes is None:
             self.hidden_nodes = []
         else:
@@ -75,7 +60,7 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
 
     def _validate(self):
         if (not isinstance(self.max_iters, int) and self.max_iters != np.inf
-                and not self.max_iters.is_integer()) or (self.max_iters < 0):
+            and not self.max_iters.is_integer()) or (self.max_iters < 0):
             raise Exception("""max_iters must be a positive integer.""")
 
         if not isinstance(self.bias, bool):
@@ -94,7 +79,7 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
             raise Exception("""clip_max must be greater than 0.""")
 
         if (not isinstance(self.max_attempts, int) and not
-                self.max_attempts.is_integer()) or (self.max_attempts < 0):
+        self.max_attempts.is_integer()) or (self.max_attempts < 0):
             raise Exception("""max_attempts must be a positive integer.""")
 
         if self.pop_size < 0:
@@ -109,7 +94,7 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
             raise Exception("""mutation_prob must be between 0 and 1.""")
 
         if self.activation is None or \
-           self.activation not in self.activation_dict.keys():
+                self.activation not in self.activation_dict.keys():
             raise Exception("""Activation function must be one of: 'identity',
                     'relu', 'sigmoid' or 'tanh'.""")
 
@@ -138,26 +123,11 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
         """
         self._validate()
 
-        # Make sure y is an array and not a list
-        y = np.array(y)
+        X, y = self._format_x_y_data(X, y)
 
-        # Convert y to 2D if necessary
-        if len(np.shape(y)) == 1:
-            y = np.reshape(y, [len(y), 1])
+        node_list = self._build_node_list(X, y, self.hidden_nodes, self.bias)
 
-        # Verify X and y are the same length
-        if not np.shape(X)[0] == np.shape(y)[0]:
-            raise Exception('The length of X and y must be equal.')
-
-        # Determine number of nodes in each layer
-        input_nodes = np.shape(X)[1] + self.bias
-        output_nodes = np.shape(y)[1]
-        node_list = [input_nodes] + self.hidden_nodes + [output_nodes]
-
-        num_nodes = 0
-
-        for i in range(len(node_list) - 1):
-            num_nodes += node_list[i]*node_list[i+1]
+        num_nodes = self._calculate_state_size(node_list)
 
         if init_weights is not None and len(init_weights) != num_nodes:
             raise Exception("""init_weights must be None or have length %d"""
@@ -167,15 +137,13 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
         if isinstance(self.random_state, int) and self.random_state > 0:
             np.random.seed(self.random_state)
 
-        # Initialize optimization problem
-        fitness = NetworkWeights(X, y, node_list,
-                                 self.activation_dict[self.activation],
-                                 self.bias, self.is_classifier,
-                                 learning_rate=self.learning_rate)
-
-        problem = ContinuousOpt(num_nodes, fitness, maximize=False,
-                                min_val=-1*self.clip_max,
-                                max_val=self.clip_max, step=self.learning_rate)
+        fitness, problem = self._build_problem_and_fitness_function(X, y,
+                                                                    node_list,
+                                                                    self.activation_dict[self.activation],
+                                                                    self.learning_rate,
+                                                                    self.bias,
+                                                                    self.clip_max,
+                                                                    self.is_classifier)
 
         if self.algorithm == 'random_hill_climb':
             fitness_curve, fitted_weights, loss = self.__run_with_rhc(init_weights, num_nodes, problem)
@@ -199,27 +167,8 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
         return self
 
     def _run_with_gd(self, init_weights, num_nodes, problem):
-        if init_weights is None:
-            init_weights = np.random.uniform(-1, 1, num_nodes)
-        fitness_curve = []
-        if self.curve:
-            fitted_weights, loss, fitness_curve = gradient_descent(
-                problem,
-                max_attempts=self.max_attempts if self.early_stopping else
-                self.max_iters,
-                max_iters=self.max_iters,
-                curve=self.curve,
-                init_state=init_weights)
-
-        else:
-            fitted_weights, loss = gradient_descent(
-                problem,
-                max_attempts=self.max_attempts if self.early_stopping else
-                self.max_iters,
-                max_iters=self.max_iters,
-                curve=self.curve,
-                init_state=init_weights)
-        return fitness_curve, fitted_weights, loss
+        return self._run_gd(init_weights, num_nodes, problem, self.curve,
+                            self.max_attempts, self.early_stopping, self.max_iters)
 
     def _run_with_ga(self, problem):
         fitness_curve = []
@@ -316,36 +265,12 @@ class BaseNeuralNetwork(BaseEstimator, ABC):
             raise Exception("""The number of columns in X must equal %d"""
                             % ((self.node_list[0] - self.bias),))
 
-        weights = unflatten_weights(self.fitted_weights, self.node_list)
-
-        # Add bias column to inputs matrix, if required
-        if self.bias:
-            ones = np.ones([np.shape(X)[0], 1])
-            inputs = np.hstack((X, ones))
-
-        else:
-            inputs = X
-
-        # Pass data through network
-        for i in range(len(weights)):
-            # Multiple inputs by weights
-            outputs = np.dot(inputs, weights[i])
-
-            # Transform outputs to get inputs for next layer (or final preds)
-            if i < len(weights) - 1:
-                inputs = self.activation_dict[self.activation](outputs)
-            else:
-                y_pred = self.output_activation(outputs)
-
-        # For classifier, convert predicted probabilities to 0-1 labels
-        if self.is_classifier:
-            self.predicted_probs = y_pred
-
-            if self.node_list[-1] == 1:
-                y_pred = np.round(y_pred).astype(int)
-            else:
-                zeros = np.zeros_like(y_pred)
-                zeros[np.arange(len(y_pred)), np.argmax(y_pred, axis=1)] = 1
-                y_pred = zeros.astype(int)
-
+        y_pred, pp = self._predict(X=X,
+                                   fitted_weights=self.fitted_weights,
+                                   node_list=self.node_list,
+                                   input_activation=self.activation_dict[self.activation],
+                                   output_activation=self.output_activation,
+                                   bias=self.bias,
+                                   is_classifier=self.is_classifier)
+        self.predicted_probs = pp
         return y_pred

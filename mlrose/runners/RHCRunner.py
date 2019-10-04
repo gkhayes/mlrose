@@ -40,5 +40,5 @@ class RHCRunner(_RunnerBase):
         self.restart_list = restart_list
 
     def run(self):
-        return super()._run_experiment(algorithm=mlrose.random_hill_climb,
+        return super().run_experiment_(algorithm=mlrose.random_hill_climb,
                                        restarts=('Restarts', self.restart_list))

@@ -41,6 +41,6 @@ class MIMICRunner(_RunnerBase):
         self.population_sizes = population_sizes
 
     def run(self):
-        return super()._run_experiment(algorithm=mlrose.mimic,
+        return super().run_experiment_(algorithm=mlrose.mimic,
                                        pop_size=('Population Size', self.population_sizes),
                                        keep_pct=('Keep Percent', self.keep_percent_list))

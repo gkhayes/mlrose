@@ -6,10 +6,10 @@
 from sklearn.base import  ClassifierMixin
 
 from mlrose.algorithms.decay import GeomDecay
-from .BaseNeuralNetwork import BaseNeuralNetwork
+from .CoreNeuralNetwork import CoreNN
 
 
-class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
+class NeuralNetwork(CoreNN, ClassifierMixin):
     """Class for defining neural network classifier weights optimization
     problem.
 
@@ -112,7 +112,7 @@ class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
                  max_attempts=10,
                  random_state=None,
                  curve=False):
-        super(NeuralNetwork, self).__init__(
+        super().__init__(
             hidden_nodes=hidden_nodes,
             activation=activation,
             algorithm=algorithm,

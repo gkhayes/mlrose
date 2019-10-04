@@ -77,6 +77,16 @@ class ArithDecay:
 
         return temp
 
+    def get_info__(self, prefix=''):
+        if len(prefix) > 0:
+            prefix = f'{prefix}__'
+        return {
+            f'{prefix}type': 'arithmetic',
+            f'{prefix}init_temp': self.init_temp,
+            f'{prefix}decay': self.decay,
+            f'{prefix}min_temp': self.min_temp
+        }
+
     def __str__(self):
         return str(self.init_temp)
 
