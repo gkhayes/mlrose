@@ -10,7 +10,7 @@ import numpy as np
 # activation.py.
 from mlrose.neural.LinearRegression import LinearRegression
 from mlrose.neural.LogisticRegression import LogisticRegression
-from mlrose.neural.NetworkWeights import NetworkWeights
+from mlrose.neural.fitness.NetworkWeights import NetworkWeights
 from mlrose.neural.NeuralNetwork import NeuralNetwork
 from mlrose.opt_probs import ContinuousOpt
 from mlrose import (flatten_weights, unflatten_weights, gradient_descent, identity, sigmoid, softmax)

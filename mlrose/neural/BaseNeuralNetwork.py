@@ -10,10 +10,10 @@ from abc import ABC, abstractmethod
 
 from mlrose import GeomDecay, random_hill_climb, simulated_annealing, genetic_alg
 from mlrose.opt_probs import ContinuousOpt
-from .NetworkWeights import NetworkWeights
+from mlrose.neural.fitness.NetworkWeights import NetworkWeights
 from .activation import (identity, relu, sigmoid, tanh)
 from .utils import (unflatten_weights)
-from .gradient_descent import (gradient_descent)
+from mlrose.neural.utils.gradient_descent import (gradient_descent)
 
 
 class BaseNeuralNetwork(BaseEstimator, ABC):

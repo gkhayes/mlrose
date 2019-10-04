@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from .utils import flatten_weights
+from mlrose.neural.utils import flatten_weights
 
 
 def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
