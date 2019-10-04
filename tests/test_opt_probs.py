@@ -12,7 +12,7 @@ from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
 # initialization, so must be imported explicitly from neural.py,
 # activation.py and opt_probs.py
 from mlrose.neural import NetworkWeights
-from mlrose.activation import identity
+from mlrose.neural.activation import identity
 from mlrose.opt_probs._OptProb import _OptProb as OptProb
 
 

@@ -5,7 +5,7 @@
 
 import unittest
 import numpy as np
-from mlrose.activation import identity, sigmoid, softmax, tanh, relu
+from mlrose.neural.activation import identity, sigmoid, softmax, tanh, relu
 # The above functions are not automatically imported at initialization, so
 # must be imported explicitly from activation.py.
 
