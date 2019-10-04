@@ -79,15 +79,18 @@ class ExpDecay:
 
         return temp
 
-    def get_info__(self, prefix=''):
+    def get_info__(self, t=None, prefix=''):
         if len(prefix) > 0:
-            prefix = f'{prefix}__'
-        return {
+            prefix = f'_{prefix}__'
+        info = {
             f'{prefix}type': 'exponential',
             f'{prefix}init_temp': self.init_temp,
             f'{prefix}exp_const': self.exp_const,
-            f'{prefix}min_temp': self.min_temp
+            f'{prefix}min_temp': self.min_temp,
         }
+        if t is not None:
+            info[f'{prefix}current_value'] = self.evaluate(t)
+        return info
 
     def __str__(self):
         return str(self.init_temp)

@@ -51,7 +51,7 @@ class CustomSchedule:
         temp = self.schedule(t, **self.kwargs)
         return temp
 
-    def get_info__(self, prefix=''):
+    def get_info__(self, t=None, prefix=''):
         if len(prefix) > 0:
             prefix = f'{prefix}__'
         info = {
@@ -59,6 +59,8 @@ class CustomSchedule:
             f'{prefix}schedule': self.schedule
         }
         info.update({f'{prefix}_args_{k}': v for k, v in self.kwargs.items()})
+        if t is not None:
+            info[f'{prefix}current_value'] = self.evaluate(t)
         return info
 
     def __str__(self):
