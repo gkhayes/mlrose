@@ -88,6 +88,13 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     # Initialize problem, population and attempts counter
     problem.reset()
     problem.random_pop(pop_size)
+
+    if state_fitness_callback is not None:
+        # initial call with base data
+        state_fitness_callback(iteration=0,
+                               state=problem.get_state(),
+                               fitness=problem.get_adjusted_fitness(),
+                               user_data=callback_user_info)
     attempts = 0
     iters = 0
 

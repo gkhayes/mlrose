@@ -74,11 +74,11 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
 
-    best_fitness = -1*np.inf
+    best_fitness = problem.get_maximize() * -np.inf
     best_state = None
 
-    fitness_curve = []
     best_fitness_curve = []
+    best_restart = 0
 
     continue_iterating = True
     for current_restart in range(restarts + 1):
@@ -88,9 +88,18 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
         else:
             problem.set_state(init_state)
 
+        fitness_curve = []
+        callback_extra_data = None
+        if state_fitness_callback is not None:
+            callback_extra_data = callback_user_info + [('current_restart', current_restart)]
+            # initial call with base data
+            state_fitness_callback(iteration=0,
+                                   state=problem.get_state(),
+                                   fitness=problem.get_adjusted_fitness(),
+                                   user_data=callback_extra_data)
+
         attempts = 0
         iters = 0
-
         while (attempts < max_attempts) and (iters < max_iters):
             iters += 1
 
@@ -100,7 +109,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
 
             # If best neighbor is an improvement,
             # move to that state and reset attempts counter
-            if next_fitness > problem.get_fitness():
+            current_fitness = problem.get_fitness()
+            if next_fitness > current_fitness:
                 problem.set_state(next_state)
                 attempts = 0
             else:
@@ -118,26 +128,25 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
                                                             curve=np.asarray(fitness_curve) if curve else None,
-                                                            user_data=callback_user_info + [('current_restart',
-                                                                                             current_restart)])
+                                                            user_data=callback_extra_data)
                 # break out if requested
                 if not continue_iterating:
                     break
 
         # Update best state and best fitness
-        if problem.get_fitness() > best_fitness:
-            best_fitness = problem.get_fitness()
+        current_fitness = problem.get_adjusted_fitness()
+        if current_fitness > best_fitness:
+            best_fitness = current_fitness
             best_state = problem.get_state()
             if curve:
                 best_fitness_curve = [*fitness_curve]
+                best_restart = current_restart
+                # print(f'BEST FITNESS CURVE AT restart: {current_restart}')
                 fitness_curve = []
 
         # break out if requested
         if not continue_iterating:
             break
-
-    best_fitness = problem.get_maximize()*best_fitness
-
     if curve:
         return best_state, best_fitness, np.asarray(best_fitness_curve)
 

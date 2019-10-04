@@ -12,7 +12,7 @@ Example usage:
 
     experiment_name = 'example_experiment'
     problem = TSPGenerator.generate(seed=SEED, number_of_cities=22)
-                  
+
     rhc = RHCRunner(problem=problem,
                     experiment_name=experiment_name,
                     output_directory=OUTPUT_DIRECTORY,
@@ -20,7 +20,7 @@ Example usage:
                     iteration_list=2 ** np.arange(10),
                     max_attempts=5000,
                     restart_list=[25, 75, 100])   
-                    
+
     # the two data frames will contain the results
     df_run_stats, df_run_curves = rhc.run()               
 """

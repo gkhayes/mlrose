@@ -143,7 +143,12 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     # Initialize problem, population and attempts counter
     problem.reset()
     problem.random_pop(pop_size)
-
+    if state_fitness_callback is not None:
+        # initial call with base data
+        state_fitness_callback(iteration=0,
+                               state=problem.get_state(),
+                               fitness=problem.get_adjusted_fitness(),
+                               user_data=callback_user_info)
     # check for hamming
     # get_hamming_distance_default_
 

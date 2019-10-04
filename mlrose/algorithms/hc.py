@@ -71,18 +71,25 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     best_fitness = -1*np.inf
     best_state = None
 
-
     fitness_curve = []
     best_fitness_curve = []
 
     continue_iterating = True
-    for _ in range(restarts + 1):
+    for current_restart in range(restarts + 1):
         # Initialize optimization problem
         if init_state is None:
             problem.reset()
         else:
             problem.set_state(init_state)
 
+        callback_extra_data = None
+        if state_fitness_callback is not None:
+            callback_extra_data = callback_user_info + [('current_restart', current_restart)]
+            # initial call with base data
+            state_fitness_callback(iteration=0,
+                                   state=problem.get_state(),
+                                   fitness=problem.get_adjusted_fitness(),
+                                   user_data=callback_extra_data)
         iters = 0
         while iters < max_iters:
             iters += 1
@@ -103,7 +110,7 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
                                                             curve=np.asarray(fitness_curve) if curve else None,
-                                                            user_data=callback_user_info)
+                                                            user_data=callback_extra_data)
                 # break out if requested
                 if not continue_iterating:
                     break
