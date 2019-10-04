@@ -78,15 +78,15 @@ class GeomDecay:
     def get_info__(self, t=None, prefix=''):
         if len(prefix) > 0:
             prefix = f'_{prefix}__'
-        d = {
+        info = {
             f'{prefix}type': 'geometric',
             f'{prefix}init_temp': self.init_temp,
             f'{prefix}decay': self.decay,
             f'{prefix}min_temp': self.min_temp,
         }
         if t is not None:
-            d[f'{prefix}current_value'] = self.evaluate(t)
-        return d
+            info[f'{prefix}current_value'] = self.evaluate(t)
+        return info
 
     def __str__(self):
         return str(self.init_temp)

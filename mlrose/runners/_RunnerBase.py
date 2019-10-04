@@ -141,17 +141,19 @@ class _RunnerBase(ABC):
         print(f'\t{state}')
         print()
 
-        eval = lambda n: n if not hasattr(n, 'evaluate') else n.evaluate(t)
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
         param_stats = {str(gd(k)): self.current_args[k] for k in self.current_args}
+
+        # gather all stats
+        current_iteration_stats = {**{p: v for (p, v) in user_data
+                                      if p.lower() not in [k.lower() for k in param_stats.keys()]},
+                                   **param_stats}
+
         # check for additional info
-        gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(k)
+        gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(t)
         ai = (gi(k, self.current_args[k]) for k in self.current_args)
         additional_info = {k: v for d in ai for k, v in d.items()}
-        # gather all stats
-        all_stats = {**{p: eval(v) for (p, v) in user_data if p.lower() not in [k.lower() for k in param_stats.keys()]},
-                     **param_stats, **additional_info}
 
         if iteration > 0:
             remaining_iterations = [i for i in self.iteration_list if i >= iteration]
@@ -166,23 +168,23 @@ class _RunnerBase(ABC):
                 'Time': t,
                 'State': state
             }
-            run_stat = {**run_stat, **all_stats}
+            run_stat = {**run_stat, **current_iteration_stats, **additional_info}
 
             self._raw_run_stats.append(run_stat)
 
         if self.generate_curves and iteration == 0:
-            curve_stat = self._create_curve_stat(0, fitness, all_stats, t)
+            curve_stat = self._create_curve_stat(0, fitness, current_iteration_stats, t)
             self._zero_curve_stat = curve_stat
 
         if self.generate_curves and curve is not None and (done or iteration == max(self.iteration_list)):
             fc = list(zip(range(1, iteration + 1), curve))
 
-            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(i, f, all_stats) for (i, f) in fc]
+            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(i, f, current_iteration_stats) for (i, f) in fc]
 
             # interpolate the time over the curve where we don't have times
             # use the timings from the current run stats (not strictly 100% accurate, but close enough)
             timings = [(r['Iteration'], r['Time']) for r in self._raw_run_stats
-                       if all([r[x] == all_stats[x] for x in all_stats])]
+                       if all([r[x] == current_iteration_stats[x] for x in current_iteration_stats])]
 
             for t in range(1, len(timings)):
                 i1, t1 = timings[t - 1]

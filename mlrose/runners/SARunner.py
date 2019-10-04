@@ -2,6 +2,7 @@ try:
     import mlrose
 except:
     import sys
+
     sys.path.append("..")
     import mlrose
 
@@ -20,7 +21,7 @@ Example usage:
                   iteration_list=2 ** np.arange(14),
                   max_attempts=5000,
                   temperature_list=[1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000])
-                  
+
     # the two data frames will contain the results
     df_run_stats, df_run_curves = sa.run()                  
 """
