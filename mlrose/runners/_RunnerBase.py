@@ -149,13 +149,9 @@ class _RunnerBase(ABC):
         gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(k)
         ai = (gi(k, self.current_args[k]) for k in self.current_args)
         additional_info = {k: v for d in ai for k, v in d.items()}
-
-
-        # additional_info.update(kv) for kv in [gi(k, self.current_args[k]) for k in self.current_args]
-
+        # gather all stats
         all_stats = {**{p: eval(v) for (p, v) in user_data if p.lower() not in [k.lower() for k in param_stats.keys()]},
                      **param_stats, **additional_info}
-        all_stats.update(additional_info)
 
         if iteration > 0:
             remaining_iterations = [i for i in self.iteration_list if i >= iteration]
