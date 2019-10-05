@@ -52,8 +52,7 @@ class CustomSchedule:
         return temp
 
     def get_info__(self, t=None, prefix=''):
-        if len(prefix) > 0:
-            prefix = f'{prefix}__'
+        prefix = f'_{prefix}__schedule_' if len(prefix) > 0 else 'schedule_'
         info = {
             f'{prefix}type': 'custom',
             f'{prefix}schedule': self.schedule

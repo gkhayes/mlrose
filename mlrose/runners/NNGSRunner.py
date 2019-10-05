@@ -8,7 +8,8 @@ from mlrose.neural import NNClassifier
 
 """
 Example usage:
-
+    from mlrose.runners import NNGSRunner
+    
     grid_search_parameters = ({
         'max_iters': [1, 2, 4, 8, 16, 32, 64, 128],                     # nn params
         'learning_rate': [0.001, 0.002, 0.003],                         # nn params
