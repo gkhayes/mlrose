@@ -1,3 +1,5 @@
+from mlrose import short_name
+
 try:
     import mlrose
 except:
@@ -27,6 +29,7 @@ Example usage:
 """
 
 
+@short_name('sa')
 class SARunner(_RunnerBase):
 
     def __init__(self, problem, experiment_name, seed, iteration_list, temperature_list, decay_list=None,

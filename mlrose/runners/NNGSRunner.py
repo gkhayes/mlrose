@@ -1,4 +1,5 @@
 import mlrose.algorithms as mla
+from mlrose import short_name
 from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
 
 from mlrose.runners._RunnerBase import _RunnerBase
@@ -35,6 +36,7 @@ Example usage:
 """
 
 
+@short_name('nngs')
 class NNGSRunner(_RunnerBase, GridSearchMixin):
 
     def __init__(self, x_train, y_train, x_test, y_test,

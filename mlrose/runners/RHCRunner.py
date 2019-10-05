@@ -1,4 +1,5 @@
 import mlrose
+from mlrose import short_name
 
 from mlrose.runners._RunnerBase import _RunnerBase
 
@@ -21,6 +22,7 @@ Example usage:
 """
 
 
+@short_name('rhc')
 class RHCRunner(_RunnerBase):
 
     def __init__(self, problem, experiment_name, seed, iteration_list, restart_list,

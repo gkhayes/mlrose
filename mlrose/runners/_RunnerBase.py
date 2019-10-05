@@ -11,6 +11,10 @@ from mlrose.runners.utils import build_data_filename
 
 class _RunnerBase(ABC):
 
+    @classmethod
+    def runner_name(cls):
+        return cls.__short_name__
+
     @abstractmethod
     def run(self):
         pass
