@@ -11,11 +11,6 @@ from mlrose.runners.utils import build_data_filename
 
 class _RunnerBase(ABC):
 
-    @classmethod
-    @abstractmethod
-    def runner_name(cls):
-        pass
-
     @abstractmethod
     def run(self):
         pass
@@ -28,6 +23,7 @@ class _RunnerBase(ABC):
         self.max_attempts = max_attempts
         self.generate_curves = generate_curves
         self.parameter_description_dict = {}
+
         self.run_stats_df = None
         self.curves_df = None
         self._raw_run_stats = []
@@ -36,6 +32,9 @@ class _RunnerBase(ABC):
         self._extra_args = kwargs
         self._output_directory = output_directory
         self._experiment_name = experiment_name
+        self._current_args = None
+        self._iteration_start_time = None
+        self.runner_name = None
 
     def _setup(self):
         self._raw_run_stats = []
@@ -43,18 +42,11 @@ class _RunnerBase(ABC):
         if self._output_directory is not None:
             if not os.path.exists(self._output_directory):
                 os.makedirs(self._output_directory)
-        """
-        directory = "./data/old/curves/"
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        path1 = './data/old'
-        path2 = './data/old/curves'
-        """
         pass
 
-    def run_experiment_(self, algorithm, save_data=True, **kwargs):
+    def run_experiment_(self, algorithm, **kwargs):
         self._setup()
-
+        self.runner_name = algorithm.__short_name__
         # extract loop params
         values = [([(k, v) for v in vs]) for (k, (n, vs)) in kwargs.items() if vs is not None]
         self.parameter_description_dict = {k: n for (k, (n, vs)) in kwargs.items() if vs is not None}
@@ -62,30 +54,18 @@ class _RunnerBase(ABC):
         run_start = time.perf_counter()
         i = int(max(self.iteration_list))
 
-        print(f'Running {self.runner_name()}')
+        print(f'Running {self.runner_name}')
         for vns in value_sets:
-            self.current_args = dict(vns)
-            total_args = self.current_args.copy()
+            total_args = dict(vns)
 
-            if self._extra_args is not None and len(self._extra_args) > 0:
-                total_args.update(self._extra_args)
-
-            user_info = [(n, total_args[n]) for n in total_args]
-
-            np.random.seed(self.seed)
-            self.iteration_start_time = time.perf_counter()
-            print(f'*** Iteration START - params: {total_args}')
-            self._invoke_algorithm(algorithm, i, total_args, user_info)
-            print(f'*** Iteration END - params: {total_args}')
-            print()
+            self._run_one_experiment(algorithm, i, total_args)
 
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 
-        self.run_stats_df = pd.DataFrame(self._raw_run_stats)
-        self.curves_df = pd.DataFrame(self._fitness_curves)
+        self.create_run_data_frames()
 
-        if save_data and self._output_directory is not None:
+        if self._output_directory is not None:
             self._dump_df_to_disk(self.run_stats_df,
                                   df_name='run_stats_df')
             if self.generate_curves:
@@ -94,19 +74,37 @@ class _RunnerBase(ABC):
 
         return self.run_stats_df, self.curves_df
 
-    def _invoke_algorithm(self, algorithm, i, total_args, user_info):
-        algorithm(problem=self.problem,
-                  max_attempts=self.max_attempts,
-                  curve=self.generate_curves,
-                  random_state=self.seed,
-                  max_iters=i,
-                  state_fitness_callback=self._save_state,
-                  callback_user_info=user_info,
-                  **total_args)
+    def _run_one_experiment(self, algorithm, max_iters, total_args, **kwargs):
+        if self._extra_args is not None and len(self._extra_args) > 0:
+            total_args.update(self._extra_args)
+        user_info = [(k, v) for k, v in total_args.items()]
+        self._invoke_algorithm(algorithm=algorithm, problem=self.problem, max_iters=max_iters,
+                               max_attempts=self.max_attempts, curve=self.generate_curves,
+                               user_info=user_info, **total_args)
+
+    def create_run_data_frames(self):
+        self.run_stats_df = pd.DataFrame(self._raw_run_stats)
+        self.curves_df = pd.DataFrame(self._fitness_curves)
+
+    def _invoke_algorithm(self, algorithm, problem, max_attempts,
+                          curve, user_info, **total_args):
+        print(f'*** Iteration START - params: {total_args}')
+        np.random.seed(self.seed)
+        self._current_args = total_args.copy()
+        self._iteration_start_time = time.perf_counter()
+        ret = algorithm(problem=problem,
+                        max_attempts=max_attempts,
+                        curve=curve,
+                        random_state=self.seed,
+                        state_fitness_callback=self._save_state,
+                        callback_user_info=user_info,
+                        **total_args)
+        print(f'*** Iteration END - params: {total_args}')
+        return ret
 
     def _dump_df_to_disk(self, df, df_name):
         filename_root = build_data_filename(output_directory=self._output_directory,
-                                            runner_name=self.runner_name(),
+                                            runner_name=self.runner_name,
                                             experiment_name=self._experiment_name,
                                             df_name=df_name)
 
@@ -129,21 +127,22 @@ class _RunnerBase(ABC):
             return True
 
         end = time.perf_counter()
-        t = end - self.iteration_start_time
+        t = end - self._iteration_start_time
 
         if user_data is not None and len(user_data) > 0:
             data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
             print(data_desc)
-        print(f'runner_name:[{self.runner_name()}], experiment_name:[{self._experiment_name}], ' +
+        print(f'runner_name:[{self.runner_name}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
               f'iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness:[{fitness:.4f}]')
-        print(f'\t{state}')
+
+        print(f'\t{state}'[120:])
         print()
 
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
-        param_stats = {str(gd(k)): self.current_args[k] for k in self.current_args}
+        param_stats = {str(gd(k)): v for k, v in self._current_args.items()}
 
         # gather all stats
         current_iteration_stats = {**{p: v for (p, v) in user_data
@@ -152,7 +151,7 @@ class _RunnerBase(ABC):
 
         # check for additional info
         gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(t)
-        ai = (gi(k, self.current_args[k]) for k in self.current_args)
+        ai = (gi(k, v) for k, v in self._current_args.items())
         additional_info = {k: v for d in ai for k, v in d.items()}
 
         if iteration > 0:
@@ -179,7 +178,8 @@ class _RunnerBase(ABC):
         if self.generate_curves and curve is not None and (done or iteration == max(self.iteration_list)):
             fc = list(zip(range(1, iteration + 1), curve))
 
-            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(i, f, current_iteration_stats) for (i, f) in fc]
+            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(i, f, current_iteration_stats) for (i, f)
+                                                     in fc]
 
             # interpolate the time over the curve where we don't have times
             # use the timings from the current run stats (not strictly 100% accurate, but close enough)

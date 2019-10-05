@@ -5,9 +5,11 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 from mlrose.neural.utils import flatten_weights
 
 
+@short_name('gd')
 def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
                      init_state=None, curve=False, random_state=None,
                      state_fitness_callback=None, callback_user_info=None):
@@ -132,4 +134,4 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
-    return best_state, best_fitness
+    return best_state, best_fitness, None

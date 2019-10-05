@@ -5,7 +5,10 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 
+
+@short_name('identity')
 def identity(x, deriv=False):
     """Linear activation function
 

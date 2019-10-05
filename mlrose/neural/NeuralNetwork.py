@@ -6,10 +6,10 @@
 from sklearn.base import  ClassifierMixin
 
 from mlrose.algorithms.decay import GeomDecay
-from .CoreNeuralNetwork import CoreNN
+from ._NNCore import _NNCore
 
 
-class NeuralNetwork(CoreNN, ClassifierMixin):
+class NeuralNetwork(_NNCore, ClassifierMixin):
     """Class for defining neural network classifier weights optimization
     problem.
 

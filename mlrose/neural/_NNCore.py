@@ -8,11 +8,12 @@ import numpy as np
 from abc import abstractmethod
 
 from mlrose import GeomDecay, random_hill_climb, simulated_annealing, genetic_alg
+from mlrose.algorithms.gd import gradient_descent
 from mlrose.neural._NNBase import _NNBase
 from mlrose.neural.activation import (identity, relu, sigmoid, tanh)
 
 
-class CoreNN(_NNBase):
+class _NNCore(_NNBase):
     """Core class for neural networks.
 
     Warning: This class should not be used directly.
@@ -167,8 +168,17 @@ class CoreNN(_NNBase):
         return self
 
     def _run_with_gd(self, init_weights, num_nodes, problem):
-        return self._run_gd(init_weights, num_nodes, problem, self.curve,
-                            self.max_attempts, self.early_stopping, self.max_iters)
+        if init_weights is None:
+            init_weights = np.random.uniform(-1, 1, num_nodes)
+
+        fitted_weights, loss, fitness_curve = gradient_descent(
+            problem,
+            max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
+            max_iters=self.max_iters,
+            curve=self.curve,
+            init_state=init_weights)
+
+        return ([] if fitness_curve is None else fitness_curve), fitted_weights, loss
 
     def _run_with_ga(self, problem):
         fitness_curve = []
@@ -182,7 +192,7 @@ class CoreNN(_NNBase):
                 max_iters=self.max_iters,
                 curve=self.curve)
         else:
-            fitted_weights, loss = genetic_alg(
+            fitted_weights, loss, _ = genetic_alg(
                 problem,
                 pop_size=self.pop_size, mutation_prob=self.mutation_prob,
                 max_attempts=self.max_attempts if self.early_stopping else
@@ -205,7 +215,7 @@ class CoreNN(_NNBase):
                 init_state=init_weights,
                 curve=self.curve)
         else:
-            fitted_weights, loss = simulated_annealing(
+            fitted_weights, loss, _ = simulated_annealing(
                 problem,
                 schedule=self.schedule,
                 max_attempts=self.max_attempts if self.early_stopping else
@@ -235,7 +245,7 @@ class CoreNN(_NNBase):
                                       restarts=0, init_state=init_weights,
                                       curve=self.curve)
             else:
-                current_weights, current_loss = random_hill_climb(
+                current_weights, current_loss, _ = random_hill_climb(
                     problem,
                     max_attempts=self.max_attempts if self.early_stopping
                     else self.max_iters,

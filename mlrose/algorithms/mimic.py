@@ -6,7 +6,10 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 
+
+@short_name('mimic')
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf, curve=False, random_state=None,
           state_fitness_callback=None, callback_user_info=None):
@@ -147,4 +150,4 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
-    return best_state, best_fitness
+    return best_state, best_fitness, None

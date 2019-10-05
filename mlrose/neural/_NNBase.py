@@ -7,7 +7,6 @@ from abc import ABC, abstractmethod
 import numpy as np
 from sklearn.base import BaseEstimator
 
-from mlrose.neural.utils.gradient_descent import (gradient_descent)
 from mlrose.neural.fitness.NetworkWeights import NetworkWeights
 from mlrose.neural.utils import (unflatten_weights)
 from mlrose.opt_probs import ContinuousOpt
@@ -57,31 +56,6 @@ class _NNBase(BaseEstimator, ABC):
         pass
 
     @staticmethod
-    def _run_gd(init_weights, num_nodes, problem, curve, max_attempts,
-                early_stopping, max_iters):
-        if init_weights is None:
-            init_weights = np.random.uniform(-1, 1, num_nodes)
-
-        fitness_curve = []
-        if curve:
-            fitted_weights, loss, fitness_curve = gradient_descent(
-                problem,
-                max_attempts=max_attempts if early_stopping else max_iters,
-                max_iters=max_iters,
-                curve=curve,
-                init_state=init_weights)
-
-        else:
-            fitted_weights, loss = gradient_descent(
-                problem,
-                max_attempts=max_attempts if early_stopping else max_iters,
-                max_iters=max_iters,
-                curve=curve,
-                init_state=init_weights)
-
-        return fitness_curve, fitted_weights, loss
-
-    @staticmethod
     def _calculate_state_size(node_list):
         num_nodes = 0
         for i in range(len(node_list) - 1):
@@ -110,7 +84,7 @@ class _NNBase(BaseEstimator, ABC):
 
     @staticmethod
     def _build_problem_and_fitness_function(X, y, node_list, activation, learning_rate,
-                                             bias, clip_max, is_classifier=True):
+                                            bias, clip_max, is_classifier=True):
         # Initialize optimization problem
         fitness = NetworkWeights(X, y, node_list,
                                  activation,

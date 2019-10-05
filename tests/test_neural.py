@@ -13,7 +13,8 @@ from mlrose.neural.LogisticRegression import LogisticRegression
 from mlrose.neural.fitness.NetworkWeights import NetworkWeights
 from mlrose.neural.NeuralNetwork import NeuralNetwork
 from mlrose.opt_probs import ContinuousOpt
-from mlrose import (flatten_weights, unflatten_weights, gradient_descent, identity, sigmoid, softmax)
+from mlrose import (flatten_weights, unflatten_weights, identity, sigmoid, softmax)
+from mlrose.algorithms.gd import gradient_descent
 
 
 class TestNeural(unittest.TestCase):
@@ -81,9 +82,9 @@ class TestNeural(unittest.TestCase):
                                 min_val=-1, max_val=1, step=0.1)
 
         test_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
-        test_fitness = -1*problem.eval_fitness(test_weights)
+        test_fitness = -1 * problem.eval_fitness(test_weights)
 
-        best_state, best_fitness = gradient_descent(problem)
+        best_state, best_fitness, _ = gradient_descent(problem)
 
         assert (len(best_state) == 10 and min(best_state) >= -1
                 and max(best_state) <= 1 and best_fitness < test_fitness)
@@ -113,8 +114,8 @@ class TestNeural(unittest.TestCase):
 
         init_weights = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-        best_state, best_fitness = gradient_descent(problem, max_iters=1,
-                                                    init_state=init_weights)
+        best_state, best_fitness, _ = gradient_descent(problem, max_iters=1,
+                                                       init_state=init_weights)
 
         x = np.array([-0.7, -0.7, -0.9, -0.9, -0.9, -0.9, -1, -1, -1, -1])
 
@@ -144,7 +145,7 @@ class TestNeuralWeights(unittest.TestCase):
                                  bias=False)
 
         a = list(np.arange(8) + 1)
-        b = list(0.01*(np.arange(2) + 1))
+        b = list(0.01 * (np.arange(2) + 1))
 
         weights = a + b
 
@@ -175,7 +176,7 @@ class TestNeuralWeights(unittest.TestCase):
                                  bias=False)
 
         a = list(np.arange(8) + 1)
-        b = list(0.01*(np.arange(4) + 1))
+        b = list(0.01 * (np.arange(4) + 1))
 
         weights = a + b
 
@@ -200,7 +201,7 @@ class TestNeuralWeights(unittest.TestCase):
                                  bias=False, is_classifier=False)
 
         a = list(np.arange(8) + 1)
-        b = list(0.01*(np.arange(2) + 1))
+        b = list(0.01 * (np.arange(2) + 1))
 
         weights = a + b
 
@@ -225,7 +226,7 @@ class TestNeuralWeights(unittest.TestCase):
                                  bias=True, is_classifier=False)
 
         a = list(np.arange(10) + 1)
-        b = list(0.01*(np.arange(2) + 1))
+        b = list(0.01 * (np.arange(2) + 1))
 
         weights = a + b
 
@@ -251,7 +252,7 @@ class TestNeuralWeights(unittest.TestCase):
                                  learning_rate=1)
 
         a = list(np.arange(8) + 1)
-        b = list(0.01*(np.arange(2) + 1))
+        b = list(0.01 * (np.arange(2) + 1))
 
         weights = a + b
         fitness.evaluate(weights)

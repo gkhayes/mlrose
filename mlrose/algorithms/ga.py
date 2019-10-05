@@ -6,6 +6,8 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
+
 
 def _get_hamming_distance_default(population, p1):
     hamming_distances = np.array([np.count_nonzero(p1 != p2) / len(p1) for p2 in population])
@@ -43,6 +45,7 @@ def _genetic_alg_select_parents(pop_size, problem,
     return p1, p2
 
 
+@short_name('ga')
 def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=0.99,
                 minimum_elites=0, minimum_dregs=0, mutation_prob=0.1,
                 max_attempts=10, max_iters=np.inf, curve=False, random_state=None,
@@ -244,4 +247,4 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
-    return best_state, best_fitness
+    return best_state, best_fitness, None

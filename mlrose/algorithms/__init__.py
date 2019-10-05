@@ -13,3 +13,4 @@ from .crossovers import UniformCrossOver, TSPCrossOver, OnePointCrossOver
 
 from .decay import ArithDecay, CustomSchedule, ExpDecay, GeomDecay
 from .mutators import ChangeOneMutator, DiscreteMutator, ShiftOneMutator, SwapMutator
+from .decorators import (short_name)

@@ -18,7 +18,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test mimic function for a discrete maximization problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = mimic(problem, max_attempts=50)
+        best_state, best_fitness, _ = mimic(problem, max_attempts=50)
 
         x = np.array([1, 1, 1, 1, 1])
 
@@ -29,7 +29,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test mimic function for a discrete minimization problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = mimic(problem, max_attempts=50)
+        best_state, best_fitness, _ = mimic(problem, max_attempts=50)
 
         x = np.array([0, 0, 0, 0, 0])
 
@@ -40,7 +40,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test hill_climb function for a discrete maximization problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = hill_climb(problem, restarts=20)
+        best_state, best_fitness, _ = hill_climb(problem, restarts=20)
 
         x = np.array([1, 1, 1, 1, 1])
 
@@ -51,7 +51,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test hill_climb function for a continuous maximization problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = hill_climb(problem, restarts=20)
+        best_state, best_fitness, _ = hill_climb(problem, restarts=20)
 
         x = np.array([1, 1, 1, 1, 1])
 
@@ -62,7 +62,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test hill_climb function for a discrete minimization problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = hill_climb(problem, restarts=20)
+        best_state, best_fitness, _ = hill_climb(problem, restarts=20)
 
         x = np.array([0, 0, 0, 0, 0])
 
@@ -73,7 +73,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test hill_climb function for a continuous minimization problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = hill_climb(problem, restarts=20)
+        best_state, best_fitness, _ = hill_climb(problem, restarts=20)
 
         x = np.array([0, 0, 0, 0, 0])
 
@@ -86,7 +86,7 @@ class TestAlgorithms(unittest.TestCase):
         problem = DiscreteOpt(5, OneMax(), maximize=True)
         x = np.array([0, 0, 0, 0, 0])
 
-        best_state, best_fitness = hill_climb(problem, max_iters=1,
+        best_state, best_fitness, _ = hill_climb(problem, max_iters=1,
                                               restarts=0, init_state=x)
 
         assert best_fitness == 1
@@ -97,7 +97,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = random_hill_climb(problem, max_attempts=10,
+        best_state, best_fitness, _ = random_hill_climb(problem, max_attempts=10,
                                                      restarts=20)
 
         x = np.array([1, 1, 1, 1, 1])
@@ -110,7 +110,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = random_hill_climb(problem, max_attempts=10,
+        best_state, best_fitness, _ = random_hill_climb(problem, max_attempts=10,
                                                      restarts=20)
 
         x = np.array([1, 1, 1, 1, 1])
@@ -123,7 +123,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = random_hill_climb(problem, max_attempts=10,
+        best_state, best_fitness, _ = random_hill_climb(problem, max_attempts=10,
                                                      restarts=20)
 
         x = np.array([0, 0, 0, 0, 0])
@@ -136,7 +136,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = random_hill_climb(problem, max_attempts=10,
+        best_state, best_fitness, _ = random_hill_climb(problem, max_attempts=10,
                                                      restarts=20)
 
         x = np.array([0, 0, 0, 0, 0])
@@ -150,7 +150,7 @@ class TestAlgorithms(unittest.TestCase):
         problem = DiscreteOpt(5, OneMax(), maximize=True)
         x = np.array([0, 0, 0, 0, 0])
 
-        best_state, best_fitness = random_hill_climb(problem, max_attempts=1,
+        best_state, best_fitness, _ = random_hill_climb(problem, max_attempts=1,
                                                      max_iters=1, restarts=0,
                                                      init_state=x)
 
@@ -162,7 +162,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = simulated_annealing(problem,
+        best_state, best_fitness, _ = simulated_annealing(problem,
                                                        max_attempts=50)
 
         x = np.array([1, 1, 1, 1, 1])
@@ -175,7 +175,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = simulated_annealing(problem,
+        best_state, best_fitness, _ = simulated_annealing(problem,
                                                        max_attempts=50)
 
         x = np.array([1, 1, 1, 1, 1])
@@ -188,7 +188,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = simulated_annealing(problem,
+        best_state, best_fitness, _ = simulated_annealing(problem,
                                                        max_attempts=50)
 
         x = np.array([0, 0, 0, 0, 0])
@@ -201,7 +201,7 @@ class TestAlgorithms(unittest.TestCase):
         problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = simulated_annealing(problem,
+        best_state, best_fitness, _ = simulated_annealing(problem,
                                                        max_attempts=50)
 
         x = np.array([0, 0, 0, 0, 0])
@@ -216,7 +216,7 @@ class TestAlgorithms(unittest.TestCase):
         problem = DiscreteOpt(5, OneMax(), maximize=True)
         x = np.array([0, 0, 0, 0, 0])
 
-        best_state, best_fitness = simulated_annealing(
+        best_state, best_fitness, _ = simulated_annealing(
             problem, max_attempts=1,
             max_iters=1, init_state=x)
 
@@ -227,7 +227,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test genetic_alg function for a discrete maximization problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = genetic_alg(problem, max_attempts=50)
+        best_state, best_fitness, _ = genetic_alg(problem, max_attempts=50)
 
         x = np.array([1, 1, 1, 1, 1])
 
@@ -238,7 +238,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test genetic_alg function for a continuous maximization problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=True)
-        best_state, best_fitness = genetic_alg(problem, max_attempts=200)
+        best_state, best_fitness, _ = genetic_alg(problem, max_attempts=200)
 
         x = np.array([1, 1, 1, 1, 1])
 
@@ -249,7 +249,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test genetic_alg function for a discrete minimization problem"""
 
         problem = DiscreteOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = genetic_alg(problem, max_attempts=50)
+        best_state, best_fitness, _ = genetic_alg(problem, max_attempts=50)
 
         x = np.array([0, 0, 0, 0, 0])
 
@@ -260,7 +260,7 @@ class TestAlgorithms(unittest.TestCase):
         """Test genetic_alg function for a continuous minimization problem"""
 
         problem = ContinuousOpt(5, OneMax(), maximize=False)
-        best_state, best_fitness = genetic_alg(problem, max_attempts=200)
+        best_state, best_fitness, _ = genetic_alg(problem, max_attempts=200)
 
         x = np.array([0, 0, 0, 0, 0])
 

@@ -6,7 +6,10 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 
+
+@short_name('hc')
 def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
                curve=False, random_state=None,
                state_fitness_callback=None, callback_user_info=None):
@@ -138,4 +141,4 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
     if curve:
         return best_state, best_fitness, np.asarray(best_fitness_curve)
 
-    return best_state, best_fitness
+    return best_state, best_fitness, None

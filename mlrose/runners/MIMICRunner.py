@@ -1,10 +1,4 @@
-try:
-    import mlrose
-except:
-    import sys
-    sys.path.append("..")
-    import mlrose
-
+import mlrose
 from mlrose.runners._RunnerBase import _RunnerBase
 
 """
@@ -27,10 +21,6 @@ Example usage:
 
 
 class MIMICRunner(_RunnerBase):
-
-    @classmethod
-    def runner_name(cls):
-        return 'mimic'
 
     def __init__(self, problem, experiment_name, seed, iteration_list, population_sizes,
                  keep_percent_list, max_attempts=500, generate_curves=True, **kwargs):

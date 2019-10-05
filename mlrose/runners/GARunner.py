@@ -1,10 +1,4 @@
-
-try:
-    import mlrose
-except:
-    import sys
-    sys.path.append("..")
-    import mlrose
+import mlrose
 from mlrose.runners._RunnerBase import _RunnerBase
 
 """
@@ -28,10 +22,6 @@ Example usage:
 
 
 class GARunner(_RunnerBase):
-
-    @classmethod
-    def runner_name(cls):
-        return 'ga'
 
     def __init__(self, problem, experiment_name, seed, iteration_list, population_sizes, mutation_rates,
                  hamming_factors=None, hamming_factor_decays=None, max_attempts=500, generate_curves=True, **kwargs):

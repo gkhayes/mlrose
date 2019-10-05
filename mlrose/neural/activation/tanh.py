@@ -5,7 +5,10 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 
+
+@short_name('tanh')
 def tanh(x, deriv=False):
     """Hyperbolic tan activation function
 

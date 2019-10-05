@@ -5,7 +5,10 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 
+
+@short_name('softmax')
 def softmax(x):
     """Softmax activation function
 

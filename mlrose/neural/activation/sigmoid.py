@@ -5,7 +5,12 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
+# import warnings
+# warnings.filterwarnings("ignore")
 
+
+@short_name('sigmoii')
 def sigmoid(x, deriv=False):
     """Sigmoid activation function
 

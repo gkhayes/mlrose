@@ -7,8 +7,10 @@
 import numpy as np
 
 from mlrose.algorithms.decay import GeomDecay
+from mlrose.algorithms.decorators import short_name
 
 
+@short_name('sa')
 def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
                         max_iters=np.inf, init_state=None, curve=False,
                         random_state=None,
@@ -140,4 +142,4 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
-    return best_state, best_fitness
+    return best_state, best_fitness, None

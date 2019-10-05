@@ -5,7 +5,10 @@
 
 import numpy as np
 
+from mlrose.algorithms.decorators import short_name
 
+
+@short_name('relu')
 def relu(x, deriv=False):
     """ReLU activation function
 

@@ -29,10 +29,6 @@ Example usage:
 
 class SARunner(_RunnerBase):
 
-    @classmethod
-    def runner_name(cls):
-        return 'sa'
-
     def __init__(self, problem, experiment_name, seed, iteration_list, temperature_list, decay_list=None,
                  max_attempts=500, generate_curves=True, **kwargs):
         super().__init__(problem=problem, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
