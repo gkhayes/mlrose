@@ -139,7 +139,10 @@ class DiscreteOpt(_OptProb):
     # (thanks to David Sejin Park)
     def _get_mutual_info_fast(self):
         if self._mut_inf is None:
-            return self._get_mutual_info_slow()
+            # restore sanity
+            self._get_mutual_info_impl = self._get_mutual_info_slow
+            return self._get_mutual_info_impl()
+
         # get length of the sample which survived from mimic iteration
         len_sample_kept = self.keep_sample.shape[0]
         # get the length of the bit sequence / problem size
