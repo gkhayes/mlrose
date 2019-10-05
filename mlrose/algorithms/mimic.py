@@ -13,8 +13,7 @@ from mlrose.opt_probs import DiscreteOpt
 @short_name('mimic')
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf, curve=False, random_state=None,
-          state_fitness_callback=None, callback_user_info=None,
-          use_fast=False):
+          state_fitness_callback=None, callback_user_info=None):
     """Use MIMIC to find the optimum for a given optimization problem.
     Parameters
     ----------
@@ -44,9 +43,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         Return true to continue iterating, or false to stop.
     callback_user_info: any, default: None
         User data passed as last parameter of callback.
-    use_fast: bool, default: False
-        If False, use standard sklearn mutual_info calculation.
-        If True, use
     Returns
     -------
     best_state: array
@@ -90,10 +86,6 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     # Set random seed
     if isinstance(random_state, int) and random_state > 0:
         np.random.seed(random_state)
-
-    # set fast mode if requested
-    if isinstance(problem, DiscreteOpt):
-        problem.set_node_prob_fast_mode(fast_mode=use_fast)
 
     fitness_curve = []
 
