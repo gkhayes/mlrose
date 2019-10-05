@@ -119,7 +119,7 @@ class DiscreteOpt(_OptProb):
             self._mut_mask = mut_mask
             # Set ignore error to ignore dividing by zero
             np.seterr(divide='ignore', invalid='ignore')
-            self._get_mutual_info_impl = self.get_mutual_info_fast2
+            self._get_mutual_info_impl = self._get_mutual_info_fast
             self._mut_inf = np.zeros([self.length * self.length])
         else:
             self._mut_mask = None
