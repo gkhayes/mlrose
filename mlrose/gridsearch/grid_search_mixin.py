@@ -5,7 +5,7 @@ import sklearn.model_selection as skms
 class GridSearchMixin:
 
     @staticmethod
-    def _perform_grid_search(classifier, x_train, y_train, cv, parameters, n_jobs=1):
+    def _perform_grid_search(classifier, x_train, y_train, cv, parameters, n_jobs=1, verbose=False):
         scorer = GridSearchMixin.make_scorer()
         search_results = skms.GridSearchCV(classifier,
                                            parameters,
@@ -13,7 +13,7 @@ class GridSearchMixin:
                                            scoring=scorer,
                                            n_jobs=n_jobs,
                                            return_train_score=True,
-                                           verbose=False)
+                                           verbose=verbose)
         search_results.fit(x_train, y_train)
         return search_results
 

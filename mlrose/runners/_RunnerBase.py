@@ -15,6 +15,12 @@ class _RunnerBase(ABC):
     def runner_name(cls):
         return cls.__short_name__
 
+    def dynamic_runner_name(self):
+        return self.__dynamic_short_name__ if hasattr(self, '__dynamic_short_name__') else self.runner_name()
+
+    def _set_dynamic_runner_name(self, name):
+        self.__dynamic_short_name__ = name
+
     @abstractmethod
     def run(self):
         pass
@@ -38,7 +44,6 @@ class _RunnerBase(ABC):
         self._experiment_name = experiment_name
         self._current_args = None
         self._iteration_start_time = None
-        self.runner_name = None
 
     def _setup(self):
         self._raw_run_stats = []
@@ -50,7 +55,6 @@ class _RunnerBase(ABC):
 
     def run_experiment_(self, algorithm, **kwargs):
         self._setup()
-        self.runner_name = algorithm.__short_name__
         # extract loop params
         values = [([(k, v) for v in vs]) for (k, (n, vs)) in kwargs.items() if vs is not None]
         self.parameter_description_dict = {k: n for (k, (n, vs)) in kwargs.items() if vs is not None}
@@ -58,7 +62,7 @@ class _RunnerBase(ABC):
         run_start = time.perf_counter()
         i = int(max(self.iteration_list))
 
-        print(f'Running {self.runner_name}')
+        print(f'Running {self.dynamic_runner_name()}')
         for vns in value_sets:
             total_args = dict(vns)
 
@@ -108,7 +112,7 @@ class _RunnerBase(ABC):
 
     def _dump_df_to_disk(self, df, df_name):
         filename_root = build_data_filename(output_directory=self._output_directory,
-                                            runner_name=self.runner_name,
+                                            runner_name=self.dynamic_runner_name(),
                                             experiment_name=self._experiment_name,
                                             df_name=df_name)
 
@@ -136,7 +140,7 @@ class _RunnerBase(ABC):
         if user_data is not None and len(user_data) > 0:
             data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
             print(data_desc)
-        print(f'runner_name:[{self.runner_name}], experiment_name:[{self._experiment_name}], ' +
+        print(f'runner_name:[{self.dynamic_runner_name()}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
               f'iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness:[{fitness:.4f}]')

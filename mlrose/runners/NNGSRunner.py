@@ -70,7 +70,12 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
         self.classifier = NNClassifier(runner=self,
                                        algorithm=algorithm,
                                        max_attempts=max_attempts)
-        self.runner_name = f'nngs_{algorithm.__short_name__}'
+
+        # update short name based on algorithm
+        print(self.dynamic_runner_name())
+        self._set_dynamic_runner_name(f'nngs_{algorithm.__short_name__}')
+        print(self.dynamic_runner_name())
+        print(self.runner_name())
 
         self.x_train = x_train
         self.y_train = y_train
