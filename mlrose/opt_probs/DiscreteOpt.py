@@ -109,7 +109,7 @@ class DiscreteOpt(_OptProb):
         self.node_probs = probs
         self.parent_nodes = parent
 
-    def set_node_prob_fast_mode(self, fast_mode):
+    def set_mimic_fast_mode(self, fast_mode):
         if fast_mode:
             mut_mask = np.zeros([self.length, self.length], dtype=bool)
             for i in range(0, self.length):
