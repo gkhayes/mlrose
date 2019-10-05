@@ -275,13 +275,69 @@ class DiscreteOpt(OptProb):
     def eval_node_probs(self):
         """Update probability density estimates.
         """
-        # Create mutual info matrix
-        mutual_info = np.zeros([self.length, self.length])
-        for i in range(self.length - 1):
-            for j in range(i + 1, self.length):
-                mutual_info[i, j] = -1 * mutual_info_score(
-                    self.keep_sample[:, i],
-                    self.keep_sample[:, j])
+        if (self.mimic_speed == False):
+            # Create mutual info matrix
+            mutual_info = np.zeros([self.length, self.length])
+            for i in range(self.length - 1):
+                for j in range(i + 1, self.length):
+                    mutual_info[i, j] = -1 * mutual_info_score(
+                        self.keep_sample[:, i],
+                        self.keep_sample[:, j])
+
+        elif (self.mimic_speed == True):
+            # Set ignore error to ignore dividing by zero
+            np.seterr(divide='ignore', invalid='ignore')
+
+            # get length of the sample which survived from mimic iteration
+            len_sample_kept = self.keep_sample.shape[0]
+            # get the length of the bit sequence / problem size
+            len_prob = self.keep_sample.shape[1]
+
+            # Expand the matrices to so each row corresponds to a row by row combination of the list of samples
+            b = np.repeat(self.keep_sample, self.length).reshape(len_sample_kept, len_prob * len_prob)
+            d = np.hstack(([self.keep_sample] * len_prob))
+
+            # Compute the mutual information matrix in bulk, by iterating through the list of possible feature values ((max_val-1)^2).
+            # For example, a binary string would go through 00 01 10 11, for a total of 4 iterations.
+
+            # First initialize the mutual info matrix.
+            mut_inf = np.zeros([self.length * self.length])
+            # Pre-compute the U and V which gets computed multiple times in the inner loop.
+            U = {}
+            V = {}
+            U_sum = {}
+            V_sum = {}
+            for i in range(0, self.max_val):
+                U[i] = (d == i)
+                V[i] = (b == i)
+                U_sum[i] = np.sum(d == i, axis=0)
+                V_sum[i] = np.sum(b == i, axis=0)
+
+            # Compute the mutual information for all sample to sample combination for each feature combination ((max_val-1)^2)
+            for i in range(0, self.max_val):
+                for j in range(0, self.max_val):
+                    # This corresponds to U and V of mutual info matrix, for this feature pair
+                    coeff = np.sum(U[i] * V[j], axis=0)
+                    # Compute length N, for the particular feature pair
+                    UV_length = (U_sum[i] * V_sum[j])
+
+                    # compute the second term of the MI matrix
+                    temp = np.log(np.divide(coeff * len_sample_kept, UV_length))
+                    # remove the nans and negative infinity
+                    temp[np.isnan(temp)] = 0
+                    temp[np.isneginf(temp)] = 0
+
+                    # combine the first and the second term, divide by the length N.
+                    # Add the whole MI matrix for the feature to the previously computed values
+                    mut_inf = mut_inf + np.divide(coeff * temp, len_sample_kept)
+
+            # Need to multiply by negative to get the mutual information
+            mut_inf = -mut_inf.reshape(self.length, self.length)
+            # Only get the upper triangle matrix above the identity row.
+            # Possible enhancements, currently we are doing dobule the computation required.
+            # Pre set the matrix so the compuation is only done for rows that are needed. To do for the future.
+            mutual_info = np.triu(mut_inf, k=1)
+
 
         # Find minimum spanning tree of mutual info matrix
         mst = minimum_spanning_tree(csr_matrix(mutual_info))
