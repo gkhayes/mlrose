@@ -46,10 +46,11 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
                  algorithm, grid_search_parameters,
                  hidden_nodes_set, activation_set, learning_rates=None, cv=5,
                  bias=True, early_stopping=False, clip_max=1e+10,
-                 max_attempts=500, generate_curves=True):
+                 max_attempts=500, generate_curves=True,
+                 output_directory=None):
 
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
-                         generate_curves=generate_curves)
+                         generate_curves=generate_curves, output_directory=output_directory)
 
         self.hidden_nodes_set = hidden_nodes_set
         self.activation_set = activation_set
