@@ -153,4 +153,4 @@ def gradient_descent_original(problem, max_attempts=10, max_iters=np.inf,
     if curve:
         return best_state, best_fitness, np.asarray(fitness_curve)
 
-    return best_state, best_fitness
+    return best_state, best_fitness, None
