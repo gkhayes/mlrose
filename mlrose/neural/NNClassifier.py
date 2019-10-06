@@ -103,7 +103,7 @@ class NNClassifier(_NNBase):
             fitted_weights, loss, _ = self.runner.run_one_experiment_(algorithm=self.algorithm,
                                                                       problem=problem,
                                                                       max_iters=self.max_iters,
-                                                                      max_attempts=self.max_attempts,
+                                                                      max_attempts=max_attempts,
                                                                       total_args=total_args,
                                                                       **params)
 
