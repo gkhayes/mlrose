@@ -27,7 +27,7 @@ class NNClassifier(_NNBase):
         super().__init__()
 
         self.runner = runner
-        self.algorithm_params = runner.algorithm_params
+        self.grid_search_parameters = runner.grid_search_parameters
 
         # nn specific properties
         #  (grid-search settable)
@@ -58,13 +58,12 @@ class NNClassifier(_NNBase):
             if hasattr(self, k):
                 continue
             self.__setattr__(k,  v)
-        pass
 
     def get_params(self, deep=True):
         out = super().get_params(deep)
         # exclude any that end with an underscore
         out = {k: v for (k, v) in out.items() if not k[-1] == '_'}
-        ap = {k: None for k in self.algorithm_params if k not in out}
+        ap = {k: None for k in self.grid_search_parameters if k not in out}
         out.update(ap)
         return out
 
@@ -92,9 +91,20 @@ class NNClassifier(_NNBase):
         if self.algorithm is not None:
             # self._perform_grid_search()
             params = {k: self.__getattribute__(k) for k in self.kwargs}
+            total_args = {
+                'activation': self.activation,
+                'bias': self.bias,
+                'early_stopping': self.early_stopping,
+                'clip_max': self.clip_max,
+                'hidden_nodes': self.hidden_nodes,
+                'learning_rate': self.learning_rate
+            }
+            max_attempts = self.max_attempts if self.early_stopping else self.max_iters
             fitted_weights, loss, _ = self.runner.run_one_experiment_(algorithm=self.algorithm,
                                                                       problem=problem,
                                                                       max_iters=self.max_iters,
+                                                                      max_attempts=self.max_attempts,
+                                                                      total_args=total_args,
                                                                       **params)
 
             # Save fitted weights

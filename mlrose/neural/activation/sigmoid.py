@@ -2,15 +2,15 @@
 
 # Author: Genevieve Hayes (Modified by Andrew Rollings)
 # License: BSD 3 clause
+from mlrose.algorithms.decorators import short_name
 
 import numpy as np
 
-from mlrose.algorithms.decorators import short_name
-# import warnings
-# warnings.filterwarnings("ignore")
+import warnings
+warnings.filterwarnings("ignore")
 
 
-@short_name('sigmoii')
+@short_name('sigmoid')
 def sigmoid(x, deriv=False):
     """Sigmoid activation function
 

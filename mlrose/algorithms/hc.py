@@ -107,9 +107,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
 
             # invoke callback
             if state_fitness_callback is not None:
+                max_attempts_reached = (iters == max_iters) or problem.can_stop()
                 continue_iterating = state_fitness_callback(iteration=iters,
                                                             attempt=None,
-                                                            done=problem.can_stop(),
+                                                            done=max_attempts_reached,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
                                                             curve=np.asarray(fitness_curve) if curve else None,

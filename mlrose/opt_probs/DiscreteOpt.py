@@ -169,7 +169,8 @@ class DiscreteOpt(_OptProb):
             U_sum[i] = np.sum(d == i, axis=0)
             V_sum[i] = np.sum(b == i, axis=0)
 
-        # Compute the mutual information for all sample to sample combination for each feature combination ((max_val-1)^2)
+        # Compute the mutual information for all sample to sample combination for each feature combination
+        # ((max_val-1)^2)
         for i in range(0, self.max_val):
             for j in range(0, self.max_val):
                 # This corresponds to U and V of mutual info matrix, for this feature pair
@@ -178,22 +179,22 @@ class DiscreteOpt(_OptProb):
                 UV_length = (U_sum[i] * V_sum[j])
 
                 # compute the second term of the MI matrix
-                temp = np.log(np.divide(coeff * len_sample_kept, UV_length))
+                temp = np.log(coeff) - np.log(UV_length) + np.log(len_sample_kept)
                 # remove the nans and negative infinity
                 temp[np.isnan(temp)] = 0
                 temp[np.isneginf(temp)] = 0
 
                 # combine the first and the second term, divide by the length N.
                 # Add the whole MI matrix for the feature to the previously computed values
-                div = np.divide(coeff * temp, len_sample_kept)
+                div = temp * np.divide(coeff, len_sample_kept)
                 div[self._mut_mask] = 0
                 self._mut_inf += div
 
         # Need to multiply by negative to get the mutual information
         self._mut_inf = -self._mut_inf.reshape(self.length, self.length)
         # Only get the upper triangle matrix above the identity row.
-        # Possible enhancements, currently we are doing dobule the computation required.
-        # Pre set the matrix so the compuation is only done for rows that are needed. To do for the future.
+        # Possible enhancements, currently we are doing double the computation required.
+        # Pre set the matrix so the computation is only done for rows that are needed. To do for the future.
 
         mutual_info = self._mut_inf.T
         self._mut_inf = self._mut_inf.reshape(self.length * self.length)

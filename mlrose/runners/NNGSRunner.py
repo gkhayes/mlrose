@@ -1,4 +1,5 @@
-import mlrose.algorithms as mla
+import time
+
 from mlrose import short_name
 from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
 
@@ -22,7 +23,7 @@ Example usage:
                      y_test=y_test,
                      experiment_name='nn_test',
                      algorithm=mlrose.algorithms.sa.simulated_annealing,
-                     algorithm_params=grid_search_parameters,
+                     grid_search_parameters=grid_search_parameters,
                      iteration_list=[1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
                      hidden_nodes_set=[[4, 4, 4]],
                      activation_set=[mlrose.neural.activation.relu],
@@ -42,7 +43,7 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
 
     def __init__(self, x_train, y_train, x_test, y_test,
                  experiment_name, seed, iteration_list,
-                 algorithm, algorithm_params,
+                 algorithm, grid_search_parameters,
                  hidden_nodes_set, activation_set, learning_rates=None, cv=5,
                  bias=True, early_stopping=False, clip_max=1e+10,
                  max_attempts=500, generate_curves=True):
@@ -53,12 +54,11 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
         self.hidden_nodes_set = hidden_nodes_set
         self.activation_set = activation_set
         self.learning_rates = learning_rates
-        self.bias = bias
-        self.early_stopping = early_stopping
-        self.clip_max = clip_max
+        # self.bias = bias
+        # self.early_stopping = early_stopping
 
         # algorithm grid-search params
-        self.algorithm_params = algorithm_params
+        self.grid_search_parameters = grid_search_parameters
 
         # extract nn parameters
         self.parameters = {
@@ -66,11 +66,13 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
             'activation': self.activation_set,
             'learning_rate': self.learning_rates
         }
-        self.parameters.update(algorithm_params)
-
+        self.parameters.update(grid_search_parameters)
         self.classifier = NNClassifier(runner=self,
                                        algorithm=algorithm,
-                                       max_attempts=max_attempts)
+                                       max_attempts=max_attempts,
+                                       clip_max=clip_max,
+                                       early_stopping=early_stopping,
+                                       bias=bias)
 
         # update short name based on algorithm
         print(self.dynamic_runner_name())
@@ -85,19 +87,38 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
         self.cv = cv
 
     def run(self):
+        self._setup()
+        print(f'Running {self.dynamic_runner_name()}')
+
+        run_start = time.perf_counter()
         sr = self._perform_grid_search(classifier=self.classifier,
                                        parameters=self.parameters,
                                        x_train=self.x_train,
                                        y_train=self.y_train,
                                        cv=self.cv)
+        run_end = time.perf_counter()
+        print(f'Run time: {run_end - run_start}')
+
+        best_params = sr.best_params_
+        best_score = sr.best_score_
+        best_estimator = sr.best_estimator_
+        best_loss = best_estimator.loss
+        best_fitted_weights = best_estimator.fitted_weights  # ndarray
+        edf = {
+            'cv_results_df': sr.cv_results_
+        }
+        self._create_and_save_run_data_frames(extra_data_frames=edf)
+
         return sr
 
-    def run_one_experiment_(self, algorithm, total_args=None, **params):
+    def run_one_experiment_(self, algorithm, total_args, **params):
         if self._extra_args is not None and len(self._extra_args) > 0:
             params = {**params, **self._extra_args}
-        user_info = [(k, v) for k, v in params.items() if k != 'problem']
+
+        user_info = [(k, v) for k, v in total_args.items() if k != 'problem']
         return self._invoke_algorithm(algorithm=algorithm,
-                                      max_attempts=self.max_attempts,
                                       curve=self.generate_curves,
-                                      user_info=user_info, **params)
+                                      user_info=user_info,
+                                      additional_algorithm_args=total_args,
+                                      **params)
 

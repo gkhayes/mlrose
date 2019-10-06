@@ -42,7 +42,7 @@ class _RunnerBase(ABC):
         self._extra_args = kwargs
         self._output_directory = output_directory
         self._experiment_name = experiment_name
-        self._current_args = None
+        self._current_algorithm_args = None
         self._iteration_start_time = None
 
     def _setup(self):
@@ -59,10 +59,10 @@ class _RunnerBase(ABC):
         values = [([(k, v) for v in vs]) for (k, (n, vs)) in kwargs.items() if vs is not None]
         self.parameter_description_dict = {k: n for (k, (n, vs)) in kwargs.items() if vs is not None}
         value_sets = list(it.product(*values))
-        run_start = time.perf_counter()
         i = int(max(self.iteration_list))
 
         print(f'Running {self.dynamic_runner_name()}')
+        run_start = time.perf_counter()
         for vns in value_sets:
             total_args = dict(vns)
 
@@ -71,14 +71,7 @@ class _RunnerBase(ABC):
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 
-        self.create_run_data_frames()
-
-        if self._output_directory is not None:
-            self._dump_df_to_disk(self.run_stats_df,
-                                  df_name='run_stats_df')
-            if self.generate_curves:
-                self._dump_df_to_disk(self.curves_df,
-                                      df_name='curves_df')
+        self._create_and_save_run_data_frames()
 
         return self.run_stats_df, self.curves_df
 
@@ -90,25 +83,17 @@ class _RunnerBase(ABC):
                                max_attempts=self.max_attempts, curve=self.generate_curves,
                                user_info=user_info, **total_args)
 
-    def create_run_data_frames(self):
+    def _create_and_save_run_data_frames(self, extra_data_frames=None):
         self.run_stats_df = pd.DataFrame(self._raw_run_stats)
         self.curves_df = pd.DataFrame(self._fitness_curves)
-
-    def _invoke_algorithm(self, algorithm, problem, max_attempts,
-                          curve, user_info, **total_args):
-        print(f'*** Iteration START - params: {total_args}')
-        np.random.seed(self.seed)
-        self._current_args = total_args.copy()
-        self._iteration_start_time = time.perf_counter()
-        ret = algorithm(problem=problem,
-                        max_attempts=max_attempts,
-                        curve=curve,
-                        random_state=self.seed,
-                        state_fitness_callback=self._save_state,
-                        callback_user_info=user_info,
-                        **total_args)
-        print(f'*** Iteration END - params: {total_args}')
-        return ret
+        if self._output_directory is not None:
+            self._dump_df_to_disk(self.run_stats_df, df_name='run_stats_df')
+            if self.generate_curves:
+                self._dump_df_to_disk(self.curves_df, df_name='curves_df')
+            # output any extra
+            if isinstance(extra_data_frames, dict):
+                for n, v in extra_data_frames:
+                    self._dump_df_to_disk(v, df_name=n)
 
     def _dump_df_to_disk(self, df, df_name):
         filename_root = build_data_filename(output_directory=self._output_directory,
@@ -118,6 +103,29 @@ class _RunnerBase(ABC):
 
         pk.dump(df, open(f'{filename_root}.p', "wb"))
         df.to_csv(f'{filename_root}.csv')
+
+    @staticmethod
+    def short_name(v):
+        return v if not hasattr(v, '__short_name__') else v.__short_name__
+
+    def _invoke_algorithm(self, algorithm, problem, max_attempts,
+                          curve, user_info, additional_algorithm_args=None, **total_args):
+        self._current_algorithm_args = total_args.copy()
+        if additional_algorithm_args is not None:
+            self._current_algorithm_args.update(additional_algorithm_args)
+
+        print(f'*** Iteration START - params: {[self.short_name(v) for v in self._current_algorithm_args.items()]}')
+        np.random.seed(self.seed)
+        self._iteration_start_time = time.perf_counter()
+        ret = algorithm(problem=problem,
+                        max_attempts=max_attempts,
+                        curve=curve,
+                        random_state=self.seed,
+                        state_fitness_callback=self._save_state,
+                        callback_user_info=user_info,
+                        **total_args)
+        print(f'*** Iteration END - params: {[self.short_name(v) for v in self._current_algorithm_args.items()]}')
+        return ret
 
     @staticmethod
     def _create_curve_stat(iteration, fitness, curve_data, t=None):
@@ -138,7 +146,7 @@ class _RunnerBase(ABC):
         t = end - self._iteration_start_time
 
         if user_data is not None and len(user_data) > 0:
-            data_desc = ', '.join([f'{n}:[{v}]' for (n, v) in user_data])
+            data_desc = ', '.join([f'{n}:[{self.short_name(v)}]' for (n, v) in user_data])
             print(data_desc)
         print(f'runner_name:[{self.dynamic_runner_name()}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
@@ -150,7 +158,7 @@ class _RunnerBase(ABC):
 
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
-        param_stats = {str(gd(k)): v for k, v in self._current_args.items()}
+        param_stats = {str(gd(k)): self.short_name(v) for k, v in self._current_algorithm_args.items()}
 
         # gather all stats
         current_iteration_stats = {**{p: v for (p, v) in user_data
@@ -159,7 +167,7 @@ class _RunnerBase(ABC):
 
         # check for additional info
         gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(t)
-        ai = (gi(k, v) for k, v in self._current_args.items())
+        ai = (gi(k, v) for k, v in self._current_algorithm_args.items())
         additional_info = {k: v for d in ai for k, v in d.items()}
 
         if iteration > 0:

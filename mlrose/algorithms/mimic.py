@@ -7,7 +7,6 @@
 import numpy as np
 
 from mlrose.algorithms.decorators import short_name
-from mlrose.opt_probs import DiscreteOpt
 
 
 @short_name('mimic')
@@ -133,7 +132,7 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 
         # invoke callback
         if state_fitness_callback is not None:
-            max_attempts_reached = (attempts == max_attempts) or problem.can_stop()
+            max_attempts_reached = (attempts == max_attempts) or (iters == max_iters) or problem.can_stop()
             continue_iterating = state_fitness_callback(iteration=iters,
                                                         attempt=attempts + 1,
                                                         done=max_attempts_reached,
