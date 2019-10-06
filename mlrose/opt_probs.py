@@ -271,6 +271,7 @@ class DiscreteOpt(OptProb):
         self.parent_nodes = []
         self.sample_order = []
         self.prob_type = 'discrete'
+        self.mimic_speed = False
 
     def eval_node_probs(self):
         """Update probability density estimates.
@@ -294,49 +295,53 @@ class DiscreteOpt(OptProb):
             len_prob = self.keep_sample.shape[1]
 
             # Expand the matrices to so each row corresponds to a row by row combination of the list of samples
-            b = np.repeat(self.keep_sample, self.length).reshape(len_sample_kept, len_prob * len_prob)
-            d = np.hstack(([self.keep_sample] * len_prob))
+            permuted_rows = np.repeat(self.keep_sample, self.length).reshape(len_sample_kept, len_prob * len_prob)
+            duplicated_rows = np.hstack(([self.keep_sample] * len_prob))
 
-            # Compute the mutual information matrix in bulk, by iterating through the list of possible feature values ((max_val-1)^2).
+            # Compute the mutual information matrix in bulk
+            # This is done by iterating through the list of possible feature values ((max_val-1)^2).
             # For example, a binary string would go through 00 01 10 11, for a total of 4 iterations.
 
             # First initialize the mutual info matrix.
-            mut_inf = np.zeros([self.length * self.length])
-            # Pre-compute the U and V which gets computed multiple times in the inner loop.
-            U = {}
-            V = {}
-            U_sum = {}
-            V_sum = {}
+            mutual_info_vectorized = np.zeros([self.length * self.length])
+            # Pre-compute the clusters U and V which gets computed multiple times in the inner loop.
+            cluster_U = {}
+            cluster_V = {}
+            cluster_U_sum = {}
+            cluster_V_sum = {}
             for i in range(0, self.max_val):
-                U[i] = (d == i)
-                V[i] = (b == i)
-                U_sum[i] = np.sum(d == i, axis=0)
-                V_sum[i] = np.sum(b == i, axis=0)
+                cluster_U[i] = (duplicated_rows == i)
+                cluster_V[i] = (permuted_rows == i)
+                cluster_U_sum[i] = np.sum(duplicated_rows == i, axis=0)
+                cluster_V_sum[i] = np.sum(permuted_rows == i, axis=0)
 
-            # Compute the mutual information for all sample to sample combination for each feature combination ((max_val-1)^2)
+            # Compute the mutual information for all sample to sample combination
+            # Done for each feature combination i & j ((max_val-1)^2)
             for i in range(0, self.max_val):
                 for j in range(0, self.max_val):
-                    # This corresponds to U and V of mutual info matrix, for this feature pair
-                    coeff = np.sum(U[i] * V[j], axis=0)
-                    # Compute length N, for the particular feature pair
-                    UV_length = (U_sum[i] * V_sum[j])
+                    # |U_i AND V_j|/N Length of cluster matching for feature pair i j over sample length N
+                    # This is the first term in the MI computation
+                    MI_first_term = np.sum(cluster_U[i] * cluster_V[j], axis=0)
+                    MI_first_term = np.divide(MI_first_term,len_sample_kept)
 
                     # compute the second term of the MI matrix
-                    temp = np.log(coeff) - np.log(UV_length) + np.log(len_sample_kept)
-                    # remove the nans and negative infinity
-                    temp[np.isnan(temp)] = 0
-                    temp[np.isneginf(temp)] = 0
+                    # Length |U_i||V_j|, for the particular feature pair
+                    UV_length = (cluster_U_sum[i] * cluster_V_sum[j])
+                    MI_second_term = np.log(MI_first_term) - np.log(UV_length) + np.log(len_sample_kept)
+                    # remove the nans and negative infinity, there shouldn't be any
+                    MI_second_term[np.isnan(MI_second_term)] = 0
+                    MI_second_term[np.isneginf(MI_second_term)] = 0
 
-                    # combine the first and the second term, divide by the length N.
+                    # Combine the first and second term
                     # Add the whole MI matrix for the feature to the previously computed values
-                    mut_inf = mut_inf + temp * np.divide(coeff, len_sample_kept)
+                    mutual_info_vectorized = mutual_info_vectorized + MI_first_term * MI_second_term
 
-            # Need to multiply by negative to get the mutual information
-            mut_inf = -mut_inf.reshape(self.length, self.length)
+            # Need to multiply by negative to get the mutual information, and reshape (Full Matrix)
+            mutual_info_full = -mutual_info_vectorized.reshape(self.length, self.length)
             # Only get the upper triangle matrix above the identity row.
-            # Possible enhancements, currently we are doing dobule the computation required.
-            # Pre set the matrix so the compuation is only done for rows that are needed. To do for the future.
-            mutual_info = np.triu(mut_inf, k=1)
+            mutual_info = np.triu(mutual_info_full, k=1)
+            # Possible enhancements, currently we are doing double the computation required.
+            # Pre set the matrix so the computation is only done for rows that are needed. To do for the future.
 
 
         # Find minimum spanning tree of mutual info matrix
