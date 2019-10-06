@@ -108,13 +108,20 @@ class _RunnerBase(ABC):
                     self._dump_df_to_disk(v, df_name=n)
 
     def _dump_df_to_disk(self, df, df_name):
-        filename_root = build_data_filename(output_directory=self._output_directory,
-                                            runner_name=self.dynamic_runner_name(),
-                                            experiment_name=self._experiment_name,
-                                            df_name=df_name)
+        filename_root = self._dump_pickle_to_disk(object_to_pickle=df,
+                                                  name=df_name)
 
         pk.dump(df, open(f'{filename_root}.p', "wb"))
         df.to_csv(f'{filename_root}.csv')
+
+    def _dump_pickle_to_disk(self, object_to_pickle, name):
+        filename_root = build_data_filename(output_directory=self._output_directory,
+                                            runner_name=self.dynamic_runner_name(),
+                                            experiment_name=self._experiment_name,
+                                            df_name=name)
+
+        pk.dump(object_to_pickle, open(f'{filename_root}.p', "wb"))
+        return filename_root
 
     @staticmethod
     def short_name(v):

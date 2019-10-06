@@ -1,4 +1,5 @@
 import time
+import pandas as pd
 
 from mlrose import short_name
 from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
@@ -6,11 +7,10 @@ from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
 from mlrose.runners._RunnerBase import _RunnerBase
 from mlrose.neural import NNClassifier
 
-
 """
 Example usage:
     from mlrose.runners import NNGSRunner
-    
+
     grid_search_parameters = ({
         'max_iters': [1, 2, 4, 8, 16, 32, 64, 128],                     # nn params
         'learning_rate': [0.001, 0.002, 0.003],                         # nn params
@@ -48,7 +48,6 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
                  bias=True, early_stopping=False, clip_max=1e+10,
                  max_attempts=500, generate_curves=True,
                  output_directory=None):
-
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          generate_curves=generate_curves, output_directory=output_directory)
 
@@ -97,16 +96,20 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
                                        x_train=self.x_train,
                                        y_train=self.y_train,
                                        cv=self.cv)
+        self._dump_pickle_to_disk(sr, 'grid_search_results')
+
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 
-        best_params = sr.best_params_
-        best_score = sr.best_score_
-        best_estimator = sr.best_estimator_
-        best_loss = best_estimator.loss
-        best_fitted_weights = best_estimator.fitted_weights  # ndarray
+        best = {
+            'best_params': sr.best_params_,
+            'best_score': sr.best_score_,
+            'best_estimator': sr.best_estimator_,
+            'best_loss': sr.best_estimator_.loss,
+            'best_fitted_weights': sr.best_estimator_.fitted_weights  # ndarray
+        }
         edf = {
-            'cv_results_df': sr.cv_results_
+            'cv_results_df': pd.DataFrame(sr.cv_results_)
         }
         self._create_and_save_run_data_frames(extra_data_frames=edf)
 
