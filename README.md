@@ -45,6 +45,7 @@ You can cite mlrose in research publications and reports as follows:
 * Hayes, G. (2019). ***mlrose: Machine Learning, Randomized Optimization and SEarch package for Python***. https://github.com/gkhayes/mlrose. Accessed: *day month year*.
 
 You can cite this fork in a similar way, but please be sure to reference the original work.
+Thanks to David S. Park for the MIMIC enhancements (from https://github.com/parkds/mlrose).
 
 
 BibTeX entry:
