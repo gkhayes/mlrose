@@ -364,9 +364,23 @@ class DiscreteOpt(OptProb):
                 if not len(subset):
                     probs[i, j] = 1/self.max_val
                 else:
-                    probs[i, j] = np.histogram(subset[:, i],
+
+                    temp_probs = np.histogram(subset[:, i],
                                                np.arange(self.max_val + 1),
                                                density=True)[0]
+
+                    #Check if noise argument is not default (in epsilon)
+                    if self.noise!=0:
+                        #Add noise, from the mimic argument "noise"
+                        temp_probs = (temp_probs + self.noise)
+                        #All probability adds up to one
+                        temp_probs=np.divide(temp_probs,np.sum(temp_probs))
+                        #Handle floating point error to ensure probability adds up to 1
+                        if sum(temp_probs) != 1.0:
+                            temp_probs = np.divide(temp_probs, np.sum(temp_probs))
+                        #Set probability
+
+                    probs[i, j]=temp_probs
 
         # Update probs and parent
         self.node_probs = probs

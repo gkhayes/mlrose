@@ -456,7 +456,7 @@ def genetic_alg(problem, pop_size=200, mutation_prob=0.1, max_attempts=10,
 
 
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
-          max_iters=np.inf, curve=False, random_state=None, fast_mimic=False):
+          max_iters=np.inf, curve=False, random_state=None, fast_mimic=False,noise=0):
     """Use MIMIC to find the optimum for a given optimization problem.
 
     Parameters
@@ -538,6 +538,11 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         raise Exception("""fast_mimic mode must be a boolean.""")
     else:
         problem.mimic_speed=fast_mimic
+
+    if (noise < 0) or (noise > 0.1):
+        raise Exception("""noise must be between 0 and 0.1.""")
+    else:
+        problem.noise=noise
 
     # Initialize problem, population and attempts counter
     problem.reset()
