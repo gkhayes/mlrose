@@ -6,11 +6,14 @@
 
 import numpy as np
 from abc import abstractmethod
+from mlrose.algorithms.decay import GeomDecay
+from mlrose.algorithms.rhc import random_hill_climb
+from mlrose.algorithms.sa import simulated_annealing
+from mlrose.algorithms.ga import  genetic_alg
 
-from mlrose import GeomDecay, random_hill_climb, simulated_annealing, genetic_alg
-from mlrose.algorithms.gd import gradient_descent
 from mlrose.neural._NNBase import _NNBase
 from mlrose.neural.activation import (identity, relu, sigmoid, tanh)
+from mlrose.neural.utils.weights import gradient_descent_original
 
 
 class _NNCore(_NNBase):
@@ -171,7 +174,7 @@ class _NNCore(_NNBase):
         if init_weights is None:
             init_weights = np.random.uniform(-1, 1, num_nodes)
 
-        fitted_weights, loss, fitness_curve = gradient_descent(
+        fitted_weights, loss, fitness_curve = gradient_descent_original(
             problem,
             max_attempts=self.max_attempts if self.early_stopping else self.max_iters,
             max_iters=self.max_iters,
