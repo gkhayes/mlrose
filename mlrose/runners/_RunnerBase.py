@@ -48,16 +48,22 @@ class _RunnerBase(ABC):
         self._extra_args = kwargs
         self._output_directory = output_directory
         self._experiment_name = experiment_name
-        self._current_algorithm_args = None
-        self._iteration_start_time = None
+        self._current_logged_algorithm_args = {}
+        self._run_start_time = None
+        self._iteration_times = []
 
     def _setup(self):
         self._raw_run_stats = []
         self._fitness_curves = []
+        self._iteration_times = []
+        self._current_logged_algorithm_args.clear()
         if self._output_directory is not None:
             if not os.path.exists(self._output_directory):
                 os.makedirs(self._output_directory)
         pass
+
+    def _log_current_argument(self, arg_name, arg_value):
+        self._current_logged_algorithm_args[arg_name] = arg_value
 
     def run_experiment_(self, algorithm, **kwargs):
         self._setup()
@@ -116,14 +122,14 @@ class _RunnerBase(ABC):
 
     def _invoke_algorithm(self, algorithm, problem, max_attempts,
                           curve, user_info, additional_algorithm_args=None, **total_args):
-        self._current_algorithm_args = total_args.copy()
+        self._current_logged_algorithm_args.update(total_args)
         if additional_algorithm_args is not None:
-            self._current_algorithm_args.update(additional_algorithm_args)
+            self._current_logged_algorithm_args.update(additional_algorithm_args)
 
-        arg_text = [self.short_name(v) for v in self._current_algorithm_args.values()]
-        self._print_banner(f'*** Iteration START - params: {arg_text}')
+        arg_text = [self.short_name(v) for v in self._current_logged_algorithm_args.values()]
+        self._print_banner(f'*** Run START - params: {arg_text}')
         np.random.seed(self.seed)
-        self._iteration_start_time = time.perf_counter()
+        self._run_start_time = time.perf_counter()
         ret = algorithm(problem=problem,
                         max_attempts=max_attempts,
                         curve=curve,
@@ -131,7 +137,7 @@ class _RunnerBase(ABC):
                         state_fitness_callback=self._save_state,
                         callback_user_info=user_info,
                         **total_args)
-        print(f'*** Iteration END - params: {arg_text}')
+        print(f'*** Run END - params: {arg_text}')
         return ret
 
     @staticmethod
@@ -146,14 +152,19 @@ class _RunnerBase(ABC):
 
     def _save_state(self, iteration, state, fitness, user_data, attempt=0, done=False, curve=None):
 
+        # log iteration timing
+        end = time.perf_counter()
+        t = end - self._run_start_time
+        self._iteration_times.append(t)
+
+        # do we need to log anything else?
         if iteration > 0 and iteration not in self.iteration_list and not done:
             return True
 
-        end = time.perf_counter()
-        t = end - self._iteration_start_time
-
+        display_data = {**self._current_logged_algorithm_args}
         if user_data is not None and len(user_data) > 0:
-            data_desc = ', '.join([f'{n}:[{self.short_name(v)}]' for (n, v) in user_data])
+            display_data.update({n: v for (n, v) in user_data})
+            data_desc = ', '.join([f'{n}:[{self.short_name(v)}]' for n, v in display_data.items()])
             print(data_desc)
         print(f'runner_name:[{self.dynamic_runner_name()}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
@@ -165,7 +176,7 @@ class _RunnerBase(ABC):
 
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
-        param_stats = {str(gd(k)): self.short_name(v) for k, v in self._current_algorithm_args.items()}
+        param_stats = {str(gd(k)): self.short_name(v) for k, v in self._current_logged_algorithm_args.items()}
 
         # gather all stats
         current_iteration_stats = {**{p: v for (p, v) in user_data
@@ -174,7 +185,7 @@ class _RunnerBase(ABC):
 
         # check for additional info
         gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(t)
-        ai = (gi(k, v) for k, v in self._current_algorithm_args.items())
+        ai = (gi(k, v) for k, v in self._current_logged_algorithm_args.items())
         additional_info = {k: v for d in ai for k, v in d.items()}
 
         if iteration > 0:
@@ -195,26 +206,20 @@ class _RunnerBase(ABC):
             self._raw_run_stats.append(run_stat)
 
         if self.generate_curves and iteration == 0:
-            curve_stat = self._create_curve_stat(0, fitness, current_iteration_stats, t)
+            curve_stat = self._create_curve_stat(iteration=0,
+                                                 fitness=fitness,
+                                                 curve_data=current_iteration_stats,
+                                                 t=t)
             self._zero_curve_stat = curve_stat
 
         if self.generate_curves and curve is not None and (done or iteration == max(self.iteration_list)):
             fc = list(zip(range(1, iteration + 1), curve))
 
-            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(i, f, current_iteration_stats) for (i, f)
-                                                     in fc]
-
-            # interpolate the time over the curve where we don't have times
-            # use the timings from the current run stats (not strictly 100% accurate, but close enough)
-            timings = [(r['Iteration'], r['Time']) for r in self._raw_run_stats
-                       if all([r[x] == current_iteration_stats[x] for x in current_iteration_stats])]
-
-            for t in range(1, len(timings)):
-                i1, t1 = timings[t - 1]
-                i2, t2 = timings[t]
-                t_range = np.linspace(t1, t2, 1 + (i2 - i1))
-                for i in range(i1, min(1 + i2, len(curve_stats))):
-                    curve_stats[i]['Time'] = t_range[i - i1]
+            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(iteration=i,
+                                                                             fitness=f,
+                                                                             curve_data=current_iteration_stats,
+                                                                             t=self._iteration_times[i])
+                                                     for (i, f) in fc]
             self._fitness_curves.extend(curve_stats)
 
         return not done
