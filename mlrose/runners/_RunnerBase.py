@@ -21,6 +21,12 @@ class _RunnerBase(ABC):
     def _set_dynamic_runner_name(self, name):
         self.__dynamic_short_name__ = name
 
+    @staticmethod
+    def _print_banner(text):
+        print('*' * len(text))
+        print(text)
+        print('*' * len(text))
+
     @abstractmethod
     def run(self):
         pass
@@ -114,7 +120,8 @@ class _RunnerBase(ABC):
         if additional_algorithm_args is not None:
             self._current_algorithm_args.update(additional_algorithm_args)
 
-        print(f'*** Iteration START - params: {[self.short_name(v) for v in self._current_algorithm_args.items()]}')
+        arg_text = [self.short_name(v) for v in self._current_algorithm_args.values()]
+        self._print_banner(f'*** Iteration START - params: {arg_text}')
         np.random.seed(self.seed)
         self._iteration_start_time = time.perf_counter()
         ret = algorithm(problem=problem,
@@ -124,7 +131,7 @@ class _RunnerBase(ABC):
                         state_fitness_callback=self._save_state,
                         callback_user_info=user_info,
                         **total_args)
-        print(f'*** Iteration END - params: {[self.short_name(v) for v in self._current_algorithm_args.items()]}')
+        print(f'*** Iteration END - params: {arg_text}')
         return ret
 
     @staticmethod
