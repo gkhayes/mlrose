@@ -322,14 +322,14 @@ class DiscreteOpt(OptProb):
                     UV_length = (U_sum[i] * V_sum[j])
 
                     # compute the second term of the MI matrix
-                    temp = np.log(np.divide(coeff * len_sample_kept, UV_length))
+                    temp = np.log(coeff) - np.log(UV_length) + np.log(len_sample_kept)
                     # remove the nans and negative infinity
                     temp[np.isnan(temp)] = 0
                     temp[np.isneginf(temp)] = 0
 
                     # combine the first and the second term, divide by the length N.
                     # Add the whole MI matrix for the feature to the previously computed values
-                    mut_inf = mut_inf + np.divide(coeff * temp, len_sample_kept)
+                    mut_inf = mut_inf + temp * np.divide(coeff, len_sample_kept)
 
             # Need to multiply by negative to get the mutual information
             mut_inf = -mut_inf.reshape(self.length, self.length)
