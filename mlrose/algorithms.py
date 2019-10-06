@@ -484,6 +484,9 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     fast_mimic: bool, default: False
         Activate fast mimic mode to compute the mutual information in vectorized form
         Faster speed but requires more memory.
+    noise: float, default: 0
+        Adds noise to the probability and conditional probability estimates.
+        0.01 corresponds to 1% noise.
 
     Returns
     -------

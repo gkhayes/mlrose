@@ -272,6 +272,7 @@ class DiscreteOpt(OptProb):
         self.sample_order = []
         self.prob_type = 'discrete'
         self.mimic_speed = False
+        self.noise=0
 
     def eval_node_probs(self):
         """Update probability density estimates.
