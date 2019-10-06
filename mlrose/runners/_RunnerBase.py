@@ -104,7 +104,7 @@ class _RunnerBase(ABC):
                 self._dump_df_to_disk(self.curves_df, df_name='curves_df')
             # output any extra
             if isinstance(extra_data_frames, dict):
-                for n, v in extra_data_frames:
+                for n, v in extra_data_frames.items():
                     self._dump_df_to_disk(v, df_name=n)
 
     def _dump_df_to_disk(self, df, df_name):
