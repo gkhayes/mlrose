@@ -115,6 +115,8 @@ class _RunnerBase(ABC):
         df.to_csv(f'{filename_root}.csv')
 
     def _dump_pickle_to_disk(self, object_to_pickle, name):
+        if self._output_directory is None:
+            return
         filename_root = build_data_filename(output_directory=self._output_directory,
                                             runner_name=self.dynamic_runner_name(),
                                             experiment_name=self._experiment_name,

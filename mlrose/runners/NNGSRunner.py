@@ -96,10 +96,14 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
                                        x_train=self.x_train,
                                        y_train=self.y_train,
                                        cv=self.cv)
-        self._dump_pickle_to_disk(sr, 'grid_search_results')
-
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
+
+        # pull the stats from the best estimator to here.
+        # (as grid search will have cloned this object).
+        self.__dict__.update(sr.best_estimator_.runner.__dict__)
+        # dump the results to disk
+        self._dump_pickle_to_disk(sr, 'grid_search_results')
 
         best = {
             'best_params': sr.best_params_,
