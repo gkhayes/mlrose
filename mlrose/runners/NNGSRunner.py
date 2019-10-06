@@ -115,10 +115,11 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
     def run_one_experiment_(self, algorithm, total_args, **params):
         if self._extra_args is not None and len(self._extra_args) > 0:
             params = {**params, **self._extra_args}
-        if total_args is not None:
-            total_args.update(params)
 
-        user_info = [(k, v) for k, v in total_args.items() if k != 'problem']
+        total_args.update(params)
+        total_args.pop('problem')
+        user_info = [(k, v) for k, v in total_args.items()]
+
         return self._invoke_algorithm(algorithm=algorithm,
                                       curve=self.generate_curves,
                                       user_info=user_info,

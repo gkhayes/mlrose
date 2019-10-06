@@ -92,6 +92,7 @@ class NNClassifier(_NNBase):
             # self._perform_grid_search()
             params = {k: self.__getattribute__(k) for k in self.kwargs}
             total_args = {
+                'algorithm': self.algorithm,
                 'activation': self.activation,
                 'bias': self.bias,
                 'early_stopping': self.early_stopping,
