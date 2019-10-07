@@ -1,4 +1,4 @@
-from mlrose import short_name
+from mlrose.algorithms.decorators import short_name
 
 try:
     import mlrose

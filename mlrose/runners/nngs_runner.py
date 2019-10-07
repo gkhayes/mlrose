@@ -1,7 +1,7 @@
 import time
 import pandas as pd
 
-from mlrose import short_name
+from mlrose.algorithms.decorators import short_name
 from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
 
 from mlrose.runners._runner_base import _RunnerBase

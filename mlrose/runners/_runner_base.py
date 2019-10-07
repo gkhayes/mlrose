@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 
+from mlrose import get_short_name
 from mlrose.runners.utils import build_data_filename
 
 
@@ -13,7 +14,7 @@ class _RunnerBase(ABC):
 
     @classmethod
     def runner_name(cls):
-        return cls.__short_name__
+        return get_short_name(cls)
 
     def dynamic_runner_name(self):
         return self.__dynamic_short_name__ if hasattr(self, '__dynamic_short_name__') else self.runner_name()
@@ -125,17 +126,13 @@ class _RunnerBase(ABC):
         pk.dump(object_to_pickle, open(f'{filename_root}.p', "wb"))
         return filename_root
 
-    @staticmethod
-    def short_name(v):
-        return v if not hasattr(v, '__short_name__') else v.__short_name__
-
     def _invoke_algorithm(self, algorithm, problem, max_attempts,
                           curve, user_info, additional_algorithm_args=None, **total_args):
         self._current_logged_algorithm_args.update(total_args)
         if additional_algorithm_args is not None:
             self._current_logged_algorithm_args.update(additional_algorithm_args)
 
-        arg_text = [self.short_name(v) for v in self._current_logged_algorithm_args.values()]
+        arg_text = [get_short_name(v) for v in self._current_logged_algorithm_args.values()]
         self._print_banner(f'*** Run START - params: {arg_text}')
         np.random.seed(self.seed)
         self._run_start_time = time.perf_counter()
@@ -173,7 +170,7 @@ class _RunnerBase(ABC):
         display_data = {**self._current_logged_algorithm_args}
         if user_data is not None and len(user_data) > 0:
             display_data.update({n: v for (n, v) in user_data})
-            data_desc = ', '.join([f'{n}:[{self.short_name(v)}]' for n, v in display_data.items()])
+            data_desc = ', '.join([f'{n}:[{get_short_name(v)}]' for n, v in display_data.items()])
             print(data_desc)
         print(f'runner_name:[{self.dynamic_runner_name()}], experiment_name:[{self._experiment_name}], ' +
               ('' if attempt is None else f'attempt:[{attempt}], ') +
@@ -185,7 +182,7 @@ class _RunnerBase(ABC):
 
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
-        param_stats = {str(gd(k)): self.short_name(v) for k, v in self._current_logged_algorithm_args.items()}
+        param_stats = {str(gd(k)): get_short_name(v) for k, v in self._current_logged_algorithm_args.items()}
 
         # gather all stats
         current_iteration_stats = {**{p: v for (p, v) in user_data

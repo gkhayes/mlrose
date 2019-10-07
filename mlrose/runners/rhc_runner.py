@@ -1,5 +1,5 @@
 import mlrose
-from mlrose import short_name
+from mlrose.algorithms.decorators import short_name
 
 from mlrose.runners._runner_base import _RunnerBase
 
