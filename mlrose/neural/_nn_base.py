@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 from sklearn.base import BaseEstimator
 
-from mlrose.neural.fitness.NetworkWeights import NetworkWeights
+from mlrose.neural.fitness.network_weights import NetworkWeights
 from mlrose.neural.utils import (unflatten_weights)
 from mlrose.opt_probs import ContinuousOpt
 

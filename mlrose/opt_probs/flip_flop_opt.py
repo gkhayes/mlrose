@@ -8,7 +8,7 @@ import numpy as np
 from mlrose.algorithms.crossovers import OnePointCrossOver
 from mlrose.algorithms.mutators import ChangeOneMutator
 from mlrose.fitness import FlipFlop
-from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
+from mlrose.opt_probs.discrete_opt import DiscreteOpt
 
 
 class FlipFlopOpt(DiscreteOpt):

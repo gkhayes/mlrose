@@ -3,20 +3,25 @@
 # Author: Genevieve Hayes (modified by Andrew Rollings)
 # License: BSD 3 clause
 
-
-from sklearn.base import ClassifierMixin
+from sklearn.base import  ClassifierMixin
 
 from mlrose.algorithms.decay import GeomDecay
-from ._NNCore import _NNCore
+from ._nn_core import _NNCore
 
 
-class LogisticRegression(_NNCore, ClassifierMixin):
-    """Class for defining logistic regression weights optimization
-    problem. Inherits :code:`fit` and :code:`predict` methods from
-    :code:`NeuralNetwork()` class.
+class NeuralNetwork(_NNCore, ClassifierMixin):
+    """Class for defining neural network classifier weights optimization
+    problem.
 
     Parameters
     ----------
+    hidden_nodes: list of ints
+        List giving the number of nodes in each hidden layer.
+
+    activation: string, default: 'relu'
+        Activation function for each of the hidden layers. Must be one of:
+        'identity', 'relu', 'sigmoid' or 'tanh'.
+
     algorithm: string, default: 'random_hill_climb'
         Algorithm used to find optimal network weights. Must be one
         of:'random_hill_climb', 'simulated_annealing', 'genetic_alg' or
@@ -27,6 +32,10 @@ class LogisticRegression(_NNCore, ClassifierMixin):
 
     bias: bool, default: True
         Whether to include a bias term.
+
+    is_classifer: bool, default: True
+        Whether the network is for classification or regression. Set
+        :code:`True` for classification and :code:`False` for regression.
 
     learning_rate: float, default: 0.1
         Learning rate for gradient descent or step size for randomized
@@ -65,7 +74,7 @@ class LogisticRegression(_NNCore, ClassifierMixin):
         by np.random.seed(); otherwise, the random seed is not set.
 
     curve: bool, default: False
-        If bool is true, curve containing the fitness at each training
+        If bool is True, fitness_curve containing the fitness at each training
         iteration is returned.
 
     Attributes
@@ -77,21 +86,47 @@ class LogisticRegression(_NNCore, ClassifierMixin):
         Value of loss function for fitted weights when :code:`fit` is
         performed.
 
+    predicted_probs: array
+        Numpy array giving the predicted probabilities for each class when
+        :code:`predict` is performed for multi-class classification data; or
+        the predicted probability for class 1 when :code:`predict` is performed
+        for binary classification data.
+
     fitness_curve: array
         Numpy array giving the fitness at each training iteration.
     """
 
-    def __init__(self, algorithm='random_hill_climb', max_iters=100, bias=True,
-                 learning_rate=0.1, early_stopping=False, clip_max=1e+10,
-                 restarts=0, schedule=GeomDecay(), pop_size=200,
-                 mutation_prob=0.1, max_attempts=10, random_state=None,
+    def __init__(self, hidden_nodes=None,
+                 activation='relu',
+                 algorithm='random_hill_climb',
+                 max_iters=100,
+                 bias=True,
+                 is_classifier=True,
+                 learning_rate=0.1,
+                 early_stopping=False,
+                 clip_max=1e+10,
+                 restarts=0,
+                 schedule=GeomDecay(),
+                 pop_size=200,
+                 mutation_prob=0.1,
+                 max_attempts=10,
+                 random_state=None,
                  curve=False):
+        super().__init__(
+            hidden_nodes=hidden_nodes,
+            activation=activation,
+            algorithm=algorithm,
+            max_iters=max_iters,
+            bias=bias,
+            is_classifier=is_classifier,
+            learning_rate=learning_rate,
+            early_stopping=early_stopping,
+            clip_max=clip_max,
+            restarts=restarts,
+            schedule=schedule,
+            pop_size=pop_size,
+            mutation_prob=mutation_prob,
+            max_attempts=max_attempts,
+            random_state=random_state,
+            curve=curve)
 
-        _NNCore.__init__(
-            self, hidden_nodes=[], activation='sigmoid',
-            algorithm=algorithm, max_iters=max_iters, bias=bias,
-            is_classifier=True, learning_rate=learning_rate,
-            early_stopping=early_stopping, clip_max=clip_max,
-            restarts=restarts, schedule=schedule, pop_size=pop_size,
-            mutation_prob=mutation_prob, max_attempts=max_attempts,
-            random_state=random_state, curve=curve)

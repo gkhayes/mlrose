@@ -16,7 +16,7 @@ from .algorithms.decorators import (short_name)
 from .fitness import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
                       Knapsack, TravellingSales, Queens, MaxKColor, 
                       CustomFitness)
-from .neural import NeuralNetwork, LinearRegression, LogisticRegression, _NNCore, NNClassifier
+from .neural import NeuralNetwork, LinearRegression, LogisticRegression, _nn_core, NNClassifier
 from .neural.activation import (identity, relu, sigmoid, softmax, tanh)
 from .neural.fitness import NetworkWeights
 from .neural.utils.weights import (flatten_weights, unflatten_weights)
@@ -27,4 +27,4 @@ from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt, QueensOp
 
 from .runners import GARunner, MIMICRunner, RHCRunner, SARunner, NNGSRunner
 from .runners import (build_data_filename)
-from .generators import KnapsackGenerator, TSPGenerator, FlipFlopGenerator, QueensGenerator, MaxKColorGenerator
+from .generators import MaxKColorGenerator, QueensGenerator, FlipFlopGenerator, TSPGenerator, KnapsackGenerator

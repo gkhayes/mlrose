@@ -11,7 +11,7 @@ from mlrose.algorithms.rhc import random_hill_climb
 from mlrose.algorithms.sa import simulated_annealing
 from mlrose.algorithms.ga import  genetic_alg
 
-from mlrose.neural._NNBase import _NNBase
+from mlrose.neural._nn_base import _NNBase
 from mlrose.neural.activation import (identity, relu, sigmoid, tanh)
 from mlrose.neural.utils.weights import gradient_descent_original
 

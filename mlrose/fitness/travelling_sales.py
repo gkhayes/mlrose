@@ -6,6 +6,7 @@
 import numpy as np
 import pandas as pd
 
+
 class TravellingSales:
     """Fitness function for Travelling Salesman optimization problem.
     Evaluates the fitness of a tour of n nodes, represented by state vector

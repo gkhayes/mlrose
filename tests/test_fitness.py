@@ -11,7 +11,7 @@ from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
 # from mlrose.fitness import head, tail, max_run
 # The above functions are not automatically imported at initialization, so
 # must be imported explicitly from fitness.py.
-from mlrose.fitness._DiscretePeaksBase import _DiscretePeaksBase
+from mlrose.fitness._discrete_peaks_base import _DiscretePeaksBase
 
 
 class TestFitness(unittest.TestCase):

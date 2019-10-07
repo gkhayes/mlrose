@@ -3,15 +3,15 @@
 # Author: Genevieve Hayes (modified by Andrew Rollings)
 # License: BSD 3 clause
 
-from sklearn.base import RegressorMixin
 
+from sklearn.base import ClassifierMixin
 
 from mlrose.algorithms.decay import GeomDecay
-from ._NNCore import _NNCore
+from ._nn_core import _NNCore
 
 
-class LinearRegression(_NNCore, RegressorMixin):
-    """Class for defining linear regression weights optimization
+class LogisticRegression(_NNCore, ClassifierMixin):
+    """Class for defining logistic regression weights optimization
     problem. Inherits :code:`fit` and :code:`predict` methods from
     :code:`NeuralNetwork()` class.
 
@@ -86,10 +86,11 @@ class LinearRegression(_NNCore, RegressorMixin):
                  restarts=0, schedule=GeomDecay(), pop_size=200,
                  mutation_prob=0.1, max_attempts=10, random_state=None,
                  curve=False):
+
         _NNCore.__init__(
-            self, hidden_nodes=[], activation='identity',
+            self, hidden_nodes=[], activation='sigmoid',
             algorithm=algorithm, max_iters=max_iters, bias=bias,
-            is_classifier=False, learning_rate=learning_rate,
+            is_classifier=True, learning_rate=learning_rate,
             early_stopping=early_stopping, clip_max=clip_max,
             restarts=restarts, schedule=schedule, pop_size=pop_size,
             mutation_prob=mutation_prob, max_attempts=max_attempts,

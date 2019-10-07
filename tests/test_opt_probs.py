@@ -13,7 +13,7 @@ from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
 # activation.py and opt_probs.py
 from mlrose.neural import NetworkWeights
 from mlrose.neural.activation import identity
-from mlrose.opt_probs._OptProb import _OptProb as OptProb
+from mlrose.opt_probs._opt_prob import _OptProb as OptProb
 
 
 class TestOptProb(unittest.TestCase):

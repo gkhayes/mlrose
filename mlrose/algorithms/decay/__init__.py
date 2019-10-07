@@ -3,7 +3,7 @@
 # Author: Genevieve Hayes
 # License: BSD 3 clause
 
-from .ArithDecay import ArithDecay
-from .GeomDecay import GeomDecay
-from .ExpDecay import ExpDecay
-from .CustomSchedule import CustomSchedule
+from .arith_decay import ArithDecay
+from .geom_decay import GeomDecay
+from .exp_decay import ExpDecay
+from .custom_schedule import CustomSchedule

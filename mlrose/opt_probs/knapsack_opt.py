@@ -6,7 +6,7 @@
 from mlrose.algorithms.crossovers import UniformCrossOver
 from mlrose.algorithms.mutators import ChangeOneMutator
 from mlrose.fitness import Knapsack
-from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
+from mlrose.opt_probs.discrete_opt import DiscreteOpt
 
 
 class KnapsackOpt(DiscreteOpt):

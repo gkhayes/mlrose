@@ -8,7 +8,7 @@ import numpy as np
 from mlrose.algorithms.crossovers import TSPCrossOver
 from mlrose.algorithms.mutators import SwapMutator
 from mlrose.fitness import TravellingSales
-from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
+from mlrose.opt_probs.discrete_opt import DiscreteOpt
 
 
 class TSPOpt(DiscreteOpt):

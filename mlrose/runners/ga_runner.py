@@ -1,6 +1,6 @@
 import mlrose
 from mlrose import short_name
-from mlrose.runners._RunnerBase import _RunnerBase
+from mlrose.runners._runner_base import _RunnerBase
 
 """
 Example usage:

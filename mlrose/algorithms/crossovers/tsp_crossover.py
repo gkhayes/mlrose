@@ -7,7 +7,7 @@ TSP Crossover implementation for GA.
 
 import numpy as np
 
-from mlrose.algorithms.crossovers._CrossOverBase import _CrossOverBase
+from mlrose.algorithms.crossovers._crossover_base import _CrossOverBase
 
 
 class TSPCrossOver(_CrossOverBase):

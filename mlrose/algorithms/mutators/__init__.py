@@ -4,7 +4,7 @@
 # Modified: Andrew Rollings
 # License: BSD 3 clause
 
-from .ChangeOneMutator import ChangeOneMutator
-from .DiscreteMutator import DiscreteMutator
-from .SwapMutator import SwapMutator
-from .ShiftOneMutator import ShiftOneMutator
+from .change_one_mutator import ChangeOneMutator
+from .discrete_mutator import DiscreteMutator
+from .swap_mutator import SwapMutator
+from .shift_one_mutator import ShiftOneMutator

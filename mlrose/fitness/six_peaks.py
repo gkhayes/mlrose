@@ -5,11 +5,11 @@
 
 import numpy as np
 
-from mlrose.fitness._DiscretePeaksBase import _DiscretePeaksBase
+from mlrose.fitness._discrete_peaks_base import _DiscretePeaksBase
 
 
-class FourPeaks(_DiscretePeaksBase):
-    """Fitness function for Four Peaks optimization problem. Evaluates the
+class SixPeaks(_DiscretePeaksBase):
+    """Fitness function for Six Peaks optimization problem. Evaluates the
     fitness of an n-dimensional state vector :math:`x`, given parameter T, as:
 
     .. math::
@@ -19,14 +19,15 @@ class FourPeaks(_DiscretePeaksBase):
 
     * :math:`tail(b, x)` is the number of trailing b's in :math:`x`;
     * :math:`head(b, x)` is the number of leading b's in :math:`x`;
-    * :math:`R(x, T) = n`, if :math:`tail(0, x) > T` and
-      :math:`head(1, x) > T`; and
+    * :math:`R(x, T) = n`, if (:math:`tail(0, x) > T` and
+      :math:`head(1, x) > T`) or (:math:`tail(1, x) > T` and
+      :math:`head(0, x) > T`); and
     * :math:`R(x, T) = 0`, otherwise.
 
     Parameters
     ----------
     t_pct: float, default: 0.1
-        Threshold parameter (T) for Four Peaks fitness function, expressed as
+        Threshold parameter (T) for Six Peaks fitness function, expressed as
         a percentage of the state space dimension, n (i.e.
         :math:`T = t_{pct} \\times n`).
 
@@ -37,10 +38,10 @@ class FourPeaks(_DiscretePeaksBase):
 
         >>> import mlrose
         >>> import numpy as np
-        >>> fitness = mlrose.FourPeaks(t_pct=0.15)
-        >>> state = np.array([1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0])
+        >>> fitness = mlrose.SixPeaks(t_pct=0.15)
+        >>> state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
         >>> fitness.evaluate(state)
-        16
+        12
 
     References
     ----------
@@ -50,7 +51,7 @@ class FourPeaks(_DiscretePeaksBase):
 
     Note
     ----
-    The Four Peaks fitness function is suitable for use in bit-string
+    The Six Peaks fitness function is suitable for use in bit-string
     (discrete-state with :code:`max_val = 2`) optimization problems *only*.
     """
 
@@ -72,18 +73,20 @@ class FourPeaks(_DiscretePeaksBase):
 
         Returns
         -------
-        fitness: float.
+        fitness: float
             Value of fitness function.
         """
         _n = len(state)
         _t = np.ceil(self.t_pct*_n)
 
         # Calculate head and tail values
+        head_0 = self.head(0, state)
         tail_0 = self.tail(0, state)
         head_1 = self.head(1, state)
+        tail_1 = self.tail(1, state)
 
         # Calculate R(X, T)
-        if (tail_0 > _t and head_1 > _t):
+        if (tail_0 > _t and head_1 > _t) or (tail_1 > _t and head_0 > _t):
             _r = _n
         else:
             _r = 0

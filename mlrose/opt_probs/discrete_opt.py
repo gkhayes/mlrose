@@ -10,7 +10,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree, depth_first_tree
 
 from mlrose.algorithms.crossovers import UniformCrossOver
 from mlrose.algorithms.mutators import SwapMutator
-from mlrose.opt_probs._OptProb import _OptProb
+from mlrose.opt_probs._opt_prob import _OptProb
 
 
 class DiscreteOpt(_OptProb):

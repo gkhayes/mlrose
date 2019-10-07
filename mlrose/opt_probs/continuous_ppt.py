@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from mlrose.opt_probs._OptProb import _OptProb
+from mlrose.opt_probs._opt_prob import _OptProb
 
 
 class ContinuousOpt(_OptProb):

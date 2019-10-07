@@ -6,7 +6,7 @@
 
 import numpy as np
 
-from mlrose.algorithms.crossovers._CrossOverBase import _CrossOverBase
+from mlrose.algorithms.crossovers._crossover_base import _CrossOverBase
 
 
 class UniformCrossOver(_CrossOverBase):

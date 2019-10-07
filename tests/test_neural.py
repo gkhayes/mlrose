@@ -8,10 +8,10 @@ import numpy as np
 # The following functions/classes are not automatically imported at
 # initialization, so must be imported explicitly from neural.py and
 # activation.py.
-from mlrose.neural.LinearRegression import LinearRegression
-from mlrose.neural.LogisticRegression import LogisticRegression
-from mlrose.neural.fitness.NetworkWeights import NetworkWeights
-from mlrose.neural.NeuralNetwork import NeuralNetwork
+from mlrose.neural.linear_regression import LinearRegression
+from mlrose.neural.logistic_regression import LogisticRegression
+from mlrose.neural.fitness.network_weights import NetworkWeights
+from mlrose.neural.neural_network import NeuralNetwork
 from mlrose.opt_probs import ContinuousOpt
 from mlrose import (flatten_weights, unflatten_weights, identity, sigmoid, softmax)
 from mlrose.algorithms.gd import gradient_descent

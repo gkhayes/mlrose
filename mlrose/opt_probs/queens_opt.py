@@ -8,7 +8,7 @@ import numpy as np
 from mlrose.algorithms.crossovers import UniformCrossOver
 from mlrose.algorithms.mutators import ChangeOneMutator
 from mlrose.fitness import Queens
-from mlrose.opt_probs.DiscreteOpt import DiscreteOpt
+from mlrose.opt_probs.discrete_opt import DiscreteOpt
 
 
 class QueensOpt(DiscreteOpt):

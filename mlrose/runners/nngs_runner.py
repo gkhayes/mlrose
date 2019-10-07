@@ -4,7 +4,7 @@ import pandas as pd
 from mlrose import short_name
 from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
 
-from mlrose.runners._RunnerBase import _RunnerBase
+from mlrose.runners._runner_base import _RunnerBase
 from mlrose.neural import NNClassifier
 
 """

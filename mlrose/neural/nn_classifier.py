@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from mlrose.neural._NNBase import _NNBase
+from mlrose.neural._nn_base import _NNBase
 
 
 class NNClassifier(_NNBase):

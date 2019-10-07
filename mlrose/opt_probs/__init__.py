@@ -1,12 +1,12 @@
 """ Classes for defining optimization problem objects."""
 
-# Author: Genevieve Hayes
+# Author: Genevieve Hayes (modified by Andrew Rollings)
 # License: BSD 3 clause
 
-from .ContinuousOpt import ContinuousOpt
-from .DiscreteOpt import DiscreteOpt
-from .FlipFlopOpt import FlipFlopOpt
-from .KnapsackOpt import KnapsackOpt
-from .QueensOpt import QueensOpt
-from .MaxKColorOpt import MaxKColorOpt
-from .TSPOpt import TSPOpt
+from .continuous_ppt import ContinuousOpt
+from .discrete_opt import DiscreteOpt
+from .flip_flop_opt import FlipFlopOpt
+from .knapsack_opt import KnapsackOpt
+from .queens_opt import QueensOpt
+from .max_k_color_opt import MaxKColorOpt
+from .tsp_opt import TSPOpt

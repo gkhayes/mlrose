@@ -5,7 +5,7 @@
 # License: BSD 3 clause
 import numpy as np
 
-from mlrose.algorithms.mutators._MutatorBase import _MutatorBase
+from mlrose.algorithms.mutators._mutator_base import _MutatorBase
 
 
 class ShiftOneMutator(_MutatorBase):
