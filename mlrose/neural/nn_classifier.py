@@ -15,7 +15,7 @@ class NNClassifier(_NNBase):
                  algorithm=None,
                  # grid-search
                  activation=None,
-                 hidden_nodes=None,
+                 hidden_layer_sizes=None,
                  max_iters=100,
                  max_attempts=10,
                  learning_rate=0.1,
@@ -31,7 +31,7 @@ class NNClassifier(_NNBase):
 
         # nn specific properties
         #  (grid-search settable)
-        self.hidden_nodes = hidden_nodes
+        self.hidden_layer_sizes = hidden_layer_sizes
         self.activation = activation
         self.learning_rate = learning_rate
         self.max_iters = max_iters
@@ -69,7 +69,7 @@ class NNClassifier(_NNBase):
 
     def _get_nodes(self, x_train, y_train):
         return _NNBase._build_node_list(X=x_train, y=y_train,
-                                        hidden_nodes=self.hidden_nodes,
+                                        hidden_nodes=self.hidden_layer_sizes,
                                         bias=self.bias)
 
     def fit(self, x_train, y_train=None, init_weights=None):
@@ -97,7 +97,7 @@ class NNClassifier(_NNBase):
                 'bias': self.bias,
                 'early_stopping': self.early_stopping,
                 'clip_max': self.clip_max,
-                'hidden_nodes': self.hidden_nodes,
+                'hidden_nodes': self.hidden_layer_sizes,
                 'learning_rate': self.learning_rate
             }
             max_attempts = self.max_attempts if self.early_stopping else self.max_iters

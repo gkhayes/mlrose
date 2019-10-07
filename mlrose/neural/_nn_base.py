@@ -67,7 +67,7 @@ class _NNBase(BaseEstimator, ABC):
         # Determine number of nodes in each layer
         input_nodes = np.shape(X)[1] + bias
         output_nodes = np.shape(y)[1]
-        node_list = [input_nodes] + hidden_nodes + [output_nodes]
+        node_list = [input_nodes] + list(hidden_nodes) + [output_nodes]
         return node_list
 
     @staticmethod
