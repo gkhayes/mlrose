@@ -111,9 +111,8 @@ class _RunnerBase(ABC):
     def _dump_df_to_disk(self, df, df_name):
         filename_root = self._dump_pickle_to_disk(object_to_pickle=df,
                                                   name=df_name)
-
-        pk.dump(df, open(f'{filename_root}.p', "wb"))
         df.to_csv(f'{filename_root}.csv')
+        print(f'Saving: [{filename_root}.csv]')
 
     def _dump_pickle_to_disk(self, object_to_pickle, name):
         if self._output_directory is None:
@@ -124,6 +123,7 @@ class _RunnerBase(ABC):
                                             df_name=name)
 
         pk.dump(object_to_pickle, open(f'{filename_root}.p', "wb"))
+        print(f'Saving: [{filename_root}.p]')
         return filename_root
 
     def _invoke_algorithm(self, algorithm, problem, max_attempts,
