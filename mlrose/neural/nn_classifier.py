@@ -18,7 +18,7 @@ class NNClassifier(_NNBase):
                  hidden_layer_sizes=None,
                  max_iters=100,
                  max_attempts=10,
-                 learning_rate=0.1,
+                 learning_rate_init=0.1,
                  bias=True,
                  early_stopping=False,
                  clip_max=1e+10,
@@ -33,7 +33,7 @@ class NNClassifier(_NNBase):
         #  (grid-search settable)
         self.hidden_layer_sizes = hidden_layer_sizes
         self.activation = activation
-        self.learning_rate = learning_rate
+        self.learning_rate_init = learning_rate_init
         self.max_iters = max_iters
         self.max_attempts = max_attempts
 
@@ -81,7 +81,7 @@ class NNClassifier(_NNBase):
                                                                        y=y_train,
                                                                        node_list=self.node_list,
                                                                        activation=self.activation,
-                                                                       learning_rate=self.learning_rate,
+                                                                       learning_rate=self.learning_rate_init,
                                                                        bias=self.bias,
                                                                        clip_max=self.clip_max)
         self.fitness_fn = fitness
@@ -97,8 +97,8 @@ class NNClassifier(_NNBase):
                 'bias': self.bias,
                 'early_stopping': self.early_stopping,
                 'clip_max': self.clip_max,
-                'hidden_nodes': self.hidden_layer_sizes,
-                'learning_rate': self.learning_rate
+                'hidden_layer_sizes': self.hidden_layer_sizes,
+                'learning_rate_init': self.learning_rate_init
             }
             max_attempts = self.max_attempts if self.early_stopping else self.max_iters
             fitted_weights, loss, _ = self.runner.run_one_experiment_(algorithm=self.algorithm,
