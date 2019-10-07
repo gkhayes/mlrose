@@ -133,6 +133,7 @@ class _RunnerBase(ABC):
             self._current_logged_algorithm_args.update(additional_algorithm_args)
 
         arg_text = [get_short_name(v) for v in self._current_logged_algorithm_args.values()]
+        self._iteration_times.clear()
         self._print_banner(f'*** Run START - params: {arg_text}')
         np.random.seed(self.seed)
         self._run_start_time = time.perf_counter()
