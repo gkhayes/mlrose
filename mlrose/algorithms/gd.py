@@ -5,7 +5,7 @@
 
 import numpy as np
 
-from mlrose.algorithms.decorators import short_name
+from mlrose.decorators import short_name
 from mlrose.neural.utils import flatten_weights
 
 

@@ -2,7 +2,7 @@
 
 # Author: Genevieve Hayes (Modified by Andrew Rollings)
 # License: BSD 3 clause
-from mlrose.algorithms.decorators import short_name
+from mlrose.decorators import short_name
 
 import numpy as np
 

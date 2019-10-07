@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 
-from mlrose import get_short_name
+from mlrose.decorators import get_short_name
 from mlrose.runners.utils import build_data_filename
 
 
@@ -178,7 +178,8 @@ class _RunnerBase(ABC):
               f'iteration:[{iteration}], done:[{done}], '
               f'time:[{t:.2f}], fitness:[{fitness:.4f}]')
 
-        print(f'\t{state}'[120:])
+        state_string = str(state).replace('\n', '//')[:200]
+        print(f'\t{state_string}...')
         print()
 
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]

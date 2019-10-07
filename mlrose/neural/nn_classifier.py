@@ -22,7 +22,7 @@ class NNClassifier(_NNBase):
                  bias=True,
                  early_stopping=False,
                  clip_max=1e+10,
-                 **kwargs_
+                 **kwargs
                  ):
         super().__init__()
 
@@ -53,8 +53,8 @@ class NNClassifier(_NNBase):
         self.loss = None
 
         # extra parameters
-        self.kwargs = kwargs_
-        for k, v in kwargs_.items():
+        self.kwargs = kwargs
+        for k, v in kwargs.items():
             if hasattr(self, k):
                 continue
             self.__setattr__(k,  v)

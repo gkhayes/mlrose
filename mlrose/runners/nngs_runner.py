@@ -1,10 +1,11 @@
 import time
 import pandas as pd
 
-from mlrose.algorithms.decorators import short_name
+from mlrose.decorators import short_name
 from mlrose.gridsearch.grid_search_mixin import GridSearchMixin
 
 from mlrose.runners._runner_base import _RunnerBase
+from mlrose.decorators import get_short_name
 from mlrose.neural import NNClassifier
 
 """
@@ -51,22 +52,14 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          generate_curves=generate_curves, output_directory=output_directory)
 
-        self.hidden_nodes_set = hidden_nodes_set
-        self.activation_set = activation_set
-        self.learning_rates = learning_rates
-        # self.bias = bias
-        # self.early_stopping = early_stopping
-
-        # algorithm grid-search params
-        self.grid_search_parameters = grid_search_parameters
-
         # extract nn parameters
-        self.parameters = {
-            'hidden_nodes': self.hidden_nodes_set,
-            'activation': self.activation_set,
-            'learning_rate': self.learning_rates
+        self.grid_search_parameters = {
+            'hidden_nodes': hidden_nodes_set,
+            'activation': activation_set,
+            'learning_rate': learning_rates
         }
-        self.parameters.update(grid_search_parameters)
+        self.grid_search_parameters.update(grid_search_parameters)
+        # add algorithm grid-search params
         self.classifier = NNClassifier(runner=self,
                                        algorithm=algorithm,
                                        max_attempts=max_attempts,
@@ -75,10 +68,7 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
                                        bias=bias)
 
         # update short name based on algorithm
-        print(self.dynamic_runner_name())
-        self._set_dynamic_runner_name(f'nngs_{algorithm.__short_name__}')
-        print(self.dynamic_runner_name())
-        print(self.runner_name())
+        self._set_dynamic_runner_name(f'nngs_{get_short_name(algorithm)}')
 
         self.x_train = x_train
         self.y_train = y_train
@@ -92,7 +82,7 @@ class NNGSRunner(_RunnerBase, GridSearchMixin):
 
         run_start = time.perf_counter()
         sr = self._perform_grid_search(classifier=self.classifier,
-                                       parameters=self.parameters,
+                                       parameters=self.grid_search_parameters,
                                        x_train=self.x_train,
                                        y_train=self.y_train,
                                        cv=self.cv)

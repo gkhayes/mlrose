@@ -7,7 +7,7 @@
 import numpy as np
 
 from mlrose.algorithms.decay import GeomDecay
-from mlrose.algorithms.decorators import short_name
+from mlrose.decorators import short_name
 
 
 @short_name('sa')

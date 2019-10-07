@@ -1,13 +1,5 @@
-from mlrose.algorithms.decorators import short_name
-
-try:
-    import mlrose
-except:
-    import sys
-
-    sys.path.append("..")
-    import mlrose
-
+import mlrose
+from mlrose.decorators import short_name
 from mlrose.runners._runner_base import _RunnerBase
 
 """

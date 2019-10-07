@@ -6,7 +6,7 @@
 
 import numpy as np
 
-from mlrose.algorithms.decorators import short_name
+from mlrose.decorators import short_name
 
 
 def _get_hamming_distance_default(population, p1):

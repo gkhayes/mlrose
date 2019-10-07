@@ -91,9 +91,12 @@ class _NNBase(BaseEstimator, ABC):
                                  bias, is_classifier,
                                  learning_rate=learning_rate)
         num_nodes = _NNBase._calculate_state_size(node_list)
-        problem = ContinuousOpt(num_nodes, fitness, maximize=False,
+        problem = ContinuousOpt(length=num_nodes,
+                                fitness_fn=fitness,
+                                maximize=False,
                                 min_val=-1 * clip_max,
-                                max_val=clip_max, step=learning_rate)
+                                max_val=clip_max,
+                                step=learning_rate)
         return fitness, problem
 
     @staticmethod
