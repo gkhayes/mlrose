@@ -4,10 +4,10 @@
 # License: BSD 3 clause
 
 import numpy as np
-
-import mlrose.neural.activation as act
-from mlrose.neural.utils import unflatten_weights
 import sklearn.metrics as skm
+
+from mlrose.neural.utils import unflatten_weights
+from mlrose.neural import activation as act
 
 
 class NetworkWeights:
