@@ -5,6 +5,7 @@ import itertools as it
 import numpy as np
 import pandas as pd
 import pickle as pk
+import inspect as lk
 
 from mlrose.decorators import get_short_name
 from mlrose.runners.utils import build_data_filename
@@ -137,6 +138,10 @@ class _RunnerBase(ABC):
         arg_text = [get_short_name(v) for v in self._current_logged_algorithm_args.values()]
         self._print_banner(f'*** Run START - params: {arg_text}')
         np.random.seed(self.seed)
+
+        valid_args = [k for k in lk.signature(algorithm).parameters]
+        args_to_pass = {k: v for k, v in total_args.items() if k in valid_args}
+
         self._start_run_timing()
         ret = algorithm(problem=problem,
                         max_attempts=max_attempts,
@@ -144,7 +149,7 @@ class _RunnerBase(ABC):
                         random_state=self.seed,
                         state_fitness_callback=self._save_state,
                         callback_user_info=user_info,
-                        **total_args)
+                        **args_to_pass)
         print(f'*** Run END - params: {arg_text}')
         return ret
 
