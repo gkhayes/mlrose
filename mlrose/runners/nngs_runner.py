@@ -37,7 +37,7 @@ class NNGSRunner(_NNRunnerBase):
 
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list, algorithm,
                  grid_search_parameters, bias=True, early_stopping=False, clip_max=1e+10,
-                 max_attempts=500, generate_curves=True, output_directory=None):
+                 max_attempts=500, n_jobs=1, generate_curves=True, output_directory=None):
 
         # update short name based on algorithm
         self._set_dynamic_runner_name(f'{get_short_name(self)}_{get_short_name(algorithm)}')
@@ -56,7 +56,8 @@ class NNGSRunner(_NNRunnerBase):
                          iteration_list=iteration_list,
                          grid_search_parameters=grid_search_parameters,
                          generate_curves=generate_curves,
-                         output_directory=output_directory)
+                         output_directory=output_directory,
+                         n_jobs=n_jobs)
 
         # build the classifier
         self.classifier = NNClassifier(runner=self,

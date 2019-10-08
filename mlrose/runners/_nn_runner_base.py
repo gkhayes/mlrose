@@ -16,6 +16,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                  generate_curves=True,
                  output_directory=None,
                  verbose_grid_search=True,
+                 n_jobs=1,
                  **kwargs):
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          generate_curves=generate_curves, output_directory=output_directory,
@@ -31,6 +32,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         self.x_test = x_test
         self.y_test = y_test
         self.cv = cv
+        self.n_jobs = n_jobs
         self.verbose_grid_search = verbose_grid_search
 
     def temp(self):
@@ -46,15 +48,29 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                                        x_train=self.x_train,
                                        y_train=self.y_train,
                                        cv=self.cv,
+                                       n_jobs=self.n_jobs,
                                        verbose=self.verbose_grid_search)
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 
+        # dump the results to disk
+        self._dump_pickle_to_disk(sr, 'grid_search_results')
+        edf = {
+            'cv_results_df': pd.DataFrame(sr.cv_results_)
+        }
+        self._create_and_save_run_data_frames(extra_data_frames=edf)
+
         # pull the stats from the best estimator to here.
         # (as grid search will have cloned this object).
         self.__dict__.update(sr.best_estimator_.runner.__dict__)
-        # dump the results to disk
-        self._dump_pickle_to_disk(sr, 'grid_search_results')
+
+        try:
+            y_pred = sr.best_estimator_.predict(self.x_test)
+            score = self.score(y_pred=y_pred, y_true=self.y_train)
+            self._print_banner(f'Score: {score}')
+        except:
+            pass
+
         """
         best = {
             'best_params': sr.best_params_,
@@ -64,11 +80,6 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
             'best_fitted_weights': sr.best_estimator_.fitted_weights  # ndarray
         }
         """
-        edf = {
-            'cv_results_df': pd.DataFrame(sr.cv_results_)
-        }
-        self._create_and_save_run_data_frames(extra_data_frames=edf)
-
         return sr
 
     @staticmethod
