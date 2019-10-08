@@ -83,6 +83,9 @@ class SKMLPRunner(_NNRunnerBase):
         if 'max_iters' in grid_search_parameters:
             grid_search_parameters['max_iter'] = grid_search_parameters.pop('max_iters')
 
+        if 'max_attempts' in grid_search_parameters:
+            grid_search_parameters['n_iter_no_change'] = grid_search_parameters.pop('max_attempts')
+
         super().__init__(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test,
                          experiment_name=experiment_name,
                          seed=seed,
