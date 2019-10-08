@@ -48,7 +48,7 @@ class _RunnerBase(ABC):
         self._raw_run_stats = []
         self._fitness_curves = []
         self._copy_zero_curve_fitness_from_first = copy_zero_curve_fitness_from_first
-        self._zero_curve_stat = None
+        self._copy_zero_curve_fitness_from_first_original = copy_zero_curve_fitness_from_first
         self._extra_args = kwargs
         self._output_directory = output_directory
         self._experiment_name = experiment_name
@@ -60,6 +60,7 @@ class _RunnerBase(ABC):
         self._raw_run_stats = []
         self._fitness_curves = []
         self._iteration_times = []
+        self._copy_zero_curve_fitness_from_first = self._copy_zero_curve_fitness_from_first_original
         self._current_logged_algorithm_args.clear()
         if self._output_directory is not None:
             if not os.path.exists(self._output_directory):
@@ -228,20 +229,27 @@ class _RunnerBase(ABC):
                                                  fitness=fitness,
                                                  curve_data=current_iteration_stats,
                                                  t=t)
-            self._zero_curve_stat = curve_stat
 
-        if self.generate_curves and curve is not None and (done or iteration == max(self.iteration_list)):
-            fc = list(zip(range(1, iteration + 1), curve))
+        if self.generate_curves and curve is not None:  # and (done or iteration == max(self.iteration_list)):
+            curve_stats_saved = len(self._fitness_curves)
+            total_curve_stats = len(curve)
+            curve_stats_to_save = total_curve_stats - curve_stats_saved
 
-            curve_stats = [self._zero_curve_stat] + [self._create_curve_stat(iteration=i,
-                                                                             fitness=f,
-                                                                             curve_data=current_iteration_stats,
-                                                                             t=self._iteration_times[i])
-                                                     for (i, f) in fc]
+            fc = list(zip(range(curve_stats_saved, iteration + 1), curve[-curve_stats_to_save:]))
 
-            if self._copy_zero_curve_fitness_from_first and len(curve_stats) > 1:
-                curve_stats[0]['Fitness'] = curve_stats[1]['Fitness']
+            curve_stats = [self._create_curve_stat(iteration=i,
+                                                   fitness=f,
+                                                   curve_data=current_iteration_stats,
+                                                   t=self._iteration_times[i]) for (i, f) in fc]
 
             self._fitness_curves.extend(curve_stats)
+
+            if self._copy_zero_curve_fitness_from_first and len(self._fitness_curves) > 1:
+                self._fitness_curves[0]['Fitness'] = self._fitness_curves[1]['Fitness']
+                self._copy_zero_curve_fitness_from_first = False
+
+        # save progress
+        if iteration > 0:
+            self._create_and_save_run_data_frames()
 
         return not done

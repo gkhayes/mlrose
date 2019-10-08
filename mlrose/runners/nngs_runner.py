@@ -36,7 +36,7 @@ Example usage:
 class NNGSRunner(_NNRunnerBase):
 
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list, algorithm,
-                 grid_search_parameters, bias=True, early_stopping=False, clip_max=1e+10,
+                 grid_search_parameters, bias=True, early_stopping=True, clip_max=1e+10,
                  max_attempts=500, n_jobs=1, generate_curves=True, output_directory=None):
 
         # update short name based on algorithm
