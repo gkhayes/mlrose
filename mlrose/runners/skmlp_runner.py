@@ -75,6 +75,14 @@ class SKMLPRunner(_NNRunnerBase):
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list,
                  grid_search_parameters, early_stopping=False,
                  generate_curves=True, output_directory=None):
+
+        # take a copy of the grid search parameters
+        grid_search_parameters = {**grid_search_parameters}
+
+        # hack for compatibility purposes
+        if 'max_iters' in grid_search_parameters:
+            grid_search_parameters['max_iter'] = grid_search_parameters.pop('max_iters')
+
         super().__init__(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test,
                          experiment_name=experiment_name,
                          seed=seed,
@@ -99,7 +107,7 @@ class SKMLPRunner(_NNRunnerBase):
         all_grid_search_parameters = _NNRunnerBase.build_grid_search_parameters(grid_search_parameters, **kwargs)
         # make sure activation set is the right type.
         if 'activation' in all_grid_search_parameters:
-            activation_set = all_grid_search_parameters['activation']
+            activation_set = list(all_grid_search_parameters['activation'])
             for i in range(len(activation_set)):
                 a = activation_set[i]
                 if a == act.relu:
@@ -112,4 +120,5 @@ class SKMLPRunner(_NNRunnerBase):
                     activation_set[i] = 'identity'
                 elif a == act.softmax:
                     activation_set[i] = 'softmax'
+            all_grid_search_parameters['activation'] = activation_set
         return all_grid_search_parameters

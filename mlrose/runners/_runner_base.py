@@ -33,7 +33,8 @@ class _RunnerBase(ABC):
         pass
 
     def __init__(self, problem, experiment_name, seed, iteration_list, max_attempts=500,
-                 generate_curves=True, output_directory=None, **kwargs):
+                 generate_curves=True, output_directory=None, copy_zero_curve_fitness_from_first=False,
+                 **kwargs):
         self.problem = problem
         self.seed = seed
         self.iteration_list = iteration_list
@@ -45,6 +46,7 @@ class _RunnerBase(ABC):
         self.curves_df = None
         self._raw_run_stats = []
         self._fitness_curves = []
+        self._copy_zero_curve_fitness_from_first = copy_zero_curve_fitness_from_first
         self._zero_curve_stat = None
         self._extra_args = kwargs
         self._output_directory = output_directory
@@ -231,6 +233,10 @@ class _RunnerBase(ABC):
                                                                              curve_data=current_iteration_stats,
                                                                              t=self._iteration_times[i])
                                                      for (i, f) in fc]
+
+            if self._copy_zero_curve_fitness_from_first and len(curve_stats) > 1:
+                curve_stats[0]['Fitness'] = curve_stats[1]['Fitness']
+
             self._fitness_curves.extend(curve_stats)
 
         return not done

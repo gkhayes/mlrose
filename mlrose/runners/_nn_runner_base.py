@@ -17,7 +17,8 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                  output_directory=None,
                  **kwargs):
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
-                         generate_curves=generate_curves, output_directory=output_directory)
+                         generate_curves=generate_curves, output_directory=output_directory,
+                         copy_zero_curve_fitness_from_first=True)
 
         self.classifier = None
 

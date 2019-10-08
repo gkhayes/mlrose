@@ -8,7 +8,7 @@ Example usage:
     from mlrose.runners import NNGSRunner
 
     grid_search_parameters = ({
-        'max_iters': [1, 2, 4, 8, 16, 32, 64, 128],                     # nn params
+        'max_iter': [1, 2, 4, 8, 16, 32, 64, 128],                     # nn params
         'learning_rate': [0.001, 0.002, 0.003],                         # nn params
         'schedule': [ArithDecay(1), ArithDecay(100), ArithDecay(1000)]  # sa params
     })
@@ -41,6 +41,13 @@ class NNGSRunner(_NNRunnerBase):
 
         # update short name based on algorithm
         self._set_dynamic_runner_name(f'{get_short_name(self)}_{get_short_name(algorithm)}')
+
+        # take a copy of the grid search parameters
+        grid_search_parameters = {**grid_search_parameters}
+
+        # hack for compatibility purposes
+        if 'max_iter' in grid_search_parameters:
+            grid_search_parameters['max_iter'] = grid_search_parameters.pop('max_iters')
 
         # call base class init
         super().__init__(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test,

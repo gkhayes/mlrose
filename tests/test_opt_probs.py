@@ -6,7 +6,7 @@
 import unittest
 import numpy as np
 
-from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt
+from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt, OnePointCrossOver
 
 # The following functions/classes are not automatically imported at
 # initialization, so must be imported explicitly from neural.py,
@@ -444,7 +444,11 @@ class TestDiscreteOpt(unittest.TestCase):
         """Test reproduce method when mutation_prob is 1 and max_val is
         greater than 2"""
 
-        problem = DiscreteOpt(5, OneMax(), maximize=True, max_val=3)
+        problem = DiscreteOpt(5, OneMax(),
+                              maximize=True,
+                              max_val=3)
+        problem._crossover = OnePointCrossOver(problem)
+
         father = np.array([0, 0, 0, 0, 0])
         mother = np.array([2, 2, 2, 2, 2])
 
