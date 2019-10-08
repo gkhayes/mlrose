@@ -135,8 +135,8 @@ class _RunnerBase(ABC):
         if additional_algorithm_args is not None:
             self._current_logged_algorithm_args.update(additional_algorithm_args)
 
-        arg_text = [get_short_name(v) for v in self._current_logged_algorithm_args.values()]
-        self._print_banner(f'*** Run START - params: {arg_text}')
+        # arg_text = [get_short_name(v) for v in self._current_logged_algorithm_args.values()]
+        self._print_banner('*** Run START ***')
         np.random.seed(self.seed)
 
         valid_args = [k for k in lk.signature(algorithm).parameters]
@@ -150,7 +150,7 @@ class _RunnerBase(ABC):
                         state_fitness_callback=self._save_state,
                         callback_user_info=user_info,
                         **args_to_pass)
-        print(f'*** Run END - params: {arg_text}')
+        self._print_banner('*** Run END ***')
         return ret
 
     def _start_run_timing(self):
