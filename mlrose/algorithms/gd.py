@@ -102,7 +102,8 @@ def gradient_descent(problem, max_attempts=10, max_iters=np.inf,
         next_state = problem.update_state(updates)
         next_fitness = problem.eval_fitness(next_state)
 
-        if next_fitness > problem.get_fitness():
+        current_fitness = problem.get_fitness()
+        if next_fitness > current_fitness:
             attempts = 0
         else:
             attempts += 1

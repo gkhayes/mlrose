@@ -212,7 +212,8 @@ def genetic_alg(problem, pop_size=200, pop_breed_percent=0.75, elite_dreg_ratio=
 
         # If best child is an improvement,
         # move to that state and reset attempts counter
-        if next_fitness > problem.get_fitness():
+        current_fitness = problem.get_fitness()
+        if next_fitness > current_fitness:
             problem.set_state(next_state)
             attempts = 0
         else:

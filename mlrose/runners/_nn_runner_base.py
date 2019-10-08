@@ -15,6 +15,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                  cv=5,
                  generate_curves=True,
                  output_directory=None,
+                 verbose_grid_search=True,
                  **kwargs):
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
                          generate_curves=generate_curves, output_directory=output_directory,
@@ -30,6 +31,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         self.x_test = x_test
         self.y_test = y_test
         self.cv = cv
+        self.verbose_grid_search = verbose_grid_search
 
     def temp(self):
         pass
@@ -43,7 +45,8 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                                        parameters=self.grid_search_parameters,
                                        x_train=self.x_train,
                                        y_train=self.y_train,
-                                       cv=self.cv)
+                                       cv=self.cv,
+                                       verbose=self.verbose_grid_search)
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 

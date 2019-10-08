@@ -48,8 +48,6 @@ class NNGSRunner(_NNRunnerBase):
         # hack for compatibility purposes
         if 'max_iter' in grid_search_parameters:
             grid_search_parameters['max_iter'] = grid_search_parameters.pop('max_iters')
-        if 'n_iter_no_change' in grid_search_parameters:
-            grid_search_parameters['max_attempts'] = grid_search_parameters.pop('n_iter_no_change')
 
         # call base class init
         super().__init__(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test,
@@ -81,5 +79,3 @@ class NNGSRunner(_NNRunnerBase):
                                       user_info=user_info,
                                       additional_algorithm_args=total_args,
                                       **params)
-
-

@@ -107,7 +107,8 @@ def simulated_annealing(problem, schedule=GeomDecay(), max_attempts=10,
             next_fitness = problem.eval_fitness(next_state)
 
             # Calculate delta E and change prob
-            delta_e = next_fitness - problem.get_fitness()
+            current_fitness = problem.get_fitness()
+            delta_e = next_fitness - current_fitness
             prob = np.exp(delta_e/temp)
 
             # If best neighbor is an improvement or random value is less

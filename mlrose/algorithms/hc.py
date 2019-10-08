@@ -120,7 +120,8 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
                     break
 
             # If best neighbor is an improvement, move to that state
-            if next_fitness > problem.get_fitness():
+            current_fitness = problem.get_fitness()
+            if next_fitness > current_fitness:
                 problem.set_state(next_state)
             else:
                 break

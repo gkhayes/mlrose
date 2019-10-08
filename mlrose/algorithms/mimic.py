@@ -121,7 +121,8 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
 
         # If best child is an improvement,
         # move to that state and reset attempts counter
-        if next_fitness > problem.get_fitness():
+        current_fitness = problem.get_fitness()
+        if next_fitness > current_fitness:
             problem.set_state(next_state)
             attempts = 0
         else:
