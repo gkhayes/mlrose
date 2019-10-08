@@ -50,6 +50,7 @@ class NNClassifier(_NNBase):
         self.output_activation = None
         self.predicted_probabilities = None
         self.node_list = None
+        self.node_count = None
         self.loss = None
 
         # extra parameters
@@ -76,7 +77,7 @@ class NNClassifier(_NNBase):
 
         x_train, y_train = self._format_x_y_data(x_train, y_train)
         self.node_list = self._get_nodes(x_train, y_train)
-
+        self.node_count = _NNBase._calculate_state_size(self.node_list)
         fitness, problem = _NNBase._build_problem_and_fitness_function(X=x_train,
                                                                        y=y_train,
                                                                        node_list=self.node_list,
@@ -87,10 +88,12 @@ class NNClassifier(_NNBase):
         self.fitness_fn = fitness
         self.problem = problem
 
-        # state_size = _NNBase._calculate_state_size(node_list)
         if self.algorithm is not None:
             # self._perform_grid_search()
             params = {k: self.__getattribute__(k) for k in self.kwargs}
+            if init_weights is None:
+                init_weights = np.random.uniform(-1, 1, self.node_count)
+            params['init_state'] = init_weights
             total_args = {
                 'algorithm': self.algorithm,
                 'activation': self.activation,
