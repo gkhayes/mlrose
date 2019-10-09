@@ -207,6 +207,25 @@ class TestOptProb(unittest.TestCase):
         assert np.allclose(problem.get_mate_probs(), probs, atol=0.00001)
 
     @staticmethod
+    def test_eval_mate_probs_maximize_false():
+        """Test eval_mate_probs method"""
+
+        problem = OptProb(5, OneMax(), maximize=False)
+        pop = np.array([[0, 0, 0, 0, 1],
+                        [1, 0, 1, 0, 1],
+                        [1, 1, 1, 1, 0],
+                        [1, 0, 0, 0, 1],
+                        [0, 0, 0, 0, 0],
+                        [1, 1, 1, 1, 1]])
+
+        problem.set_population(pop)
+        problem.eval_mate_probs()
+
+        probs = np.array([0.26667, 0.13333, 0.06667, 0.2, 0.33333, 0])
+
+        assert np.allclose(problem.get_mate_probs(), probs, atol=0.00001)
+
+    @staticmethod
     def test_eval_mate_probs_all_zero():
         """Test eval_mate_probs method when all states have zero fitness"""
 
