@@ -3,6 +3,11 @@
 # Author: Genevieve Hayes
 # License: BSD 3 clause
 
+try:
+    import mlrose
+except:
+    import sys
+    sys.path.append("..")
 import unittest
 import numpy as np
 # The following functions/classes are not automatically imported at

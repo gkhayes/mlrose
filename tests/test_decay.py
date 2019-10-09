@@ -3,6 +3,11 @@
 # Author: Genevieve Hayes
 # License: BSD 3 clause
 
+try:
+    import mlrose
+except:
+    import sys
+    sys.path.append("..")
 import unittest
 from mlrose import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 

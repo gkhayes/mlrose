@@ -3,6 +3,12 @@
 # Author: Genevieve Hayes
 # License: BSD 3 clause
 
+try:
+    import mlrose
+except:
+    import sys
+    sys.path.append("..")
+
 import unittest
 import numpy as np
 from mlrose.neural.activation import identity, sigmoid, softmax, tanh, relu
