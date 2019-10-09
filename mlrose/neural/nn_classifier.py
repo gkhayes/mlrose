@@ -52,13 +52,14 @@ class NNClassifier(_NNBase):
         self.node_list = None
         self.node_count = None
         self.loss = None
+        self.fit_started_ = False
 
         # extra parameters
         self.kwargs = kwargs
         for k, v in kwargs.items():
             if hasattr(self, k):
                 continue
-            self.__setattr__(k,  v)
+            self.__setattr__(k, v)
 
     def get_params(self, deep=True):
         out = super().get_params(deep)
@@ -88,6 +89,13 @@ class NNClassifier(_NNBase):
         self.fitness_fn = fitness
         self.problem = problem
 
+        # check for early abort.
+        if self.runner.has_aborted():
+            self.fitted_weights = np.array([np.NaN] * self.node_count)
+            self.loss = np.NaN
+            self.output_activation = self.fitness_fn.get_output_activation()
+            return self
+
         if self.algorithm is not None:
             # self._perform_grid_search()
             params = {k: self.__getattribute__(k) for k in self.kwargs}
@@ -104,6 +112,7 @@ class NNClassifier(_NNBase):
                 'learning_rate_init': self.learning_rate_init
             }
             max_attempts = self.max_attempts if self.early_stopping else self.max_iters
+            self.fit_started_ = True
             fitted_weights, loss, _ = self.runner.run_one_experiment_(algorithm=self.algorithm,
                                                                       problem=problem,
                                                                       max_iters=self.max_iters,

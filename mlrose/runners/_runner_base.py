@@ -6,12 +6,19 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 import inspect as lk
+import signal
+import multiprocessing
+import ctypes
 
 from mlrose.decorators import get_short_name
 from mlrose.runners.utils import build_data_filename
 
 
 class _RunnerBase(ABC):
+
+    __abort = multiprocessing.Value(ctypes.c_bool)
+    __original_sigint_handler = None
+    __sigint_params = None
 
     @classmethod
     def runner_name(cls):
@@ -56,6 +63,13 @@ class _RunnerBase(ABC):
         self._run_start_time = None
         self._iteration_times = []
 
+    def abort(self):
+        with self.__abort.get_lock():
+            self.__abort.value = True
+
+    def has_aborted(self):
+        return self.__abort.value
+
     def _setup(self):
         self._raw_run_stats = []
         self._fitness_curves = []
@@ -65,7 +79,24 @@ class _RunnerBase(ABC):
         if self._output_directory is not None:
             if not os.path.exists(self._output_directory):
                 os.makedirs(self._output_directory)
-        pass
+
+        # set up ctrl-c handler
+        if self.__original_sigint_handler is None:
+            self.__original_sigint_handler = signal.getsignal(signal.SIGINT)
+            signal.signal(signal.SIGINT, self._ctrl_c_handler)
+
+    def _ctrl_c_handler(self, sig, frame):
+        print('Interrupted - saving progress so far')
+        self.__sigint_params = (sig, frame)
+        self.abort()
+
+    def _tear_down(self):
+        # restore ctrl-c handler
+        if self.__original_sigint_handler is not None:
+            signal.signal(signal.SIGINT, self.__original_sigint_handler)
+            if self.has_aborted():
+                sig, frame = self.__sigint_params
+                self.__original_sigint_handler(sig, frame)
 
     def _log_current_argument(self, arg_name, arg_value):
         self._current_logged_algorithm_args[arg_name] = arg_value
@@ -87,6 +118,7 @@ class _RunnerBase(ABC):
 
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
+        self._tear_down()
 
         self._create_and_save_run_data_frames()
 
@@ -249,7 +281,7 @@ class _RunnerBase(ABC):
                 self._copy_zero_curve_fitness_from_first = False
 
         # save progress
-        if iteration > 0:
-            self._create_and_save_run_data_frames()
+        # if iteration > 0:
+        #    self._create_and_save_run_data_frames()
 
-        return not done
+        return not (self.has_aborted() or done)

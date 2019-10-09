@@ -42,6 +42,6 @@ setup(name='mlrose-hiive',
                 'mlrose.neural', 'mlrose.neural.activation', 'mlrose.neural.fitness',
                 'mlrose.neural.utils', 'mlrose.decorators',
                 'mlrose.gridsearch'],
-      install_requires=['numpy', 'scipy', 'scikit-learn', 'pandas', 'networkx'],
+      install_requires=['numpy', 'scipy', 'scikit-learn', 'pandas', 'networkx', 'joblib'],
       python_requires='>=3',
       zip_safe=False)
