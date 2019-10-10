@@ -81,6 +81,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
     best_state = None
 
     best_fitness_curve = []
+    all_curves = []
 
     continue_iterating = True
     for current_restart in range(restarts + 1):
@@ -119,7 +120,9 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                 attempts += 1
 
             if curve:
-                fitness_curve.append(problem.get_adjusted_fitness())
+                adjusted_fitness = problem.get_adjusted_fitness()
+                fitness_curve.append(adjusted_fitness)
+                all_curves.append({'current_restart': current_restart, 'Fitness': problem.get_adjusted_fitness()})
 
             # invoke callback
             if state_fitness_callback is not None:
@@ -129,7 +132,7 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
                                                             done=max_attempts_reached,
                                                             state=problem.get_state(),
                                                             fitness=problem.get_adjusted_fitness(),
-                                                            curve=np.asarray(fitness_curve) if curve else None,
+                                                            curve=np.asarray(all_curves) if curve else None,
                                                             user_data=callback_extra_data)
                 # break out if requested
                 if not continue_iterating:
@@ -143,8 +146,8 @@ def random_hill_climb(problem, max_attempts=10, max_iters=np.inf, restarts=0,
             if curve:
                 best_fitness_curve = [*fitness_curve]
 
-        # break out if requested
-        if not continue_iterating:
+        # break out if we can stop
+        if problem.can_stop():
             break
     best_fitness *= problem.get_maximize()
     if curve:

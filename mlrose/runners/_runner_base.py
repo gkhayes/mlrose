@@ -15,7 +15,6 @@ from mlrose.runners.utils import build_data_filename
 
 
 class _RunnerBase(ABC):
-
     __abort = multiprocessing.Value(ctypes.c_bool)
     __original_sigint_handler = None
     __sigint_params = None
@@ -35,6 +34,16 @@ class _RunnerBase(ABC):
         print('*' * len(text))
         print(text)
         print('*' * len(text))
+
+    @staticmethod
+    def _sanitize_value(value):
+        if isinstance(value, tuple) or isinstance(value, list):
+            v = str(value)
+        elif isinstance(value, np.ndarray):
+            v = str(list(value))
+        else:
+            v = get_short_name(value)
+        return v
 
     @abstractmethod
     def run(self):
@@ -107,28 +116,31 @@ class _RunnerBase(ABC):
         values = [([(k, v) for v in vs]) for (k, (n, vs)) in kwargs.items() if vs is not None]
         self.parameter_description_dict = {k: n for (k, (n, vs)) in kwargs.items() if vs is not None}
         value_sets = list(it.product(*values))
-        i = int(max(self.iteration_list))
 
         print(f'Running {self.dynamic_runner_name()}')
         run_start = time.perf_counter()
         for vns in value_sets:
             total_args = dict(vns)
+            if 'max_iters' not in total_args:
+                total_args['max_iters'] = int(max(self.iteration_list))
 
-            self._run_one_experiment(algorithm, i, total_args)
+            self._run_one_experiment(algorithm, total_args)
 
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
-        self._tear_down()
 
         self._create_and_save_run_data_frames()
+        self._tear_down()
 
         return self.run_stats_df, self.curves_df
 
-    def _run_one_experiment(self, algorithm, max_iters, total_args, **kwargs):
+    def _run_one_experiment(self, algorithm, total_args, **params):
         if self._extra_args is not None and len(self._extra_args) > 0:
             total_args.update(self._extra_args)
+        total_args.update(params)
+
         user_info = [(k, v) for k, v in total_args.items()]
-        self._invoke_algorithm(algorithm=algorithm, problem=self.problem, max_iters=max_iters,
+        self._invoke_algorithm(algorithm=algorithm, problem=self.problem,
                                max_attempts=self.max_attempts, curve=self.generate_curves,
                                user_info=user_info, **total_args)
 
@@ -136,8 +148,9 @@ class _RunnerBase(ABC):
         self.run_stats_df = pd.DataFrame(self._raw_run_stats)
         self.curves_df = pd.DataFrame(self._fitness_curves)
         if self._output_directory is not None:
-            self._dump_df_to_disk(self.run_stats_df, df_name='run_stats_df')
-            if self.generate_curves:
+            if len(self.run_stats_df) > 0:
+                self._dump_df_to_disk(self.run_stats_df, df_name='run_stats_df')
+            if self.generate_curves and len(self.curves_df) > 0:
                 self._dump_df_to_disk(self.curves_df, df_name='curves_df')
             # output any extra
             if isinstance(extra_data_frames, dict):
@@ -150,13 +163,17 @@ class _RunnerBase(ABC):
         df.to_csv(f'{filename_root}.csv')
         print(f'Saving: [{filename_root}.csv]')
 
-    def _dump_pickle_to_disk(self, object_to_pickle, name):
-        if self._output_directory is None:
-            return
+    def _get_pickle_filename_root(self, name):
         filename_root = build_data_filename(output_directory=self._output_directory,
                                             runner_name=self.dynamic_runner_name(),
                                             experiment_name=self._experiment_name,
                                             df_name=name)
+        return filename_root
+
+    def _dump_pickle_to_disk(self, object_to_pickle, name):
+        if self._output_directory is None:
+            return
+        filename_root = self._get_pickle_filename_root(name)
 
         pk.dump(object_to_pickle, open(f'{filename_root}.p', "wb"))
         print(f'Saving: [{filename_root}.p]')
@@ -191,13 +208,16 @@ class _RunnerBase(ABC):
         self._iteration_times.clear()
 
     @staticmethod
-    def _create_curve_stat(iteration, fitness, curve_data, t=None):
+    def _create_curve_stat(iteration, curve_value, curve_data, t=None):
         curve_stat = {
             'Iteration': iteration,
             'Time': t,
-            'Fitness': fitness
+            'Fitness': curve_value
         }
+
         curve_stat.update(curve_data)
+        if isinstance(curve_value, dict):
+            curve_stat.update(curve_value)
         return curve_stat
 
     def _save_state(self, iteration, state, fitness, user_data, attempt=0, done=False, curve=None):
@@ -227,17 +247,15 @@ class _RunnerBase(ABC):
 
         gd = lambda n: n if n not in self.parameter_description_dict.keys() else self.parameter_description_dict[n]
 
-        param_stats = {str(gd(k)): get_short_name(v) for k, v in self._current_logged_algorithm_args.items()}
-
-        # gather all stats
-        current_iteration_stats = {**{p: v for (p, v) in user_data
-                                      if p.lower() not in [k.lower() for k in param_stats.keys()]},
-                                   **param_stats}
+        current_iteration_stats = {str(gd(k)): self._sanitize_value(v)
+                                   for k, v in self._current_logged_algorithm_args.items()}
+        current_iteration_stats.update({str(gd(k)): self._sanitize_value(v)
+                                        for k, v in {k: v for (k, v) in user_data}.items()})
 
         # check for additional info
         gi = lambda k, v: {} if not hasattr(v, 'get_info__') else v.get_info__(t)
-        ai = (gi(k, v) for k, v in self._current_logged_algorithm_args.items())
-        additional_info = {k: v for d in ai for k, v in d.items()}
+        ai = (gi(k, v) for k, v in current_iteration_stats.items())
+        additional_info = {k: self._sanitize_value(v) for d in ai for k, v in d.items()}
 
         if iteration > 0:
             remaining_iterations = [i for i in self.iteration_list if i >= iteration]
@@ -250,27 +268,21 @@ class _RunnerBase(ABC):
                 'Iteration': i,
                 'Fitness': fitness,
                 'Time': t,
-                'State': state
+                'State': self._sanitize_value(state)
             }
-            run_stat = {**run_stat, **current_iteration_stats, **additional_info}
-
+            run_stat.update(additional_info)
+            run_stat.update(current_iteration_stats)
             self._raw_run_stats.append(run_stat)
-
-        if self.generate_curves and iteration == 0:
-            curve_stat = self._create_curve_stat(iteration=0,
-                                                 fitness=fitness,
-                                                 curve_data=current_iteration_stats,
-                                                 t=t)
 
         if self.generate_curves and curve is not None:  # and (done or iteration == max(self.iteration_list)):
             curve_stats_saved = len(self._fitness_curves)
             total_curve_stats = len(curve)
             curve_stats_to_save = total_curve_stats - curve_stats_saved
 
-            fc = list(zip(range(curve_stats_saved, iteration + 1), curve[-curve_stats_to_save:]))
+            fc = list(zip(range(curve_stats_saved, total_curve_stats + 1), curve[-curve_stats_to_save:]))
 
             curve_stats = [self._create_curve_stat(iteration=i,
-                                                   fitness=f,
+                                                   curve_value=f,
                                                    curve_data=current_iteration_stats,
                                                    t=self._iteration_times[i]) for (i, f) in fc]
 
@@ -279,6 +291,7 @@ class _RunnerBase(ABC):
             if self._copy_zero_curve_fitness_from_first and len(self._fitness_curves) > 1:
                 self._fitness_curves[0]['Fitness'] = self._fitness_curves[1]['Fitness']
                 self._copy_zero_curve_fitness_from_first = False
+            self._create_and_save_run_data_frames()
 
         # save progress
         # if iteration > 0:
