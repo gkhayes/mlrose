@@ -1,8 +1,8 @@
-from sklearn.base import BaseEstimator
-
 import mlrose.neural.activation as act
-from sklearn.neural_network import MLPClassifier
+import numpy as np
 
+from sklearn.neural_network import MLPClassifier
+from sklearn.base import BaseEstimator
 from mlrose.decorators import short_name
 from mlrose.runners._nn_runner_base import _NNRunnerBase
 
@@ -15,10 +15,10 @@ class SKMLPRunner(_NNRunnerBase):
             self.runner = runner
             self.mlp = MLPClassifier(**kwargs)
             self.state_callback = self.runner._save_state
-            self.user_info = [(k, v) for k, v in kwargs.items()]
+            self.fit_started_ = False
+            self.user_info_ = None
+            self.kwargs_ = kwargs
 
-            for k, v in kwargs.items():
-                self.runner._log_current_argument(k, v)
             # need to intercept the classifier so we can track statistics.
             if runner.generate_curves:
                 if hasattr(self.mlp, '_update_no_improvement_count'):
@@ -28,15 +28,25 @@ class SKMLPRunner(_NNRunnerBase):
                     self._mlp_loss_grad_lbfgs = self.mlp._loss_grad_lbfgs
                     self.mlp._loss_grad_lbfgs = self._loss_grad_lbfgs_intercept
 
-        def __getattr__(self, item):
-            return self.mlp.__getattribute__(item)
+        def __getattr__(self, item, default=None):
+            if 'mlp' in self.__dict__ and hasattr(self.__dict__['mlp'], item):
+                return self.__dict__['mlp'].__getattr__(item, default)
+            return self.__dict__[item] if item in self.__dict__ else default
+
+        def __setattr__(self, item, value):
+            if 'mlp' in self.__dict__ and hasattr(self.__dict__['mlp'], item):
+                self.__dict__['mlp'].__setattr__(item, value)
+            self.__dict__[item] = value
 
         def get_params(self, deep=True):
             out = super().get_params()
             out.update(self.mlp.get_params())
+            # exclude any that end with an underscore
+            out = {k: v for (k, v) in out.items() if not k[-1] == '_'}
             return out
 
         def fit(self, x_train, y_train=None):
+            self.fit_started_ = True
             self.runner._start_run_timing()
             # make initial callback
             self._invoke_runner_callback()
@@ -64,10 +74,18 @@ class SKMLPRunner(_NNRunnerBase):
             state = self.mlp.coefs_ if hasattr(self.mlp, 'coefs_') else []
             fitness = self.mlp.loss_ if hasattr(self.mlp, 'loss_') else 0
             curve = self.mlp.loss_curve_ if hasattr(self.mlp, 'loss_curve_') else [0]
+            # check for early abort.
+            if self.runner.has_aborted():
+                return self
+            if self.user_info_ is None:
+                self.user_info_ = [(k, self.__dict__[k]) for k in self.kwargs_.keys() if hasattr(self, k)]
+                for k, v in self.user_info_:
+                    self.runner._log_current_argument(k, v)
+
             return self.state_callback(iteration=iterations,
                                        state=state,
                                        fitness=fitness,
-                                       user_data=self.user_info,
+                                       user_data=self.user_info_,
                                        attempt=no_improvement_count,
                                        done=done,
                                        curve=curve)

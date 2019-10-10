@@ -108,6 +108,9 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         return filename_root
 
     def _tear_down(self):
+        if self.best_params is None:
+            super()._tear_down()
+            return
         filename_root = super()._get_pickle_filename_root('')
 
         path = os.path.join(*filename_root.split('/')[:-1])
@@ -126,13 +129,15 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         for fn in filenames:
             filename = os.path.join(path, fn)
             with open(filename, 'rb') as pickle_file:
-                df = pk.load(pickle_file)
-                delete = (pd.merge(df, df_best_params, how='inner')).empty
-                if delete:
-                    incorrect_files.append(filename)
-                else:
-                    correct_files.append(filename)
-                print()
+                try:
+                    df = pk.load(pickle_file)
+                    delete = (pd.merge(df, df_best_params, how='inner')).empty
+                    if delete:
+                        incorrect_files.append(filename)
+                    else:
+                        correct_files.append(filename)
+                except:
+                    pass
 
         # extract the md5s from the names for the best and non-best parameter files
         correct_md5s = list(set([p.split('_')[-1][:-2] for p in correct_files]))
