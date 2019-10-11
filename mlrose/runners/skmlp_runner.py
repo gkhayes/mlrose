@@ -1,5 +1,5 @@
 import mlrose.neural.activation as act
-import sklearn.metrics as skmt
+import numpy as np
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.base import BaseEstimator
@@ -9,7 +9,6 @@ from mlrose.runners._nn_runner_base import _NNRunnerBase
 
 @short_name('skmlp')
 class SKMLPRunner(_NNRunnerBase):
-
     class _MLPClassifier(BaseEstimator):
         def __init__(self, runner, **kwargs):
             self.runner = runner
@@ -18,6 +17,10 @@ class SKMLPRunner(_NNRunnerBase):
             self.fit_started_ = False
             self.user_info_ = None
             self.kwargs_ = kwargs
+
+            self.loss_ = 1.
+            self.state_ = None
+            self.curve_ = []
 
             # need to intercept the classifier so we can track statistics.
             if runner.generate_curves:
@@ -56,13 +59,24 @@ class SKMLPRunner(_NNRunnerBase):
             return self.mlp.predict(x_test)
 
         def _update_no_improvement_count_intercept(self, early_stopping, x_val, y_val):
+            ret = self._mlp_update_no_improvement_count(early_stopping, x_val, y_val)
+            self._state = self.mlp.coefs_ if hasattr(self.mlp, 'coefs_') else []
+            self.loss_ = self.mlp.loss_ if hasattr(self.mlp, 'loss_') else 0
+            if hasattr(self.mlp, 'loss_curve_'):
+                self.curve_ = self.mlp.loss_curve_
+            else:
+                self.curve_.append(self.loss_)
             self._invoke_runner_callback()
-            return self._mlp_update_no_improvement_count(early_stopping, x_val, y_val)
+            return ret
 
         def _loss_grad_lbfgs_intercept(self, packed_coef_inter, x, y, activations, deltas, coef_grads, intercept_grads):
-            self._invoke_runner_callback()
-            return self._mlp_loss_grad_lbfgs(packed_coef_inter, x, y, activations, deltas,
+            f, g = self._mlp_loss_grad_lbfgs(packed_coef_inter, x, y, activations, deltas,
                                              coef_grads, intercept_grads)
+            self.loss_ = f
+            self.state_ = g
+            self.curve_.append(self.loss_)
+            self._invoke_runner_callback()
+            return f, g
 
         def _invoke_runner_callback(self):
             iterations = self.mlp.n_iter_ if hasattr(self.mlp, 'n_iter_') else 0
@@ -71,9 +85,6 @@ class SKMLPRunner(_NNRunnerBase):
             done = (self.mlp.early_stopping and (no_improvement_count > self.mlp.n_iter_no_change) or
                     iterations == self.mlp.max_iter)
 
-            state = self.mlp.coefs_ if hasattr(self.mlp, 'coefs_') else []
-            fitness = self.mlp.loss_ if hasattr(self.mlp, 'loss_') else 0
-            curve = self.mlp.loss_curve_ if hasattr(self.mlp, 'loss_curve_') else [0]
             # check for early abort.
             if self.runner.has_aborted():
                 return self
@@ -83,16 +94,15 @@ class SKMLPRunner(_NNRunnerBase):
                     self.runner._log_current_argument(k, v)
 
             return self.state_callback(iteration=iterations,
-                                       state=state,
-                                       fitness=fitness,
+                                       state=self.state_,
+                                       fitness=self.loss_,
                                        user_data=self.user_info_,
                                        attempt=no_improvement_count,
                                        done=done,
-                                       curve=curve)
+                                       curve=self.curve_)
 
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list,
-                 grid_search_parameters, grid_search_scorer_method=skmt.balanced_accuracy_score,
-                 early_stopping=True, max_attempts=500, n_jobs=1, cv=5,
+                 grid_search_parameters, early_stopping=True, max_attempts=500, n_jobs=1, cv=5,
                  generate_curves=True, output_directory=None, replay=False, **kwargs):
 
         # take a copy of the grid search parameters
@@ -110,7 +120,6 @@ class SKMLPRunner(_NNRunnerBase):
                          seed=seed,
                          iteration_list=iteration_list,
                          grid_search_parameters=grid_search_parameters,
-                         grid_search_scorer_method=grid_search_scorer_method,
                          generate_curves=generate_curves,
                          output_directory=output_directory,
                          replay=replay,
