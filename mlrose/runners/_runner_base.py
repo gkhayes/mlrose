@@ -108,6 +108,8 @@ class _RunnerBase(ABC):
     def _setup(self):
         self._raw_run_stats = []
         self._fitness_curves = []
+        self._curve_base = 0
+
         self._iteration_times = []
         self._copy_zero_curve_fitness_from_first = self._copy_zero_curve_fitness_from_first_original
         self._current_logged_algorithm_args.clear()
@@ -127,7 +129,6 @@ class _RunnerBase(ABC):
 
     def _tear_down(self):
         # restore ctrl-c handler
-        self._curve_base = 0
         self._decrement_spawn_count()
         if self.__original_sigint_handler is not None:
             signal.signal(signal.SIGINT, self.__original_sigint_handler)
@@ -259,7 +260,6 @@ class _RunnerBase(ABC):
 
     def _start_run_timing(self):
         self._run_start_time = time.perf_counter()
-        self._iteration_times.clear()
 
     @staticmethod
     def _create_curve_stat(iteration, curve_value, curve_data, t=None):
@@ -338,7 +338,7 @@ class _RunnerBase(ABC):
             curve_stats = [self._create_curve_stat(iteration=i,
                                                    curve_value=f,
                                                    curve_data=current_iteration_stats,
-                                                   t=self._iteration_times[i-curve_stats_saved]) for (i, f) in fc]
+                                                   t=self._iteration_times[i]) for (i, f) in fc]
 
             self._fitness_curves.extend(curve_stats)
 

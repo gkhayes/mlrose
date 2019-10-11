@@ -12,7 +12,7 @@ from mlrose.decorators import short_name
 @short_name('mimic')
 def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
           max_iters=np.inf, curve=False, random_state=None,
-          state_fitness_callback=None, callback_user_info=None):
+          state_fitness_callback=None, callback_user_info=None, noise=0.0):
     """Use MIMIC to find the optimum for a given optimization problem.
     Parameters
     ----------
@@ -81,6 +81,11 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if (not isinstance(max_iters, int) and max_iters != np.inf
             and not max_iters.is_integer()) or (max_iters < 0):
         raise Exception("""max_iters must be a positive integer.""")
+
+    if (noise < 0) or (noise > 0.1):
+        raise Exception("""noise must be between 0 and 0.1.""")
+    else:
+        problem.noise = noise
 
     # Set random seed
     if isinstance(random_state, int) and random_state > 0:

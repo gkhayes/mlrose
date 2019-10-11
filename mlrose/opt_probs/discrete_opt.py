@@ -62,6 +62,7 @@ class DiscreteOpt(_OptProb):
         self.parent_nodes = []
         self.sample_order = []
         self.prob_type = 'discrete'
+        self.noise = 0
 
         self._crossover = UniformCrossOver(self) if crossover is None else crossover
         self._mutator = SwapMutator(self) if mutator is None else mutator
@@ -99,11 +100,23 @@ class DiscreteOpt(_OptProb):
                     self.keep_sample[:, parent[i - 1]] == j)[0]]
 
                 if not len(subset):
-                    probs[i, j] = 1/self.max_val
+                    probs[i, j] = 1 / self.max_val
                 else:
-                    probs[i, j] = np.histogram(subset[:, i],
-                                               np.arange(self.max_val + 1),
-                                               density=True)[0]
+                    temp_probs = np.histogram(subset[:, i],
+                                              np.arange(self.max_val + 1),
+                                              density=True)[0]
+
+                    # Check if noise argument is not default (in epsilon)
+                    if self.noise > 0:
+                        # Add noise, from the mimic argument "noise"
+                        temp_probs = (temp_probs + self.noise)
+                        # All probability adds up to one
+                        temp_probs = np.divide(temp_probs, np.sum(temp_probs))
+                        # Handle floating point error to ensure probability adds up to 1
+                        if sum(temp_probs) != 1.0:
+                            temp_probs = np.divide(temp_probs, np.sum(temp_probs))
+                    # Set probability
+                    probs[i, j] = temp_probs
 
         # Update probs and parent
         self.node_probs = probs
@@ -257,7 +270,7 @@ class DiscreteOpt(_OptProb):
             raise Exception("""keep_pct must be between 0 and 1.""")
 
         # Determine threshold
-        theta = np.percentile(self.pop_fitness, 100*(1 - keep_pct))
+        theta = np.percentile(self.pop_fitness, 100 * (1 - keep_pct))
 
         # Determine samples for keeping
         keep_inds = np.where(self.pop_fitness >= theta)[0]
@@ -315,7 +328,7 @@ class DiscreteOpt(_OptProb):
         else:
             vals = list(np.arange(self.max_val))
             vals.remove(neighbor[i])
-            neighbor[i] = vals[np.random.randint(0, self.max_val-1)]
+            neighbor[i] = vals[np.random.randint(0, self.max_val - 1)]
 
         return neighbor
 
@@ -419,7 +432,7 @@ class DiscreteOpt(_OptProb):
 
         # Get values for remaining elements in new samples
         for i in sample_order:
-            par_ind = self.parent_nodes[i-1]
+            par_ind = self.parent_nodes[i - 1]
 
             for j in range(self.max_val):
                 inds = np.where(new_sample[:, par_ind] == j)[0]
@@ -428,4 +441,3 @@ class DiscreteOpt(_OptProb):
                                                        p=self.node_probs[i, j])
 
         return new_sample
-
