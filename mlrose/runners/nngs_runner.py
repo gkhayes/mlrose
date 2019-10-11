@@ -68,6 +68,7 @@ class NNGSRunner(_NNRunnerBase):
                                        max_attempts=max_attempts,
                                        clip_max=clip_max,
                                        early_stopping=early_stopping,
+                                       seed=seed,
                                        bias=bias)
 
     def run_one_experiment_(self, algorithm, total_args, **params):

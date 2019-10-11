@@ -87,10 +87,11 @@ class _RunnerBase(ABC):
             self.__spawn_count.value -= 1
 
     def _get_spawn_count(self):
-        print(f'*** Spawn Count Remaining: {self.__spawn_count.value}')
+        self._print_banner(f'*** Spawn Count Remaining: {self.__spawn_count.value} ***')
         return self.__spawn_count.value
 
     def abort(self):
+        self._print_banner('*** ABORTING ***')
         with self.__abort.get_lock():
             self.__abort.value = True
 

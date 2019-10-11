@@ -92,7 +92,7 @@ class SKMLPRunner(_NNRunnerBase):
 
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list,
                  grid_search_parameters, early_stopping=True, max_attempts=500, n_jobs=1, cv=5,
-                 generate_curves=True, output_directory=None, **kwargs):
+                 generate_curves=True, output_directory=None, replay=False, **kwargs):
 
         # take a copy of the grid search parameters
         grid_search_parameters = {**grid_search_parameters}
@@ -111,6 +111,7 @@ class SKMLPRunner(_NNRunnerBase):
                          grid_search_parameters=grid_search_parameters,
                          generate_curves=generate_curves,
                          output_directory=output_directory,
+                         replay=replay,
                          n_jobs=n_jobs,
                          cv=cv)
 
