@@ -336,7 +336,7 @@ class _RunnerBase(ABC):
             curve_stats = [self._create_curve_stat(iteration=i,
                                                    curve_value=f,
                                                    curve_data=current_iteration_stats,
-                                                   t=self._iteration_times[i]) for (i, f) in fc]
+                                                   t=self._iteration_times[i-curve_stats_saved]) for (i, f) in fc]
 
             self._fitness_curves.extend(curve_stats)
 
