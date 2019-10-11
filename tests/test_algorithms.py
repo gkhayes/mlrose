@@ -266,6 +266,32 @@ class TestAlgorithms(unittest.TestCase):
 
         assert (np.array_equal(best_state, x) and best_fitness == 0)
 
+    @staticmethod
+    def test_mimic_discrete_max_fast():
+        """Test mimic function for a discrete maximization problem using
+        fast mimic"""
+
+        problem = DiscreteOpt(5, OneMax(), maximize=True)
+        best_state, best_fitness = mimic(problem, max_attempts=50,
+                                         fast_mimic=True)
+
+        x = np.array([1, 1, 1, 1, 1])
+
+        assert (np.array_equal(best_state, x) and best_fitness == 5)
+
+    @staticmethod
+    def test_mimic_discrete_min_fast():
+        """Test mimic function for a discrete minimization problem using
+        fast mimic"""
+
+        problem = DiscreteOpt(5, OneMax(), maximize=False)
+        best_state, best_fitness = mimic(problem, max_attempts=50,
+                                         fast_mimic=True)
+
+        x = np.array([0, 0, 0, 0, 0])
+
+        assert (np.array_equal(best_state, x) and best_fitness == 0)
+
 
 if __name__ == '__main__':
     unittest.main()
