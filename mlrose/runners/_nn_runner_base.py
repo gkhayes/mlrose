@@ -6,6 +6,7 @@ from abc import ABC
 import pandas as pd
 import numpy as np
 import pickle as pk
+
 from joblib.my_exceptions import WorkerInterrupt
 
 from mlrose import GridSearchMixin
@@ -13,12 +14,12 @@ from mlrose.runners._runner_base import _RunnerBase
 
 
 class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
-
     _interrupted_result_list = []
 
     def __init__(self, x_train, y_train, x_test, y_test,
                  experiment_name, seed, iteration_list,
                  grid_search_parameters,
+                 grid_search_scorer_method,
                  cv=5,
                  generate_curves=True,
                  output_directory=None,
@@ -26,9 +27,15 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                  n_jobs=1,
                  replay=False,
                  **kwargs):
-        super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
-                         generate_curves=generate_curves, output_directory=output_directory, replay=replay,
-                         copy_zero_curve_fitness_from_first=True)
+        # call super on _RunnerBase
+        _RunnerBase.__init__(self, problem=None, experiment_name=experiment_name, seed=seed,
+                             iteration_list=iteration_list,
+                             generate_curves=generate_curves, output_directory=output_directory,
+                             replay=replay,
+                             copy_zero_curve_fitness_from_first=True)
+
+        # call super on GridSearchMixin
+        GridSearchMixin.__init__(self, scorer_method=grid_search_scorer_method)
 
         self.classifier = None
 
@@ -63,7 +70,6 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                 gsr_name = f"{super()._get_pickle_filename_root('grid_search_results')}.p"
                 with open(gsr_name, 'rb') as pickle_file:
                     sr = pk.load(pickle_file)
-
 
             # pull the stats from the best estimator to here.
             # (as grid search will have cloned this object).

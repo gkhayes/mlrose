@@ -1,3 +1,5 @@
+import sklearn.metrics as skmt
+
 from mlrose import NNClassifier
 from mlrose.decorators import short_name
 from mlrose.runners._nn_runner_base import _NNRunnerBase
@@ -36,7 +38,8 @@ Example usage:
 class NNGSRunner(_NNRunnerBase):
 
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list, algorithm,
-                 grid_search_parameters, bias=True, early_stopping=True, clip_max=1e+10,
+                 grid_search_parameters, grid_search_scorer_method=skmt.balanced_accuracy_score,
+                 bias=True, early_stopping=True, clip_max=1e+10,
                  max_attempts=500, n_jobs=1, cv=5, generate_curves=True, output_directory=None,
                  **kwargs):
 
@@ -60,6 +63,7 @@ class NNGSRunner(_NNRunnerBase):
                          output_directory=output_directory,
                          n_jobs=n_jobs,
                          cv=cv,
+                         grid_search_scorer_method=grid_search_scorer_method,
                          **kwargs)
 
         # build the classifier

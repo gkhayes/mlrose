@@ -4,8 +4,9 @@ import inspect
 
 
 class GridSearchMixin:
-    _scorer_method = skmt.balanced_accuracy_score
-    _params = inspect.signature(_scorer_method)
+    def __init__(self, scorer_method=None):
+        self._scorer_method = skmt.balanced_accuracy_score if scorer_method is None else scorer_method
+        self._params = inspect.signature(self._scorer_method)
 
     def _perform_grid_search(self, classifier, x_train, y_train, cv, parameters, n_jobs=1, verbose=False):
         scorer = self.make_scorer()
@@ -30,4 +31,4 @@ class GridSearchMixin:
     def _grid_search_score_intercept(self, y_pred, y_true, **kwargs):
         cleaned_kwargs = {k: v for k, v in kwargs.items() if k in list(inspect.signature(self._scorer_method).parameters)}
 
-        return GridSearchMixin._scorer_method(y_pred=y_pred, y_true=y_true, **cleaned_kwargs)
+        return self._scorer_method(y_pred=y_pred, y_true=y_true, **cleaned_kwargs)
