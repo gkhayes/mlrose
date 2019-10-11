@@ -1,5 +1,5 @@
 import mlrose.neural.activation as act
-import numpy as np
+import sklearn.metrics as skmt
 
 from sklearn.neural_network import MLPClassifier
 from sklearn.base import BaseEstimator
@@ -102,7 +102,8 @@ class SKMLPRunner(_NNRunnerBase):
                                        curve=self.curve_)
 
     def __init__(self, x_train, y_train, x_test, y_test, experiment_name, seed, iteration_list,
-                 grid_search_parameters, early_stopping=True, max_attempts=500, n_jobs=1, cv=5,
+                 grid_search_parameters, grid_search_scorer_method=skmt.balanced_accuracy_score,
+                 early_stopping=True, max_attempts=500, n_jobs=1, cv=5,
                  generate_curves=True, output_directory=None, replay=False, **kwargs):
 
         # take a copy of the grid search parameters
@@ -120,6 +121,7 @@ class SKMLPRunner(_NNRunnerBase):
                          seed=seed,
                          iteration_list=iteration_list,
                          grid_search_parameters=grid_search_parameters,
+                         grid_search_scorer_method=grid_search_scorer_method,
                          generate_curves=generate_curves,
                          output_directory=output_directory,
                          replay=replay,

@@ -81,10 +81,10 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
             edf = {
                 'cv_results_df': self.cv_results_df
             }
-            self._create_and_save_run_data_frames(extra_data_frames=edf)
+            self._create_and_save_run_data_frames(extra_data_frames=edf, final_save=True)
 
             try:
-                self._dump_pickle_to_disk(sr, 'grid_search_results')
+                self._dump_pickle_to_disk(sr, 'grid_search_results', final_save=True)
             except:
                 pass
 

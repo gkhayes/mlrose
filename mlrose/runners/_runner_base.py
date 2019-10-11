@@ -157,7 +157,7 @@ class _RunnerBase(ABC):
         run_end = time.perf_counter()
         print(f'Run time: {run_end - run_start}')
 
-        self._create_and_save_run_data_frames()
+        self._create_and_save_run_data_frames(final_save=True)
         self._tear_down()
 
         return self.run_stats_df, self.curves_df
@@ -172,24 +172,25 @@ class _RunnerBase(ABC):
                                max_attempts=self.max_attempts, curve=self.generate_curves,
                                user_info=user_info, **total_args)
 
-    def _create_and_save_run_data_frames(self, extra_data_frames=None):
+    def _create_and_save_run_data_frames(self, extra_data_frames=None, final_save=False):
         self.run_stats_df = pd.DataFrame(self._raw_run_stats)
         self.curves_df = pd.DataFrame(self._fitness_curves)
         if self._output_directory is not None:
             if len(self.run_stats_df) > 0:
-                self._dump_df_to_disk(self.run_stats_df, df_name='run_stats_df')
+                self._dump_df_to_disk(self.run_stats_df, df_name='run_stats_df', final_save=final_save)
             if self.generate_curves and len(self.curves_df) > 0:
-                self._dump_df_to_disk(self.curves_df, df_name='curves_df')
+                self._dump_df_to_disk(self.curves_df, df_name='curves_df', final_save=final_save)
             # output any extra
             if isinstance(extra_data_frames, dict):
                 for n, v in extra_data_frames.items():
-                    self._dump_df_to_disk(v, df_name=n)
+                    self._dump_df_to_disk(v, df_name=n, final_save=final_save)
 
-    def _dump_df_to_disk(self, df, df_name):
+    def _dump_df_to_disk(self, df, df_name, final_save=False):
         filename_root = self._dump_pickle_to_disk(object_to_pickle=df,
                                                   name=df_name)
         df.to_csv(f'{filename_root}.csv')
-        print(f'Saving: [{filename_root}.csv]')
+        if final_save:
+            print(f'Saving: [{filename_root}.csv]')
 
     def _get_pickle_filename_root(self, name):
         filename_root = build_data_filename(output_directory=self._output_directory,
@@ -198,13 +199,14 @@ class _RunnerBase(ABC):
                                             df_name=name)
         return filename_root
 
-    def _dump_pickle_to_disk(self, object_to_pickle, name):
+    def _dump_pickle_to_disk(self, object_to_pickle, name, final_save=False):
         if self._output_directory is None:
             return
         filename_root = self._get_pickle_filename_root(name)
 
         pk.dump(object_to_pickle, open(f'{filename_root}.p', "wb"))
-        print(f'Saving: [{filename_root}.p]')
+        if final_save:
+            print(f'Saving: [{filename_root}.p]')
         return filename_root
 
     def _load_pickles(self):
