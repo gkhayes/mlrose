@@ -24,9 +24,10 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                  output_directory=None,
                  verbose_grid_search=True,
                  n_jobs=1,
+                 replay=False,
                  **kwargs):
         super().__init__(problem=None, experiment_name=experiment_name, seed=seed, iteration_list=iteration_list,
-                         generate_curves=generate_curves, output_directory=output_directory,
+                         generate_curves=generate_curves, output_directory=output_directory, replay=replay,
                          copy_zero_curve_fitness_from_first=True)
 
         self.classifier = None
@@ -58,6 +59,11 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
                                            verbose=self.verbose_grid_search)
             run_end = time.perf_counter()
             print(f'Run time: {run_end - run_start}')
+            if self.replay_mode():
+                gsr_name = f"{super()._get_pickle_filename_root('grid_search_results')}.p"
+                with open(gsr_name, 'rb') as pickle_file:
+                    sr = pk.load(pickle_file)
+
 
             # pull the stats from the best estimator to here.
             # (as grid search will have cloned this object).
@@ -163,7 +169,6 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
             if os.path.exists(correct_filename):
                 os.remove(correct_filename)
             os.rename(filename, correct_filename)
-
 
         super()._tear_down()
 

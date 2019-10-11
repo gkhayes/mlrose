@@ -90,7 +90,7 @@ class NNClassifier(_NNBase):
         self.problem = problem
 
         # check for early abort.
-        if self.runner.has_aborted():
+        if self.runner.has_aborted() or self.runner.replay_mode():
             self.fitted_weights = np.array([np.NaN] * self.node_count)
             self.loss = np.NaN
             self.output_activation = self.fitness_fn.get_output_activation()

@@ -16,6 +16,8 @@ from mlrose.runners.utils import build_data_filename
 
 class _RunnerBase(ABC):
     __abort = multiprocessing.Value(ctypes.c_bool)
+    __spawn_count = multiprocessing.Value(ctypes.c_uint)
+    __replay = multiprocessing.Value(ctypes.c_bool)
     __original_sigint_handler = None
     __sigint_params = None
 
@@ -50,7 +52,7 @@ class _RunnerBase(ABC):
         pass
 
     def __init__(self, problem, experiment_name, seed, iteration_list, max_attempts=500,
-                 generate_curves=True, output_directory=None, copy_zero_curve_fitness_from_first=False,
+                 generate_curves=True, output_directory=None, copy_zero_curve_fitness_from_first=False, replay=False,
                  **kwargs):
         self.problem = problem
         self.seed = seed
@@ -63,6 +65,7 @@ class _RunnerBase(ABC):
         self.curves_df = None
         self._raw_run_stats = []
         self._fitness_curves = []
+        self._curve_base = 0
         self._copy_zero_curve_fitness_from_first = copy_zero_curve_fitness_from_first
         self._copy_zero_curve_fitness_from_first_original = copy_zero_curve_fitness_from_first
         self._extra_args = kwargs
@@ -71,6 +74,20 @@ class _RunnerBase(ABC):
         self._current_logged_algorithm_args = {}
         self._run_start_time = None
         self._iteration_times = []
+        if replay:
+            self.set_replay_mode()
+        self._increment_spawn_count()
+
+    def _increment_spawn_count(self):
+        with self.__spawn_count.get_lock():
+            self.__spawn_count.value += 1
+
+    def _decrement_spawn_count(self):
+        with self.__spawn_count.get_lock():
+            self.__spawn_count.value -= 1
+
+    def _get_spawn_count(self):
+        return self.__spawn_count.value
 
     def abort(self):
         with self.__abort.get_lock():
@@ -78,6 +95,13 @@ class _RunnerBase(ABC):
 
     def has_aborted(self):
         return self.__abort.value
+
+    def set_replay_mode(self):
+        with self.__replay.get_lock():
+            self.__replay.value = True
+
+    def replay_mode(self):
+        return self.__replay.value
 
     def _setup(self):
         self._raw_run_stats = []
@@ -101,9 +125,11 @@ class _RunnerBase(ABC):
 
     def _tear_down(self):
         # restore ctrl-c handler
+        self._curve_base = 0
+        self._decrement_spawn_count()
         if self.__original_sigint_handler is not None:
             signal.signal(signal.SIGINT, self.__original_sigint_handler)
-            if self.has_aborted():
+            if self.has_aborted() and self._get_spawn_count() == 0:
                 sig, frame = self.__sigint_params
                 self.__original_sigint_handler(sig, frame)
 
@@ -179,11 +205,34 @@ class _RunnerBase(ABC):
         print(f'Saving: [{filename_root}.p]')
         return filename_root
 
+    def _load_pickles(self):
+        curves_df_filename = f"{self._get_pickle_filename_root('curves_df')}.p"
+        run_stats_df_filename = f"{self._get_pickle_filename_root('run_stats_df')}.p"
+        self.curves_df = None
+        self.run_stats_df = None
+        if os.path.exists(curves_df_filename):
+            with open(curves_df_filename, 'rb') as pickle_file:
+                try:
+                    self.curves_df = pk.load(pickle_file)
+                except:
+                    pass
+        if os.path.exists(run_stats_df_filename):
+            with open(run_stats_df_filename, 'rb') as pickle_file:
+                try:
+                    self.run_stats_df = pk.load(pickle_file)
+                except:
+                    pass
+
+        return self.curves_df is not None and self.run_stats_df is not None
+
     def _invoke_algorithm(self, algorithm, problem, max_attempts,
                           curve, user_info, additional_algorithm_args=None, **total_args):
         self._current_logged_algorithm_args.update(total_args)
         if additional_algorithm_args is not None:
             self._current_logged_algorithm_args.update(additional_algorithm_args)
+
+        if self.replay_mode() and self._load_pickles():
+            return None, None, None
 
         # arg_text = [get_short_name(v) for v in self._current_logged_algorithm_args.values()]
         self._print_banner('*** Run START ***')
@@ -201,6 +250,7 @@ class _RunnerBase(ABC):
                         callback_user_info=user_info,
                         **args_to_pass)
         self._print_banner('*** Run END ***')
+        self._curve_base = len(self._fitness_curves)
         return ret
 
     def _start_run_timing(self):
@@ -276,7 +326,7 @@ class _RunnerBase(ABC):
 
         if self.generate_curves and curve is not None:  # and (done or iteration == max(self.iteration_list)):
             curve_stats_saved = len(self._fitness_curves)
-            total_curve_stats = len(curve)
+            total_curve_stats = self._curve_base + len(curve)
             curve_stats_to_save = total_curve_stats - curve_stats_saved
 
             fc = list(zip(range(curve_stats_saved, total_curve_stats + 1), curve[-curve_stats_to_save:]))
