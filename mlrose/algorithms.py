@@ -482,11 +482,8 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
         If random_state is a positive integer, random_state is the seed used
         by np.random.seed(); otherwise, the random seed is not set.
     fast_mimic: bool, default: False
-        Activate fast mimic mode to compute the mutual information in vectorized form
-        Faster speed but requires more memory.
-    noise: float, default: 0
-        Adds noise to the probability and conditional probability estimates.
-        0.01 corresponds to 1% noise.
+        Activate fast mimic mode to compute the mutual information in
+        vectorized form. Faster speed but requires more memory.
 
     Returns
     -------
@@ -537,10 +534,10 @@ def mimic(problem, pop_size=200, keep_pct=0.2, max_attempts=10,
     if curve:
         fitness_curve = []
 
-    if not((fast_mimic == True) or (fast_mimic == False)):
+    if fast_mimic not in (True, False):
         raise Exception("""fast_mimic mode must be a boolean.""")
     else:
-        problem.mimic_speed=fast_mimic
+        problem.mimic_speed = fast_mimic
 
     if (noise < 0) or (noise > 0.1):
         raise Exception("""noise must be between 0 and 0.1.""")
