@@ -144,3 +144,7 @@ class NNClassifier(_NNBase):
 
         self.predicted_probabilities = pp
         return y_pred
+
+    def predict_proba(self, x_test):
+        self.predict(x_test)
+        return self.predicted_probabilities
