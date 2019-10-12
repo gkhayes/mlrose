@@ -87,7 +87,10 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
             problem.find_neighbors()
             next_state = problem.best_neighbor()
             next_fitness = problem.eval_fitness(next_state)
-
+            
+            if curve:
+                fitness_curve.append(problem.get_fitness())
+            
             # If best neighbor is an improvement, move to that state
             if next_fitness > problem.get_fitness():
                 problem.set_state(next_state)
@@ -99,9 +102,6 @@ def hill_climb(problem, max_iters=np.inf, restarts=0, init_state=None,
         if problem.get_fitness() > best_fitness:
             best_fitness = problem.get_fitness()
             best_state = problem.get_state()
-
-        if curve:
-            fitness_curve.append(problem.get_fitness())
 
     best_fitness = problem.get_maximize()*best_fitness
 
