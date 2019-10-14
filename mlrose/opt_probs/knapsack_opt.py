@@ -5,7 +5,7 @@
 
 from mlrose.algorithms.crossovers import UniformCrossOver
 from mlrose.algorithms.mutators import ChangeOneMutator
-from mlrose.fitness import Knapsack
+from mlrose.fitness import knapsack
 from mlrose.opt_probs.discrete_opt import DiscreteOpt
 
 
@@ -30,7 +30,7 @@ class KnapsackOpt(DiscreteOpt):
         self.length = length
 
         if fitness_fn is None:
-            fitness_fn = Knapsack(weights=weights, values=values,
+            fitness_fn = knapsack(weights=weights, values=values,
                                   max_weight_pct=max_weight_pct,
                                   max_item_count=max_val,
                                   multiply_by_max_item_count=multiply_by_max_item_count)

@@ -67,7 +67,7 @@ class NNClassifier(_NNBase):
         out = super().get_params(deep)
         # exclude any that end with an underscore
         out = {k: v for (k, v) in out.items() if not k[-1] == '_'}
-        ap = {k: None for k in self.grid_search_parameters if k not in out}
+        ap = {k: self.__dict__[k] if k in self.__dict__ else None for k in self.grid_search_parameters if k not in out}
         out.update(ap)
         return out
 

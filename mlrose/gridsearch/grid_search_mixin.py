@@ -32,6 +32,10 @@ class GridSearchMixin:
     def _grid_search_score_intercept(self, y_pred, y_true, **kwargs):
         cleaned_kwargs = {k: v for k, v in kwargs.items() if k in list(inspect.signature(self._scorer_method).parameters)}
 
+        # workaround for odd usage from sklearn
+        if not hasattr(self, '_get_y_argmax'):
+            self._get_y_argmax = False
+
         if not self._get_y_argmax and len(y_pred.shape) > 1 and len(y_true.shape) > 1:
             try:
                 return self._scorer_method(y_pred=y_pred, y_true=y_true, **cleaned_kwargs)

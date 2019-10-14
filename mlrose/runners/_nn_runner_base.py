@@ -56,20 +56,21 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         try:
             self._setup()
             print(f'Running {self.dynamic_runner_name()}')
-            run_start = time.perf_counter()
-            sr = self._perform_grid_search(classifier=self.classifier,
-                                           parameters=self.grid_search_parameters,
-                                           x_train=self.x_train,
-                                           y_train=self.y_train,
-                                           cv=self.cv,
-                                           n_jobs=self.n_jobs,
-                                           verbose=self.verbose_grid_search)
-            run_end = time.perf_counter()
-            print(f'Run time: {run_end - run_start}')
             if self.replay_mode():
                 gsr_name = f"{super()._get_pickle_filename_root('grid_search_results')}.p"
                 with open(gsr_name, 'rb') as pickle_file:
                     sr = pk.load(pickle_file)
+            else:
+                run_start = time.perf_counter()
+                sr = self._perform_grid_search(classifier=self.classifier,
+                                               parameters=self.grid_search_parameters,
+                                               x_train=self.x_train,
+                                               y_train=self.y_train,
+                                               cv=self.cv,
+                                               n_jobs=self.n_jobs,
+                                               verbose=self.verbose_grid_search)
+                run_end = time.perf_counter()
+                print(f'Run time: {run_end - run_start}')
 
             # pull the stats from the best estimator to here.
             # (as grid search will have cloned this object).
@@ -120,7 +121,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         return filename_root
 
     def _tear_down(self):
-        if self.best_params is None:
+        if self.best_params or self.replay_mode() is None:
             super()._tear_down()
             return
         filename_root = super()._get_pickle_filename_root('')
@@ -161,7 +162,8 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
             all_incorrect_files.extend([os.path.join(path, fn) for fn in os.listdir(path) if incorrect_md5 in fn])
 
         for filename in all_incorrect_files:
-            os.remove(filename)
+            os.rename(filename, f'{filename}.del')
+            # os.remove(filename)
 
         # rename the best files by removing the md5 from the end
         all_correct_files = []
@@ -173,7 +175,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         for filename, correct_md5 in all_correct_files:
             correct_filename = filename.replace(correct_md5, '')
             if os.path.exists(correct_filename):
-                os.remove(correct_filename)
+                os.rename(correct_filename, f'{correct_filename}.bak')
             os.rename(filename, correct_filename)
 
         super()._tear_down()

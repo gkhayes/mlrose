@@ -98,9 +98,9 @@ class _RunnerBase(ABC):
     def has_aborted(self):
         return self.__abort.value
 
-    def set_replay_mode(self):
+    def set_replay_mode(self, value=True):
         with self.__replay.get_lock():
-            self.__replay.value = True
+            self.__replay.value = value
 
     def replay_mode(self):
         return self.__replay.value
