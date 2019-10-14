@@ -12,7 +12,7 @@ except:
 import unittest
 import numpy as np
 from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
-                    knapsack, TravellingSales, queens, MaxKColor,
+                    Knapsack, TravellingSales, Queens, MaxKColor,
                     CustomFitness)
 # from mlrose.fitness import head, tail, max_run
 # The above functions are not automatically imported at initialization, so
@@ -132,7 +132,7 @@ class TestFitness(unittest.TestCase):
         max_weight_pct = 0.6
 
         state = np.array([1, 0, 2, 1, 0])
-        calculated_weights = knapsack(weights, values, max_weight_pct).evaluate(state)
+        calculated_weights = Knapsack(weights, values, max_weight_pct).evaluate(state)
         assert calculated_weights == 11
 
     @staticmethod
@@ -144,7 +144,7 @@ class TestFitness(unittest.TestCase):
         max_weight_pct = 0.4
 
         state = np.array([1, 0, 2, 1, 0])
-        assert knapsack(weights, values, max_weight_pct).evaluate(state) == 0
+        assert Knapsack(weights, values, max_weight_pct).evaluate(state) == 0
 
     @staticmethod
     def test_travelling_sales_coords():
@@ -185,7 +185,7 @@ class TestFitness(unittest.TestCase):
     def test_queens():
         """Test Queens fitness function"""
         state = np.array([1, 4, 1, 3, 5, 5, 2, 7])
-        fitness = queens().evaluate(state)
+        fitness = Queens().evaluate(state)
         assert fitness == 6
 
     @staticmethod

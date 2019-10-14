@@ -7,7 +7,7 @@ import numpy as np
 
 from mlrose.algorithms.crossovers import UniformCrossOver
 from mlrose.algorithms.mutators import ChangeOneMutator
-from mlrose.fitness import queens
+from mlrose.fitness.queens import Queens
 from mlrose.opt_probs.discrete_opt import DiscreteOpt
 
 
@@ -24,7 +24,7 @@ class QueensOpt(DiscreteOpt):
         self.length = length
 
         if fitness_fn is None:
-            fitness_fn = queens()
+            fitness_fn = Queens()
 
         self.max_val = length
         crossover = UniformCrossOver(self) if crossover is None else crossover
