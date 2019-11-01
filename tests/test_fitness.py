@@ -98,10 +98,11 @@ class TestFitness(unittest.TestCase):
         assert SixPeaks(t_pct=0.30).evaluate(state) == 0
 
     @staticmethod
-    def test_sixpeaks_r_gt0_max0():
-        """Test SixPeaks fitness function for the case where R>0 and max=0"""
+    def test_sixpeaks_r_gt0_max2():
+        """Test SixPeaks fitness function for the case where R>0 and max>0
+        based on the second condition"""
         state = np.array([0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1])
-        assert SixPeaks(t_pct=0.15).evaluate(state) == 12
+        assert SixPeaks(t_pct=0.15).evaluate(state) == 16
 
     @staticmethod
     def test_continuouspeaks_r0():
