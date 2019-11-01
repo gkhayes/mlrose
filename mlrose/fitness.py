@@ -397,13 +397,16 @@ class SixPeaks:
         tail_1 = tail(1, state)
 
         # Calculate R(X, T)
-        if (tail_0 > _t and head_1 > _t) or (tail_1 > _t and head_0 > _t):
+        _r = 0
+        _max_score = max(tail_0, head_1)
+        if tail_0 > _t and head_1 > _t:
             _r = _n
-        else:
-            _r = 0
+        elif tail_1 > _t and head_0 > _t:
+            _r = _n
+            _max_score = max(tail_1, head_0)
 
         # Evaluate function
-        fitness = max(tail_0, head_1) + _r
+        fitness = _max_score + _r
 
         return fitness
 
