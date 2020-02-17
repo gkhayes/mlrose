@@ -16,7 +16,7 @@ def readme():
 
 
 setup(name='mlrose-hiive',
-      version='2.1.0.hiive',
+      version='2.1.0',
       description="MLROSe: Machine Learning, Randomized Optimization and"
       + " Search",
       long_description=readme(),
@@ -24,7 +24,7 @@ setup(name='mlrose-hiive',
       url='https://github.com/hiive/mlrose',
       author='Genevieve Hayes (modified by Andrew Rollings)',
       license='BSD',
-      download_url='https://github.com/hiive/mlrose/archive/2.1.0.hiive.tar.gz',
+      download_url='https://github.com/hiive/mlrose/archive/2.1.0.tar.gz',
       classifiers=[
           "Intended Audience :: Education",
           "Intended Audience :: Science/Research",
