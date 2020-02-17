@@ -129,7 +129,7 @@ class _NNRunnerBase(_RunnerBase, GridSearchMixin, ABC):
         path = os.path.join(*filename_root.split('/')[:-1])
         filename_part = filename_root.split('/')[-1]
         if path[0] != '/':
-            path = f'/{path}'
+            path = f'{path}'
         # find all data frames output by this runner
         filenames = [fn for fn in os.listdir(path) if (filename_part in fn
                                                        and fn.endswith('.p')
