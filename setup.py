@@ -22,7 +22,7 @@ setup(name='mlrose-hiive',
       long_description=readme(),
       long_description_content_type='text/markdown',
       url='https://github.com/hiive/mlrose',
-      author='Genevieve Hayes (modifed by Andrew Rollings)',
+      author='Genevieve Hayes (modified by Andrew Rollings)',
       license='BSD',
       classifiers=[
           "Intended Audience :: Education",
