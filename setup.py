@@ -16,7 +16,7 @@ def readme():
 
 
 setup(name='mlrose_hiive',
-      version='2.1.1',
+      version='2.1.2',
       description="MLROSe: Machine Learning, Randomized Optimization and"
       + " Search (hiive extended remix)",
       long_description=readme(),
