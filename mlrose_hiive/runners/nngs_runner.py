@@ -10,7 +10,7 @@ Example usage:
     from mlrose_hiive.runners import NNGSRunner
 
     grid_search_parameters = ({
-        'max_iter': [1, 2, 4, 8, 16, 32, 64, 128],                     # nn params
+        'max_iters': [1, 2, 4, 8, 16, 32, 64, 128],                     # nn params
         'learning_rate': [0.001, 0.002, 0.003],                         # nn params
         'schedule': [ArithDecay(1), ArithDecay(100), ArithDecay(1000)]  # sa params
     })
