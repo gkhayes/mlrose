@@ -26,4 +26,5 @@ from .opt_probs import DiscreteOpt, ContinuousOpt, KnapsackOpt, TSPOpt, QueensOp
 
 from .runners import GARunner, MIMICRunner, RHCRunner, SARunner, NNGSRunner
 from .runners import (build_data_filename)
-from .generators import MaxKColorGenerator, QueensGenerator, FlipFlopGenerator, TSPGenerator, KnapsackGenerator
+from .generators import (MaxKColorGenerator, QueensGenerator, FlipFlopGenerator, TSPGenerator, KnapsackGenerator,
+                         ContinuousPeaksGenerator)

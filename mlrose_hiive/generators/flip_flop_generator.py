@@ -1,6 +1,6 @@
 """ Classes for defining optimization problem objects."""
 
-# Author: Genevieve Hayes
+# Author: Andrew Rollings
 # License: BSD 3 clause
 
 import numpy as np
