@@ -24,6 +24,7 @@ setup(name='mlrose-hiive',
       url='https://github.com/hiive/mlrose',
       author='Genevieve Hayes (modified by Andrew Rollings)',
       license='BSD',
+      download_url='https://github.com/hiive/mlrose/archive/2.1.0.hiive.tar.gz',
       classifiers=[
           "Intended Audience :: Education",
           "Intended Audience :: Science/Research",
