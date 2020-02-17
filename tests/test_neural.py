@@ -4,7 +4,7 @@
 # License: BSD 3 clause
 
 try:
-    import mlrose
+    import mlrose_hiive
 except:
     import sys
     sys.path.append("..")
@@ -13,13 +13,13 @@ import numpy as np
 # The following functions/classes are not automatically imported at
 # initialization, so must be imported explicitly from neural.py and
 # activation.py.
-from mlrose.neural.linear_regression import LinearRegression
-from mlrose.neural.logistic_regression import LogisticRegression
-from mlrose.neural.fitness.network_weights import NetworkWeights
-from mlrose.neural.neural_network import NeuralNetwork
-from mlrose.opt_probs import ContinuousOpt
-from mlrose import (flatten_weights, unflatten_weights, identity, sigmoid, softmax)
-from mlrose.algorithms.gd import gradient_descent
+from mlrose_hiive.neural.linear_regression import LinearRegression
+from mlrose_hiive.neural.logistic_regression import LogisticRegression
+from mlrose_hiive.neural.fitness.network_weights import NetworkWeights
+from mlrose_hiive.neural.neural_network import NeuralNetwork
+from mlrose_hiive.opt_probs import ContinuousOpt
+from mlrose_hiive import (flatten_weights, unflatten_weights, identity, sigmoid, softmax)
+from mlrose_hiive.algorithms.gd import gradient_descent
 
 
 class TestNeural(unittest.TestCase):

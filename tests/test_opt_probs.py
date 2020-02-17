@@ -3,7 +3,7 @@
 # Author: Genevieve Hayes
 # License: BSD 3 clause
 try:
-    import mlrose
+    import mlrose_hiive
 except:
     import sys
     sys.path.append("..")
@@ -11,14 +11,14 @@ except:
 import unittest
 import numpy as np
 
-from mlrose import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt, OnePointCrossOver
+from mlrose_hiive import OneMax, DiscreteOpt, ContinuousOpt, TSPOpt, OnePointCrossOver
 
 # The following functions/classes are not automatically imported at
 # initialization, so must be imported explicitly from neural.py,
 # activation.py and opt_probs.py
-from mlrose.neural import NetworkWeights
-from mlrose.neural.activation import identity
-from mlrose.opt_probs._opt_prob import _OptProb as OptProb
+from mlrose_hiive.neural import NetworkWeights
+from mlrose_hiive.neural.activation import identity
+from mlrose_hiive.opt_probs._opt_prob import _OptProb as OptProb
 
 
 class TestOptProb(unittest.TestCase):

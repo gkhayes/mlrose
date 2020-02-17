@@ -4,20 +4,20 @@
 # License: BSD 3 clause
 
 try:
-    import mlrose
+    import mlrose_hiive
 except:
     import sys
     sys.path.append("..")
 
 import unittest
 import numpy as np
-from mlrose import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
-                    Knapsack, TravellingSales, Queens, MaxKColor,
-                    CustomFitness)
-# from mlrose.fitness import head, tail, max_run
+from mlrose_hiive import (OneMax, FlipFlop, FourPeaks, SixPeaks, ContinuousPeaks,
+                          Knapsack, TravellingSales, Queens, MaxKColor,
+                          CustomFitness)
+# from mlrose_hiive.fitness import head, tail, max_run
 # The above functions are not automatically imported at initialization, so
 # must be imported explicitly from fitness.py.
-from mlrose.fitness._discrete_peaks_base import _DiscretePeaksBase
+from mlrose_hiive.fitness._discrete_peaks_base import _DiscretePeaksBase
 
 
 class TestFitness(unittest.TestCase):

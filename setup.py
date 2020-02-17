@@ -15,10 +15,10 @@ def readme():
         return _file.read()
 
 
-setup(name='mlrose-hiive',
-      version='2.1.0',
+setup(name='mlrose_hiive',
+      version='2.1.1',
       description="MLROSe: Machine Learning, Randomized Optimization and"
-      + " Search",
+      + " Search (hiive extended remix)",
       long_description=readme(),
       long_description_content_type='text/markdown',
       url='https://github.com/hiive/mlrose',
@@ -37,12 +37,12 @@ setup(name='mlrose-hiive',
           "Topic :: Scientific/Engineering :: Mathematics",
           "Topic :: Software Development :: Libraries",
           "Topic :: Software Development :: Libraries :: Python Modules"],
-      packages=['mlrose','mlrose.runners','mlrose.generators', 'mlrose.algorithms',
-                'mlrose.algorithms.decay', 'mlrose.algorithms.crossovers',
-                'mlrose.opt_probs', 'mlrose.fitness', 'mlrose.algorithms.mutators',
-                'mlrose.neural', 'mlrose.neural.activation', 'mlrose.neural.fitness',
-                'mlrose.neural.utils', 'mlrose.decorators',
-                'mlrose.gridsearch'],
+      packages=['mlrose_hiive','mlrose_hiive.runners','mlrose_hiive.generators', 'mlrose_hiive.algorithms',
+                'mlrose_hiive.algorithms.decay', 'mlrose_hiive.algorithms.crossovers',
+                'mlrose_hiive.opt_probs', 'mlrose_hiive.fitness', 'mlrose_hiive.algorithms.mutators',
+                'mlrose_hiive.neural', 'mlrose_hiive.neural.activation', 'mlrose_hiive.neural.fitness',
+                'mlrose_hiive.neural.utils', 'mlrose_hiive.decorators',
+                'mlrose_hiive.gridsearch'],
       install_requires=['numpy', 'scipy', 'scikit-learn', 'pandas', 'networkx', 'joblib'],
       python_requires='>=3',
       zip_safe=False)

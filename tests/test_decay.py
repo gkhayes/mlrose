@@ -4,12 +4,12 @@
 # License: BSD 3 clause
 
 try:
-    import mlrose
+    import mlrose_hiive
 except:
     import sys
     sys.path.append("..")
 import unittest
-from mlrose import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
+from mlrose_hiive import GeomDecay, ArithDecay, ExpDecay, CustomSchedule
 
 
 class TestDecay(unittest.TestCase):
