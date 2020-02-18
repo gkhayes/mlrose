@@ -30,7 +30,7 @@ mlrose was written in Python 3 and requires NumPy, SciPy and Scikit-Learn (sklea
 
 The latest version can be installed using `pip`:
 ```
-pip install -e git+git://github.com/hiive/mlrose#egg=mlrose-hiive
+pip install mlrose-hiive
 ```
 
 ## Documentation
