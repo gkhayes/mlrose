@@ -14,7 +14,7 @@ class SwapMutator(_MutatorBase):
         super().__init__(opt_prob)
 
     def mutate(self, child, mutation_probability):
-        if np.random.rand() > mutation_probability:
+        if np.random.rand() < mutation_probability:
             # do swap mutation
             m1 = np.random.randint(len(child))
             m2 = np.random.randint(len(child))
