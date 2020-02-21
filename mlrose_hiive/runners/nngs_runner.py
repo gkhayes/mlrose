@@ -23,7 +23,7 @@ Example usage:
                      algorithm=mlrose_hiive.algorithms.sa.simulated_annealing,
                      grid_search_parameters=grid_search_parameters,
                      iteration_list=[1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000],
-                     hidden_layer_sizes=[44,44],
+                     hidden_layer_sizes=[[44,44]],
                      bias=True,
                      early_stopping=False,
                      clip_max=1e+10,
