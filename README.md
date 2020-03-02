@@ -57,4 +57,12 @@ BibTeX entry:
  howpublished = {\url{https://github.com/gkhayes/mlrose}},
  note 	= {Accessed: day month year}
 }
+
+@misc{Rollings20,
+ author = {Rollings, A.},
+ title 	= {{mlrose: Machine Learning, Randomized Optimization and SEarch package for Python, hiive extended remix}},
+ year 	= 2020,
+ howpublished = {\url{https://github.com/hiive/mlrose}},
+ note 	= {Accessed: day month year}
+}
 ```
