@@ -42,6 +42,9 @@ A Jupyter notebook containing the examples used in the documentation is also ava
 mlrose was written by Genevieve Hayes and is distributed under the [3-Clause BSD license](https://github.com/gkhayes/mlrose/blob/master/LICENSE). 
 
 You can cite mlrose in research publications and reports as follows:
+* Rollings, A. (2020). ***mlrose: Machine Learning, Randomized Optimization and SEarch package for Python, hiive extended remix***. https://github.com/hiive/mlrose. Accessed: *day month year*.
+
+Please also keep the original author's citation:
 * Hayes, G. (2019). ***mlrose: Machine Learning, Randomized Optimization and SEarch package for Python***. https://github.com/gkhayes/mlrose. Accessed: *day month year*.
 
 You can cite this fork in a similar way, but please be sure to reference the original work.
