@@ -5,7 +5,7 @@
 # License: BSD 3 clause
 
 from setuptools import setup
-
+import mlrose_hiive
 
 def readme():
     """
@@ -16,7 +16,7 @@ def readme():
 
 
 setup(name='mlrose_hiive',
-      version='2.1.3',
+      version=mlrose_hiive.__version__,
       description="MLROSe: Machine Learning, Randomized Optimization and"
       + " Search (hiive extended remix)",
       long_description=readme(),
@@ -24,7 +24,7 @@ setup(name='mlrose_hiive',
       url='https://github.com/hiive/mlrose',
       author='Genevieve Hayes (modified by Andrew Rollings)',
       license='BSD',
-      download_url='https://github.com/hiive/mlrose/archive/2.1.3.tar.gz',
+      download_url='https://github.com/hiive/mlrose/archive/'+version+'.tar.gz',
       classifiers=[
           "Intended Audience :: Education",
           "Intended Audience :: Science/Research",
