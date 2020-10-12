@@ -9,7 +9,6 @@ from abc import abstractmethod
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.metrics import mean_squared_error, log_loss
-from sklearn.externals import six
 from .activation import identity, relu, sigmoid, softmax, tanh
 from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
 from .opt_probs import ContinuousOpt
@@ -370,7 +369,7 @@ class NetworkWeights:
         return updates_list
 
 
-class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
+class BaseNeuralNetwork(BaseEstimator, metaclass=ABCMeta):
     """Base class for neural networks.
 
     Warning: This class should not be used directly.
