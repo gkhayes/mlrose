@@ -9,7 +9,7 @@ from abc import abstractmethod
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.metrics import mean_squared_error, log_loss
-from sklearn.externals import six
+from sklearn.utils.multiclass import unique_labels
 from .activation import identity, relu, sigmoid, softmax, tanh
 from .algorithms import random_hill_climb, simulated_annealing, genetic_alg
 from .opt_probs import ContinuousOpt
@@ -370,7 +370,7 @@ class NetworkWeights:
         return updates_list
 
 
-class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
+class BaseNeuralNetwork(BaseEstimator, metaclass=ABCMeta):
     """Base class for neural networks.
 
     Warning: This class should not be used directly.
@@ -395,15 +395,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                  random_state=None,
                  curve=False):
 
-        if hidden_nodes is None:
-            self.hidden_nodes = []
-        else:
-            self.hidden_nodes = hidden_nodes
-
-        self.activation_dict = {'identity': identity,
-                                'relu': relu,
-                                'sigmoid': sigmoid,
-                                'tanh': tanh}
+        self.hidden_nodes = hidden_nodes
         self.activation = activation
         self.algorithm = algorithm
         self.max_iters = max_iters
@@ -419,13 +411,6 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         self.max_attempts = max_attempts
         self.random_state = random_state
         self.curve = curve
-
-        self.node_list = []
-        self.fitted_weights = []
-        self.loss = np.inf
-        self.output_activation = None
-        self.predicted_probs = []
-        self.fitness_curve = []
 
     def _validate(self):
         if (not isinstance(self.max_iters, int) and self.max_iters != np.inf
@@ -490,6 +475,19 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
             Numpy array containing starting weights for algorithm.
             If :code:`None`, then a random state is used.
         """
+        if self.hidden_nodes is None:
+            self.hidden_nodes = []
+        self.activation_dict = {'identity': identity,
+                                'relu': relu,
+                                'sigmoid': sigmoid,
+                                'tanh': tanh}
+        self.node_list = []
+        self.fitted_weights = []
+        self.loss = np.inf
+        self.output_activation = None
+        self.predicted_probs = []
+        self.fitness_curve = []
+
         self._validate()
 
         # Make sure y is an array and not a list
@@ -509,6 +507,7 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
         node_list = [input_nodes] + self.hidden_nodes + [output_nodes]
 
         num_nodes = 0
+        self.classes_ = unique_labels(y)
 
         for i in range(len(node_list) - 1):
             num_nodes += node_list[i]*node_list[i+1]
@@ -688,59 +687,6 @@ class BaseNeuralNetwork(six.with_metaclass(ABCMeta, BaseEstimator)):
                 y_pred = zeros.astype(int)
 
         return y_pred
-
-    def get_params(self, deep=False):
-        """Get parameters for this estimator.
-
-        Returns
-        -------
-        params : dictionary
-            Parameter names mapped to their values.
-        """
-        params = {'hidden_nodes': self.hidden_nodes,
-                  'max_iters': self.max_iters,
-                  'bias': self.bias,
-                  'is_classifier': self.is_classifier,
-                  'learning_rate': self.learning_rate,
-                  'early_stopping': self.early_stopping,
-                  'clip_max': self.clip_max,
-                  'restarts': self.restarts,
-                  'schedule': self.schedule,
-                  'pop_size': self.pop_size,
-                  'mutation_prob': self.mutation_prob}
-
-        return params
-
-    def set_params(self, **in_params):
-        """Set the parameters of this estimator.
-
-        Parameters
-        -------
-        in_params: dictionary
-            Dictionary of parameters to be set and the value to be set to.
-        """
-        if 'hidden_nodes' in in_params.keys():
-            self.hidden_nodes = in_params['hidden_nodes']
-        if 'max_iters' in in_params.keys():
-            self.max_iters = in_params['max_iters']
-        if 'bias' in in_params.keys():
-            self.bias = in_params['bias']
-        if 'is_classifier' in in_params.keys():
-            self.is_classifier = in_params['is_classifier']
-        if 'learning_rate' in in_params.keys():
-            self.learning_rate = in_params['learning_rate']
-        if 'early_stopping' in in_params.keys():
-            self.early_stopping = in_params['early_stopping']
-        if 'clip_max' in in_params.keys():
-            self.clip_max = in_params['clip_max']
-        if 'restarts' in in_params.keys():
-            self.restarts = in_params['restarts']
-        if 'schedule' in in_params.keys():
-            self.schedule = in_params['schedule']
-        if 'pop_size' in in_params.keys():
-            self.pop_size = in_params['pop_size']
-        if 'mutation_prob' in in_params.keys():
-            self.mutation_prob = in_params['mutation_prob']
 
 
 class NeuralNetwork(BaseNeuralNetwork, ClassifierMixin):
