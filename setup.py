@@ -36,6 +36,6 @@ setup(name='mlrose',
           "Topic :: Software Development :: Libraries",
           "Topic :: Software Development :: Libraries :: Python Modules"],
       packages=['mlrose'],
-      install_requires=['numpy', 'scipy', 'sklearn'],
+      install_requires=['numpy', 'scipy', 'sklearn', 'six'],
       python_requires='>=3',
       zip_safe=False)
