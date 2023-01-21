@@ -104,16 +104,21 @@ class OptProb:
         Calculate the probability of each member of the population reproducing.
         """
         pop_fitness = np.copy(self.pop_fitness)
+        sum_fitness = np.sum(pop_fitness)
 
         # Set -1*inf values to 0 to avoid dividing by sum of infinity.
         # This forces mate_probs for these pop members to 0.
-        pop_fitness[pop_fitness == -1.0*np.inf] = 0
+        pop_fitness[pop_fitness == -1.0 * np.inf] = 0
 
-        if np.sum(pop_fitness) == 0:
-            self.mate_probs = np.ones(len(pop_fitness)) \
-                              / len(pop_fitness)
+        if sum_fitness == 0:
+            self.mate_probs = np.ones(len(pop_fitness)) / len(pop_fitness)
+        elif self.maximize == 1:
+            self.mate_probs = pop_fitness / sum_fitness
+        # creates mate probability if fitness is negative
+        # if fitness 0 mate probability will also be 0
         else:
-            self.mate_probs = pop_fitness/np.sum(pop_fitness)
+            pop_fitness = [0 if x == 0 else sum_fitness / x for x in pop_fitness]
+            self.mate_probs = pop_fitness / np.sum(pop_fitness)
 
     def get_fitness(self):
         """ Return the fitness of the current state vector.
