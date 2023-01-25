@@ -892,11 +892,11 @@ class MaxKColor:
 
         >>> import mlrose
         >>> import numpy as np
-        >>> edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4)]
+        >>> edges = [(0, 1), (0, 2), (0, 4), (1, 3), (2, 0), (2, 3), (3, 4), (0, 5)]
         >>> fitness = mlrose.MaxKColor(edges)
-        >>> state = np.array([0, 1, 0, 1, 1])
+        >>> state = np.array([0, 1, 0, 1, 1, 0])
         >>> fitness.evaluate(state)
-        3
+        4
 
     Note
     ----
